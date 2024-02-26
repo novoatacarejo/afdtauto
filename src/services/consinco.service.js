@@ -23,7 +23,8 @@ class ConsincoService {
     try {
       const client = await OracleService.connect();
 
-      const sql = `SELECT CODFILIAL,
+      const sql = `SELECT
+       CODFILIAL,
        EMPRESA,
        EMPRESADIR,
        PISO,
@@ -33,12 +34,11 @@ class ConsincoService {
        USERNAME,
        USERPASS,
        PORTARIA
-       FROM
-       WFM_DEV.DEV_VW_RM_DEVICES
+       FROM WFM_DEV.DEV_VW_RM_DEVICES
        WHERE 1=1
        AND CODFILIAL NOT IN (1)
        ORDER BY 1
-       FETCH FIRST 1 ROWS ONLY
+       -- FETCH FIRST 1 ROWS ONLY
        `;
 
       const response = await client.execute(sql);

@@ -25,7 +25,10 @@ const startApplication = async () => {
 
     stations.map(async (station) => {
       let token = await StationService.getToken(station.ip, station.userName, station.userPass);
-      logger.info(token);
+
+      token
+        ? logger.info(`Connected on Station IP: ${station.ip} with the token ${token}`)
+        : logger.error(`Connected on Station IP: ${station.ip}`);
 
       let getData = await StationService.getAfdData(station.ip, token, station.portaria, afdDate);
 
@@ -37,6 +40,7 @@ const startApplication = async () => {
     });
 
     /*
+    // sucessfull attempt
     for (const station of stations) {
       let token = await StationService.getToken(station.ip, station.userName, station.userPass);
       logger.info(token);
