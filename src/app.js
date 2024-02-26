@@ -17,31 +17,39 @@ const startApplication = async () => {
     const stations = await ConsincoService.getStationsInfo();
 
     if (stations.length === 0) {
-      logger.info('No Stations finded');
+      logger.info('No Stations finded. Please, check the database connection');
       return;
     }
 
     const afdDate = returnAfdDate();
 
-    for (const station of stations) {
-      let employerDir = `../afd/${station.empresaDir}`;
-      let txtFileName = `${employerDir}/afd_${station.empresaDir}_rlg${station.item}_ip${station.ipFinal}.txt`;
-      let stationUrlLogin = `https://${station.ip}/login.fcgi?login=${station.userName}&password=${station.userPass}`;
-
-      let token = await StationService.getToken(stationUrlLogin);
+    stations.map(async (station) => {
+      let token = await StationService.getToken(station.ip, station.userName, station.userPass);
       logger.info(token);
 
-      let stationUrlGetData = `https://${station.ip}/get_afd.fcgi?session=${token}&mode=${station.portaria}`;
-      let stationUrlLogout = `https://${station.ip}/logout.fcgi?session=${token}`;
-
-      let getData = await StationService.getAfdData(stationUrlGetData, token, afdDate);
+      let getData = await StationService.getAfdData(station.ip, token, station.portaria, afdDate);
 
       logger.info(getData);
 
-      let logoutAfd = await StationService.logoutStation(stationUrlLogout);
+      let logoutAfd = await StationService.logoutStation(station.ip, token);
+
+      logger.info(logoutAfd);
+    });
+
+    /*
+    for (const station of stations) {
+      let token = await StationService.getToken(station.ip, station.userName, station.userPass);
+      logger.info(token);
+
+      let getData = await StationService.getAfdData(station.ip, token, station.portaria, afdDate);
+
+      logger.info(getData);
+
+      let logoutAfd = await StationService.logoutStation(station.ip, token);
 
       logger.info(logoutAfd);
     }
+    */
   } catch (error) {
     logger.error('Error on startApplication', error);
   } finally {

@@ -9,7 +9,7 @@ const instance = axios.create({
 });
 
 class StationService {
-  static getToken = async (stationUrlInfo) => {
+  static getToken = async (url, login, pass) => {
     try {
       const headers = {
         'Content-Length': '0'
@@ -17,7 +17,7 @@ class StationService {
 
       const response = await axios.request({
         method: 'POST',
-        url: stationUrlInfo,
+        url: `https://${url}/login.fcgi?login=${login}&password=${pass}`,
         headers,
         insecureHTTPParser: true
       });
@@ -35,30 +35,27 @@ class StationService {
     }
   };
 
-  static getAfdData = async (stationUrlInfo, tokenInfo, afdDateInfo) => {
+  static getAfdData = async (url, token, portaria, afdDateInfo) => {
     try {
-      const initial_date = {
-        day: afdDateInfo.day,
-        month: afdDateInfo.month,
-        year: afdDateInfo.year
-      };
+      let day = parseInt(afdDateInfo.day);
+      let month = parseInt(afdDateInfo.month);
+      let year = parseInt(afdDateInfo.year);
 
       const headers = {
         contentType: 'application/json',
-        'Content-Type': 'application/json',
-        'Content-Length': '85'
+        'Content-Type': 'application/json'
       };
 
-      if (!tokenInfo) {
+      if (!token) {
         throw new Error('error when trying to fetch the token');
       }
 
       const options = {
         method: 'POST',
-        url: stationUrlInfo,
+        url: `https://${url}/get_afd.fcgi?session=${token}&mode=${portaria}`,
         insecureHTTPParser: true,
         headers,
-        initial_date
+        data: { initial_date: { day, month, year } }
       };
 
       logger.info(options);
@@ -69,19 +66,19 @@ class StationService {
         throw new Error('error when trying to post data: \n' + response);
       }
 
-      logger.info(response);
-      let answer = response;
+      logger.info(response.data);
+      let answer = response.data;
       return answer;
     } catch (error) {
       logger.error(SERVICE_NAME, error);
     }
   };
 
-  static logoutStation = async (stationUrlInfo) => {
+  static logoutStation = async (url, token) => {
     try {
       const options = {
         method: 'POST',
-        url: stationUrlInfo,
+        url: `https://${url}/logout.fcgi?session=${token}`,
         insecureHTTPParser: true
       };
 
