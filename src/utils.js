@@ -1,4 +1,7 @@
 const { configure } = require('log4js');
+const fs = require('fs');
+const path = require('path');
+
 const assembleArrayObjects = (columnsName, lines) => {
   const qtColumns = columnsName.length;
   const qtLines = lines.length;
@@ -15,6 +18,21 @@ const assembleArrayObjects = (columnsName, lines) => {
   }
 
   return objects;
+};
+
+const returnObjCorrectType = (arrayObj) => {
+  let data = {
+    ip: new String(arrayObj.ip),
+    portaria: parseInt(arrayObj.portaria),
+    user: new String(arrayObj.userName),
+    pass: new String(arrayObj.userPass),
+    empresa: new String(arrayObj.empresa),
+    empresaDir: new String(arrayObj.empresaDir),
+    item: parseInt(arrayObj.item),
+    ipFInal: parseInt(arrayObj.ipFinal)
+  };
+
+  return data;
 };
 
 const returnCurrentDateAndTime = () => {
@@ -88,6 +106,20 @@ const configureLogService = async () => {
   });
 };
 
+const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
+  return new Promise((res) => {
+    const dir = `afd/${dirName}/`;
+    const filename = `afd_${dirName}_rlg${dirItem}_ip_${dirIpFinal}.txt`;
+    const outputFilePath = path.join(dir, filename);
+
+    fs.mkdirSync(path.dirname(outputFilePath), { recursive: true });
+
+    fs.writeFileSync(outputFilePath, arrayData);
+
+    res(true);
+  });
+};
+
 const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
@@ -109,3 +141,5 @@ exports.configureLogService = configureLogService;
 exports.asyncForEach = asyncForEach;
 exports.makeChunk = makeChunk;
 exports.returnAfdDate = returnAfdDate;
+exports.writeAfdTxt = writeAfdTxt;
+exports.returnObjCorrectType = returnObjCorrectType;

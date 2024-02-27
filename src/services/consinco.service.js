@@ -28,17 +28,17 @@ class ConsincoService {
        EMPRESA,
        EMPRESADIR,
        PISO,
-       ITEM,
+       TO_NUMBER(ITEM) AS ITEM,
        IP,
-       IPFINAL,
+       TO_NUMBER(IPFINAL) AS IPFINAL,
        USERNAME,
        USERPASS,
-       PORTARIA
+       TO_NUMBER(PORTARIA) AS PORTARIA
        FROM WFM_DEV.DEV_VW_RM_DEVICES
        WHERE 1=1
        AND CODFILIAL NOT IN (1)
        ORDER BY 1
-       -- FETCH FIRST 1 ROWS ONLY
+       -- FETCH FIRST 4 ROWS ONLY
        `;
 
       const response = await client.execute(sql);

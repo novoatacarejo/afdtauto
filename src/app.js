@@ -2,9 +2,10 @@ require('dotenv').config();
 const { StationService } = require('./services/station.service');
 const { ConsincoService } = require('./services/consinco.service');
 const { getLogger } = require('log4js');
-const { configureLogService, asyncForEach, makeChunk, returnAfdDate } = require('./utils');
+const { configureLogService, returnAfdDate, writeAfdTxt, returnObjCorrectType } = require('./utils');
 
 let logger = getLogger('LOG');
+let afdw = getLogger('LOG');
 let round = 0;
 let total = 0;
 
@@ -23,37 +24,32 @@ const startApplication = async () => {
 
     const afdDate = returnAfdDate();
 
-    stations.map(async (station) => {
-      let token = await StationService.getToken(station.ip, station.userName, station.userPass);
+    await Promise.all(
+      stations.map(async (station) => {
+        round++;
+        total += station.length;
+        logger.info(`[STATUS] Round ${round} - total get: ${total}/${station.length}`);
 
-      token
-        ? logger.info(`Connected on Station IP: ${station.ip} with the token ${token}`)
-        : logger.error(`Connected on Station IP: ${station.ip}`);
+        !station
+          ? logger.error(`Not station identified! Check your results of database connection!`)
+          : logger.info(`[JOB ${round}][CONNECT] Working on station: ${station.ip}`);
 
-      let getData = await StationService.getAfdData(station.ip, token, station.portaria, afdDate);
+        let clock = await returnObjCorrectType(station);
 
-      logger.info(getData);
+        let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
 
-      let logoutAfd = await StationService.logoutStation(station.ip, token);
+        !token
+          ? logger.error(`Not Connected on Station IP: ${clock.ip} or the Station not respond`)
+          : logger.info(`[LOGIN] Connected on Station IP: ${clock.ip} with the token ${token}`);
 
-      logger.info(logoutAfd);
-    });
+        let punches = await StationService.getAfdData(clock.ip, token, clock.portaria, afdDate);
 
-    /*
-    // sucessfull attempt
-    for (const station of stations) {
-      let token = await StationService.getToken(station.ip, station.userName, station.userPass);
-      logger.info(token);
+        await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, punches);
 
-      let getData = await StationService.getAfdData(station.ip, token, station.portaria, afdDate);
-
-      logger.info(getData);
-
-      let logoutAfd = await StationService.logoutStation(station.ip, token);
-
-      logger.info(logoutAfd);
-    }
-    */
+        let logout = await StationService.logoutStation(clock.ip, token);
+        logger.info(`[LOGOUt] ip:${logout.station} | status:${logout.status} | message:${logout.message}`);
+      })
+    );
   } catch (error) {
     logger.error('Error on startApplication', error);
   } finally {
