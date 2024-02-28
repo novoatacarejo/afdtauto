@@ -50,6 +50,30 @@ class ConsincoService {
       logger.error(CONSINCO_SERVICE_NAME, error);
     }
   };
+
+  static getCodPessoa = async (ident, sqlSearch) => {
+    try {
+      const client = await OracleService.connect();
+      const tipoId = sqlSearch === 38 ? 'H.CPF' : sqlSearch === 50 ? 'H.PISPASEP' : 0;
+
+      const sql = `SELECT H.CODPESSOA
+      FROM WFM_DEV.DEV_RM_FUNCIONARIO H
+      WHERE 1 = 1
+      AND ${tipoId} = '${ident}'
+      FETCH FIRST 5 ROWS ONLY
+      `;
+
+      const response = await client.execute(sql);
+
+      console.log(response);
+
+      const codPessoa = await response.rows;
+
+      return codPessoa;
+    } catch (error) {
+      logger.error(CONSINCO_SERVICE_NAME, error);
+    }
+  };
 }
 
 exports.ConsincoService = ConsincoService;

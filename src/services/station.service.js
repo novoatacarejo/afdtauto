@@ -1,11 +1,16 @@
 const { getLogger } = require('log4js');
 const axios = require('axios');
+const https = require('https');
 let logger = getLogger('LOG');
 
 const SERVICE_NAME = 'StationService';
 
+axios.defaults.timeout = 30000;
+
 const instance = axios.create({
-  baseURL: process.env.API_BASE_URL
+  baseURL: process.env.API_BASE_URL,
+  timeout: 60000,
+  httpAgent: new https.Agent({ keepAlive: true })
 });
 
 class StationService {
@@ -17,7 +22,7 @@ class StationService {
         'Content-Length': '0'
       };
 
-      const response = await axios.request({
+      const response = await instance.request({
         method: 'POST',
         url,
         headers,
@@ -29,6 +34,10 @@ class StationService {
       }
 
       let token = response.data.session;
+
+      !token
+        ? logger.error(`Not Connected on Station IP: ${ip} or the Station not respond`)
+        : logger.info(`[LOGIN] Connected on Station IP: ${ip} with the token ${token}`);
 
       return token;
     } catch (error) {
@@ -97,6 +106,8 @@ class StationService {
         status: response.status,
         message: response.statusText
       };
+
+      logger.info(`[LOGOUT] ip:${answer.station} | status:${answer.status} | message:${answer.message}`);
 
       return answer;
     } catch (error) {

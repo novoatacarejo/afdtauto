@@ -2,10 +2,9 @@ require('dotenv').config();
 const { StationService } = require('./services/station.service');
 const { ConsincoService } = require('./services/consinco.service');
 const { getLogger } = require('log4js');
-const { configureLogService, returnAfdDate, writeAfdTxt, returnObjCorrectType } = require('./utils');
+const { configureLogService, returnAfdDate, writeAfdTxt, returnObjCorrectType, isDeviceOnline } = require('./utils');
 
 let logger = getLogger('LOG');
-let afdw = getLogger('LOG');
 let round = 0;
 let total = 0;
 
@@ -23,31 +22,28 @@ const startApplication = async () => {
     }
 
     const afdDate = returnAfdDate();
+    total = stations.length;
 
     await Promise.all(
       stations.map(async (station) => {
         round++;
-        total += station.length;
-        logger.info(`[STATUS] Round ${round} - total get: ${total}/${station.length}`);
+        logger.info(`[JOB ${round} - ${round}/${total}][CONNECT] Working on station: ${station.ip}`);
 
-        !station
-          ? logger.error(`Not station identified! Check your results of database connection!`)
-          : logger.info(`[JOB ${round}][CONNECT] Working on station: ${station.ip}`);
+        let clock = returnObjCorrectType(station);
 
-        let clock = await returnObjCorrectType(station);
+        let netCheck = await isDeviceOnline(clock.ip);
 
-        let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
+        if (netCheck) {
+          let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
 
-        !token
-          ? logger.error(`Not Connected on Station IP: ${clock.ip} or the Station not respond`)
-          : logger.info(`[LOGIN] Connected on Station IP: ${clock.ip} with the token ${token}`);
+          let punches = await StationService.getAfdData(clock.ip, token, clock.portaria, afdDate);
 
-        let punches = await StationService.getAfdData(clock.ip, token, clock.portaria, afdDate);
+          await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, punches);
 
-        await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, punches);
-
-        let logout = await StationService.logoutStation(clock.ip, token);
-        logger.info(`[LOGOUt] ip:${logout.station} | status:${logout.status} | message:${logout.message}`);
+          await StationService.logoutStation(clock.ip, token);
+        } else {
+          logger.error(netCheck);
+        }
       })
     );
   } catch (error) {

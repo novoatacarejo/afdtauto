@@ -1,6 +1,7 @@
 const { configure } = require('log4js');
 const fs = require('fs');
 const path = require('path');
+const { exec } = require('child_process');
 
 const assembleArrayObjects = (columnsName, lines) => {
   const qtColumns = columnsName.length;
@@ -64,7 +65,6 @@ const returnCurrentDateAndTime = () => {
     seconds = '0' + seconds;
   }
 
-  //return `${day}-${month}-${year}__${hours}h${minutes}m${seconds}s`;
   return `${day}-${month}-${year}`;
 };
 
@@ -120,6 +120,51 @@ const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
   });
 };
 
+const isDeviceOnline = async (host) => {
+  return new Promise((resolve, reject) => {
+    exec(`ping -n 10 ${host}`, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+        return `[NETWORK-CHECK] Station ${host} error:\n${error}`;
+      }
+      if (stderr) {
+        reject(stderr);
+        return `[NETWORK-CHECK] Station ${host} is not accessible:\n${stderr}`;
+      }
+      resolve(!stderr); // Device is online if there's no error
+    });
+  });
+};
+
+const returnJsonLine = async (ln) => {
+  const lnLength = ln.length;
+  const id = new String(ln.slice(23, 34));
+
+  let punchUserTimestamp =
+    lnLength === 50
+      ? ln.slice(10, 26).replace('T', ' ')
+      : lnLength === 38
+      ? ln
+          .slice(14, 18)
+          .concat('-', ln.slice(12, 14))
+          .concat('-', ln.slice(10, 12))
+          .concat(' ', ln.slice(18, 20).concat(':', ln.slice(21, 23)))
+      : 0;
+
+  const cardId = await ConsincoService.getCodPessoa(id, lnLength);
+  const punchSystemTimestamp = punchUserTimestamp;
+  const punchType = 1;
+
+  const result = {
+    cardId,
+    punchSystemTimestamp,
+    punchUserTimestamp,
+    punchType
+  };
+
+  return result;
+};
+
 const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
@@ -143,3 +188,5 @@ exports.makeChunk = makeChunk;
 exports.returnAfdDate = returnAfdDate;
 exports.writeAfdTxt = writeAfdTxt;
 exports.returnObjCorrectType = returnObjCorrectType;
+exports.isDeviceOnline = isDeviceOnline;
+exports.returnJsonLine = returnJsonLine;
