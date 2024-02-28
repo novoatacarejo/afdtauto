@@ -68,9 +68,9 @@ const returnCurrentDateAndTime = () => {
   return `${day}-${month}-${year}`;
 };
 
-const returnAfdDate = () => {
+const returnAfdDate = (days) => {
   const date = new Date();
-  const previousDate = new Date(date.setDate(date.getDate() - 1));
+  const previousDate = new Date(date.setDate(date.getDate() + days));
   const year = previousDate.getFullYear();
   let month = previousDate.getMonth() + 1;
   let day = previousDate.getDate();

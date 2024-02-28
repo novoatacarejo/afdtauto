@@ -21,7 +21,7 @@ const startApplication = async () => {
       return;
     }
 
-    const afdDate = returnAfdDate();
+    const afdDate = returnAfdDate(0);
     total = stations.length;
 
     await Promise.all(
