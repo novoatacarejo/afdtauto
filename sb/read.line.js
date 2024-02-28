@@ -23,8 +23,6 @@ const returnJsonLine = async (ln) => {
   }
   const cardId = await ConsincoService.getCodPessoa(id, lnLength);
 
-  console.log(tipoId, id);
-
   let punchUserTimestamp =
     lnLength === 50
       ? ln.slice(10, 26).replace('T', ' ')
@@ -68,19 +66,19 @@ rl.on('line', async (line) => {
     linesRead++;
     try {
       const newLine = await returnJsonLine(line);
-      console.log(newLine);
+      // console.log(newLine);
     } catch (err) {
       console.log(`Error to get line from the TXT file.`, err);
     }
   } else {
     linesNotReaded++;
-    console.warn('[WARNING]\nLine not consider:', line);
+    console.warn('\n[WARNING] Line not consider:', line);
   }
 });
 
 // Event handler for when all lines have been read
 rl.on('close', () => {
   console.log(
-    `[FINISH]\nFile has been fully read.\nTotal lines:${total}\nLines readed: ${linesRead}\nLines not readed: ${linesNotReaded}`
+    `\n\n[FINISH] File has been fully read.\nTotal lines: ${total}\nLines readed: ${linesRead}\nLines not readed: ${linesNotReaded}`
   );
 });
