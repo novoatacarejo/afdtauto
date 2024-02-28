@@ -51,23 +51,24 @@ class ConsincoService {
     }
   };
 
-  static getCodPessoa = async (ident, sqlSearch) => {
+  static getCodPessoa = async (idt, lng) => {
     try {
       const client = await OracleService.connect();
-      const tipoId = sqlSearch === 38 ? 'H.CPF' : sqlSearch === 50 ? 'H.PISPASEP' : 0;
+      const tp = lng === 50 ? `H.CPF` : lng === 38 ? `H.PISPASEP` : ``;
 
       const sql = `SELECT H.CODPESSOA
       FROM WFM_DEV.DEV_RM_FUNCIONARIO H
       WHERE 1 = 1
-      AND ${tipoId} = '${ident}'
-      FETCH FIRST 5 ROWS ONLY
+      AND H.FILIALRM NOT IN (1,8,18)
+      AND ${tp} = '${idt}'
+      --FETCH FIRST 5 ROWS ONLY
       `;
 
       const response = await client.execute(sql);
 
       console.log(response);
 
-      const codPessoa = await response.rows;
+      const codPessoa = assembleArrayObjects(columnsName, response.rows);
 
       return codPessoa;
     } catch (error) {

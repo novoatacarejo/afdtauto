@@ -10,7 +10,20 @@ const filePath = `${__dirname}/afd_2-CARPINA_rlg1_ip_80.txt`;
 
 const returnJsonLine = async (ln) => {
   const lnLength = ln.length;
-  const id = new String(ln.slice(23, 34));
+
+  let id = lnLength === 50 ? new String(ln.slice(35, 46)) : lnLength === 38 ? new String(ln.slice(23, 34)) : 0;
+  let tipoId = lnLength === 50 ? 'cpf' : lnLength === 38 ? 'pis' : '';
+
+  if (id.length !== 11 && lnLength === 50) {
+    throw new Error(`Error: ${id} is not a valid cpf number`);
+  }
+
+  if (id.length !== 11 && lnLength === 38) {
+    throw new Error(`Error: ${id} is not a valid pis number`);
+  }
+  const cardId = await ConsincoService.getCodPessoa(id, lnLength);
+
+  console.log(tipoId, id);
 
   let punchUserTimestamp =
     lnLength === 50
@@ -23,7 +36,6 @@ const returnJsonLine = async (ln) => {
           .concat(' ', ln.slice(18, 20).concat(':', ln.slice(21, 23)))
       : 0;
 
-  const cardId = await ConsincoService.getCodPessoa(id, lnLength);
   const punchSystemTimestamp = punchUserTimestamp;
   const punchType = parseInt(1);
 
@@ -51,6 +63,7 @@ let total = 0;
 // Event handler for each line read from the file
 rl.on('line', async (line) => {
   total++;
+
   if (line.length === 38 || line.length === 50) {
     linesRead++;
     try {
