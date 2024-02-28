@@ -23,7 +23,7 @@ class ConsincoService {
     try {
       const client = await OracleService.connect();
 
-      const sql = `SELECT
+      const sql0 = `SELECT
        CODFILIAL,
        EMPRESA,
        EMPRESADIR,
@@ -41,9 +41,11 @@ class ConsincoService {
        -- FETCH FIRST 4 ROWS ONLY
        `;
 
-      const response = await client.execute(sql);
+      const response = await client.execute(sql0);
 
       const products = assembleArrayObjects(columnsName, response.rows);
+
+      await client.close();
 
       return products;
     } catch (error) {
@@ -53,26 +55,22 @@ class ConsincoService {
 
   static getCodPessoa = async (idt, lng) => {
     try {
-      const client = await OracleService.connect();
-      const tp = lng === 50 ? `H.CPF` : lng === 38 ? `H.PISPASEP` : ``;
+      const client1 = await OracleService.connect();
 
-      const sql = `SELECT H.CODPESSOA
-      FROM WFM_DEV.DEV_RM_FUNCIONARIO H
-      WHERE 1 = 1
-      AND H.FILIALRM NOT IN (1,8,18)
-      AND ${tp} = '${idt}'
-      --FETCH FIRST 5 ROWS ONLY
-      `;
+      const tp = lng === 50 ? `CPF` : lng === 38 ? `PISPASEP` : ``;
+      const codpessoa = new String(idt);
 
-      const response = await client.execute(sql);
+      const sql1 = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_FUNCIONARIO H WHERE 1 = 1 AND FILIALRM NOT IN (1,8,18) AND ${tp} = '${codpessoa}'`;
 
-      console.log(response);
+      const response1 = await client1.execute(sql1);
 
-      const codPessoa = assembleArrayObjects(columnsName, response.rows);
+      await client1.close();
 
-      return codPessoa;
+      const employeeId = assembleArrayObjects(columnsName, response1.rows);
+
+      return employeeId;
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, error);
+      console.log(CONSINCO_SERVICE_NAME, error);
     }
   };
 }
