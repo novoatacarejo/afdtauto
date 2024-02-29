@@ -1,9 +1,19 @@
+require('dotenv').config('../.env');
+const { TlanticService } = require('./services/tlantic.service');
 const { StationService } = require('./services/station.service');
 const { getLogger } = require('log4js');
-const { configureLogService, returnAfdDate, returnObjCorrectType, isDeviceOnline } = require('./utils');
+const {
+  configureLogService,
+  returnAfdDate,
+  returnObjCorrectType,
+  isDeviceOnline,
+  writeAfdTxt,
+  makeChunk
+} = require('./utils');
 
 let logger = getLogger('LOG');
 let round = 0;
+let total = 0;
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -24,25 +34,48 @@ const startApplication = async () => {
         round++;
         let clock = returnObjCorrectType(station);
 
-        /*
         let netCheck = await isDeviceOnline(clock.ip);
 
         if (!netCheck) {
-          console.log(`Station ip: ${clock.ip} not respond`);
+          logger.error(`Station ip: ${clock.ip} not respond`);
         } else {
-          
           let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
 
-          let punches = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
+          let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
 
-          await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, punches);
+          await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, afd);
 
           await StationService.logoutStation(clock.ip, token);
-          */
+        }
 
-        // }
+        const punches = await StationService.startSendLines(clock.empresaDir, clock.item, clock.ipFInal);
 
-        await StationService.startSendLines(clock.empresaDir, clock.item, clock.ipFInal);
+        if (punches.length === 0) {
+          logger.info('No punches to send');
+          return;
+        }
+
+        const punchesFormated = punches.map((punch) => {
+          return {
+            punch: {
+              cardId: new String(punch.cardId),
+              punchSystemTimestamp: punch.punchSystemTimestamp,
+              punchUserTimestamp: punch.punchUserTimestamp,
+              punchType: new String(punch.punchType)
+            }
+          };
+        });
+
+        const chunkLength = 100;
+
+        const chunks = makeChunk(punchesFormated, chunkLength);
+
+        for (const chunk of chunks) {
+          await TlanticService.postPunch(chunk);
+          round++;
+          total += chunk.length;
+          logger.info(`Round ${round} - punches sent: ${total}`);
+        }
       })
     );
   } catch (error) {

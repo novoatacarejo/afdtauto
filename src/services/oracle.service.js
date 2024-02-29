@@ -35,7 +35,6 @@ class OracleService {
       if (!this.connection) {
         this.connection = await getConnection(propsConnect);
       }
-
       return this.connection;
     } catch (error) {
       logger.error(ORACLE_SERVICE_NAME, error);

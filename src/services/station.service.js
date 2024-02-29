@@ -121,27 +121,34 @@ class StationService {
         return returnJsonLine(item);
       });
 
-      let i = 0;
+      //let i = 0;
+      const arr = [];
       for (const data of arrayData) {
         if (!data.id) {
           continue;
         }
 
-        i++;
-        const codigo = await ConsincoService.getCodPessoa(data.id, data.lnLength);
+        //i++;
+        const cod = await ConsincoService.getCodPessoa(data.id, data.lnLength);
 
-        console.log('codigo', codigo);
-
-        data.cardId = codigo;
+        data.cardId = cod;
         delete data.lnLength;
         delete data.id;
 
-        console.log(`punch ${i}:`, data);
+        const punch = {
+          cardId: data.cardId,
+          punchSystemTimestamp: data.punchSystemTimestamp,
+          punchUserTimestamp: data.punchUserTimestamp,
+          punchType: data.punchType
+        };
+
+        arr.push(punch);
       }
-      return arrayData;
+      return arr;
+
+      return;
     } catch (err) {
-      //logger.error(err);
-      console.log('------> Error ::: ', err);
+      logger.error(err);
       throw false;
     }
   };

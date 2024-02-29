@@ -45,8 +45,6 @@ class ConsincoService {
 
       const products = assembleArrayObjects(columnsName, response.rows);
 
-      await client.close();
-
       return products;
     } catch (error) {
       logger.error(CONSINCO_SERVICE_NAME, error);
@@ -58,9 +56,9 @@ class ConsincoService {
       const client = await OracleService.connect();
 
       const tp = lng === 50 ? `CPF` : lng === 38 ? `PISPASEP` : ``;
-      //const codpessoa = new String(idt);
+      const codpessoa = new String(idt);
 
-      const sql = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_FUNCIONARIO H WHERE 1 = 1 AND FILIALRM NOT IN (1,8,18) AND ${tp} = '${idt}'`;
+      const sql = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_FUNCIONARIO H WHERE 1 = 1 AND FILIALRM NOT IN (1,8,18) AND ${tp} = '${codpessoa}'`;
 
       const response1 = await client.execute(sql);
 
@@ -70,6 +68,11 @@ class ConsincoService {
     } catch (error) {
       logger.error(CONSINCO_SERVICE_NAME, error);
     }
+  };
+
+  static closeConnection = async () => {
+    await client.close();
+    return;
   };
 }
 
