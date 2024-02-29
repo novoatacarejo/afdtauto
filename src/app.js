@@ -1,11 +1,9 @@
-require('dotenv').config({ path: '../.env' });
 const { StationService } = require('./services/station.service');
 const { getLogger } = require('log4js');
 const { configureLogService, returnAfdDate, returnObjCorrectType, isDeviceOnline } = require('./utils');
 
 let logger = getLogger('LOG');
 let round = 0;
-let total = 0;
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -35,7 +33,7 @@ const startApplication = async () => {
           
           let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
 
-          let punches = await StationService.getAfdData(clock.ip, token, clock.portaria, afdDate);
+          let punches = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
 
           await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, punches);
 

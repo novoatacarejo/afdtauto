@@ -55,14 +55,14 @@ class ConsincoService {
 
   static getCodPessoa = async (idt, lng) => {
     try {
-      const client1 = await OracleService.connect();
+      const client = await OracleService.connect();
 
       const tp = lng === 50 ? `CPF` : lng === 38 ? `PISPASEP` : ``;
-      const codpessoa = new String(idt);
+      //const codpessoa = new String(idt);
 
-      const sql1 = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_FUNCIONARIO H WHERE 1 = 1 AND FILIALRM NOT IN (1,8,18) AND ${tp} = '${codpessoa}'`;
+      const sql = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_FUNCIONARIO H WHERE 1 = 1 AND FILIALRM NOT IN (1,8,18) AND ${tp} = '${idt}'`;
 
-      const response1 = await client1.execute(sql1);
+      const response1 = await client.execute(sql);
 
       const employeeId = new String(response1.rows);
 

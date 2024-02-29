@@ -1,12 +1,13 @@
-const { getLogger } = require('log4js');
+require('dotenv').config({ path: '../.env' });
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 const { ConsincoService } = require('./consinco.service');
+const axios = require('axios');
 const https = require('https');
-let logger = getLogger('LOG');
 const { returnJsonLine } = require('../utils');
 const { promisify } = require('util');
+const { getLogger } = require('log4js');
+let logger = getLogger('LOG');
 
 const SERVICE_NAME = 'StationService';
 
@@ -51,7 +52,7 @@ class StationService {
     }
   };
 
-  static getAfdData = async (ip, token, portaria, afdDateInfo) => {
+  static getAfd = async (ip, token, portaria, afdDateInfo) => {
     try {
       const previousDate = {
         day: parseInt(afdDateInfo.day),
