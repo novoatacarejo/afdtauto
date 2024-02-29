@@ -64,12 +64,13 @@ class ConsincoService {
 
       const response1 = await client1.execute(sql1);
 
-      await client1.close();
+      //await client1.close();
 
-      const employeeId = assembleArrayObjects(columnsName, response1.rows);
+      const employeeId = new String(response1.rows);
 
       return employeeId;
     } catch (error) {
+      console.log(idt, lng);
       console.log(CONSINCO_SERVICE_NAME, error);
     }
   };

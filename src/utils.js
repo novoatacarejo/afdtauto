@@ -181,6 +181,12 @@ const makeChunk = (array, length) => {
   return chunks;
 };
 
+const delay = (timeInMilliseconds) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeInMilliseconds);
+  });
+};
+
 exports.assembleArrayObjects = assembleArrayObjects;
 exports.configureLogService = configureLogService;
 exports.asyncForEach = asyncForEach;
@@ -190,3 +196,4 @@ exports.writeAfdTxt = writeAfdTxt;
 exports.returnObjCorrectType = returnObjCorrectType;
 exports.isDeviceOnline = isDeviceOnline;
 exports.returnJsonLine = returnJsonLine;
+exports.delay = delay;
