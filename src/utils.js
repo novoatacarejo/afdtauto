@@ -1,7 +1,8 @@
 const { configure } = require('log4js');
-const fs = require('fs');
-const path = require('path');
 const { exec } = require('child_process');
+const { promisify } = require('util');
+const { getLogger } = require('log4js');
+let logger = getLogger('LOG');
 
 const assembleArrayObjects = (columnsName, lines) => {
   const qtColumns = columnsName.length;
@@ -109,7 +110,7 @@ const configureLogService = async () => {
 const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
   return new Promise((res) => {
     const dir = `afd/${dirName}/`;
-    const filename = `afd_${dirName}_rlg${dirItem}_ip_${dirIpFinal}.txt`;
+    const filename = `afd_${dirName}_rlg${dirItem}_ip${dirIpFinal}.txt`;
     const outputFilePath = path.join(dir, filename);
 
     fs.mkdirSync(path.dirname(outputFilePath), { recursive: true });
@@ -131,14 +132,25 @@ const isDeviceOnline = async (host) => {
         reject(stderr);
         return `[NETWORK-CHECK] Station ${host} is not accessible:\n${stderr}`;
       }
+      logger.info(`[CONNECT] Working on station: ${host}`);
       resolve(!stderr); // Device is online if there's no error
     });
   });
 };
 
-const returnJsonLine = async (ln) => {
+const returnJsonLine = (ln) => {
   const lnLength = ln.length;
-  const id = new String(ln.slice(23, 34));
+
+  let id = lnLength === 50 ? ln.slice(35, 46) : lnLength === 38 ? ln.slice(23, 34) : 0;
+  let tipoId = lnLength === 50 ? 'cpf' : lnLength === 38 ? 'pis' : '';
+
+  if (id.length !== 11 && lnLength === 50) {
+    throw new Error(`Error: ${id} is not a valid cpf number`);
+  }
+
+  if (id.length !== 11 && lnLength === 38) {
+    throw new Error(`Error: ${id} is not a valid pis number`);
+  }
 
   let punchUserTimestamp =
     lnLength === 50
@@ -151,15 +163,15 @@ const returnJsonLine = async (ln) => {
           .concat(' ', ln.slice(18, 20).concat(':', ln.slice(21, 23)))
       : 0;
 
-  const cardId = await ConsincoService.getCodPessoa(id, lnLength);
   const punchSystemTimestamp = punchUserTimestamp;
-  const punchType = 1;
+  const punchType = parseInt(1);
 
   const result = {
-    cardId,
+    id,
     punchSystemTimestamp,
     punchUserTimestamp,
-    punchType
+    punchType,
+    lnLength
   };
 
   return result;
@@ -181,12 +193,6 @@ const makeChunk = (array, length) => {
   return chunks;
 };
 
-const delay = (timeInMilliseconds) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, timeInMilliseconds);
-  });
-};
-
 exports.assembleArrayObjects = assembleArrayObjects;
 exports.configureLogService = configureLogService;
 exports.asyncForEach = asyncForEach;
@@ -196,4 +202,3 @@ exports.writeAfdTxt = writeAfdTxt;
 exports.returnObjCorrectType = returnObjCorrectType;
 exports.isDeviceOnline = isDeviceOnline;
 exports.returnJsonLine = returnJsonLine;
-exports.delay = delay;

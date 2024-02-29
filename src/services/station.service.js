@@ -1,7 +1,12 @@
 const { getLogger } = require('log4js');
+const fs = require('fs');
+const path = require('path');
 const axios = require('axios');
+const { ConsincoService } = require('./consinco.service');
 const https = require('https');
 let logger = getLogger('LOG');
+const { returnJsonLine } = require('../utils');
+const { promisify } = require('util');
 
 const SERVICE_NAME = 'StationService';
 
@@ -83,6 +88,60 @@ class StationService {
       return answer;
     } catch (error) {
       logger.error(SERVICE_NAME, error);
+    }
+  };
+
+  static getStationsInfo = async () => {
+    try {
+      const result = await ConsincoService.getStationsInfo();
+      return result;
+    } catch (err) {
+      logger.error(err);
+    }
+  };
+
+  static startSendLines = async (emp, it, ip) => {
+    const readFileAsync = promisify(fs.readFile);
+
+    const dir = `afd/${emp}/`;
+    const filename = `afd_${emp}_rlg${it}_ip${ip}.txt`;
+    const file = path.join(dir, filename);
+
+    if (!file) {
+      logger.error(`${file} not found`);
+    }
+
+    try {
+      const data = await readFileAsync(file);
+      const result = data.toString();
+      let arrayData = result.split('\r\n');
+
+      arrayData = arrayData.map((item) => {
+        return returnJsonLine(item);
+      });
+
+      let i = 0;
+      for (const data of arrayData) {
+        if (!data.id) {
+          continue;
+        }
+
+        i++;
+        const codigo = await ConsincoService.getCodPessoa(data.id, data.lnLength);
+
+        console.log('codigo', codigo);
+
+        data.cardId = codigo;
+        delete data.lnLength;
+        delete data.id;
+
+        console.log(`punch ${i}:`, data);
+      }
+      return arrayData;
+    } catch (err) {
+      //logger.error(err);
+      console.log('------> Error ::: ', err);
+      throw false;
     }
   };
 

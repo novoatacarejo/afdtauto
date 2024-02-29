@@ -1,7 +1,8 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: '.env' });
 const { StationService } = require('./services/station.service');
+const { ConsincoService } = require('./services/consinco.service');
 const { getLogger } = require('log4js');
-const { configureLogService, returnAfdDate, returnObjCorrectType, isDeviceOnline } = require('./utils');
+const { configureLogService, returnAfdDate, writeAfdTxt, returnObjCorrectType, isDeviceOnline } = require('./utils');
 
 let logger = getLogger('LOG');
 let round = 0;
@@ -13,26 +14,27 @@ const startApplication = async () => {
   try {
     await configureLogService();
 
-    const stations = await StationService.getStationsInfo();
-    const afdDate = returnAfdDate(0);
+    const stations = await ConsincoService.getStationsInfo();
 
     if (stations.length === 0) {
       logger.info('No Stations finded. Please, check the database connection');
       return;
     }
 
+    const afdDate = returnAfdDate(0);
+    console.log(afdDate);
+    total = stations.length;
+
     await Promise.all(
       stations.map(async (station) => {
         round++;
+        logger.info(`[JOB ${round} - ${round}/${total}][CONNECT] Working on station: ${station.ip}`);
+
         let clock = returnObjCorrectType(station);
 
-        /*
         let netCheck = await isDeviceOnline(clock.ip);
 
-        if (!netCheck) {
-          console.log(`Station ip: ${clock.ip} not respond`);
-        } else {
-          
+        if (netCheck) {
           let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
 
           let punches = await StationService.getAfdData(clock.ip, token, clock.portaria, afdDate);
@@ -40,11 +42,9 @@ const startApplication = async () => {
           await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, punches);
 
           await StationService.logoutStation(clock.ip, token);
-          */
-
-        // }
-
-        await StationService.startSendLines(clock.empresaDir, clock.item, clock.ipFInal);
+        } else {
+          logger.error(netCheck);
+        }
       })
     );
   } catch (error) {

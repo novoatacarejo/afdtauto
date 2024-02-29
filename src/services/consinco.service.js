@@ -36,7 +36,7 @@ class ConsincoService {
        TO_NUMBER(PORTARIA) AS PORTARIA
        FROM WFM_DEV.DEV_VW_RM_DEVICES
        WHERE 1=1
-       AND CODFILIAL NOT IN (1)
+       AND CODFILIAL NOT IN (1,8,18)
        ORDER BY 1
        -- FETCH FIRST 4 ROWS ONLY
        `;
@@ -64,14 +64,11 @@ class ConsincoService {
 
       const response1 = await client1.execute(sql1);
 
-      //await client1.close();
-
       const employeeId = new String(response1.rows);
 
       return employeeId;
     } catch (error) {
-      console.log(idt, lng);
-      console.log(CONSINCO_SERVICE_NAME, error);
+      logger.error(CONSINCO_SERVICE_NAME, error);
     }
   };
 }

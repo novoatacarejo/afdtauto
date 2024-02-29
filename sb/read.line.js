@@ -1,11 +1,10 @@
 require('dotenv').config({ path: '../.env' });
 const fs = require('fs');
 const { ConsincoService } = require('../src/services/consinco.service');
-const { delay } = require('../src/utils');
 const { promisify } = require('util');
 
-const filePath = `${__dirname}/afd_2-CARPINA_rlg1_ip_80.txt`;
-//const filePath = `${__dirname}/afd_29-ARARIPINA_rlg1_ip_80.txt`;
+//const filePath = `${__dirname}/afd_2-CARPINA_rlg1_ip80.txt`;
+const filePath = `${__dirname}/afd_29-ARARIPINA_rlg1_ip80.txt`;
 
 const returnJsonLine = (ln) => {
   const lnLength = ln.length;
@@ -58,31 +57,32 @@ const readLastSync = async (file) => {
       return returnJsonLine(item);
     });
 
+    let i = 0;
     for (const data of arrayData) {
       if (!data.id) {
         continue;
       }
-      const codigo = await ConsincoService.getCodPessoa(data.id, data.lnLength);
+      i++;
+      const cod = await ConsincoService.getCodPessoa(data.id, data.lnLength);
 
-      data.cardId = codigo;
+      data.cardId = cod;
       delete data.lnLength;
       delete data.id;
 
-      //console.log({ ...data });
-      return data;
+      console.log(`punch ${i}:`, data);
     }
     return arrayData;
   } catch (err) {
     logger.error(err);
     throw false;
+  } finally {
+    process.exit(1);
   }
 };
 
 const start = async () => {
-  let result = await readLastSync(filePath);
-
-  //return result;
-  console.log(result);
+  await readLastSync(filePath);
+  return;
 };
 
 start();
