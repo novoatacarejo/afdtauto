@@ -91,7 +91,7 @@ const configureLogService = async () => {
       appenders: {
         logger: {
           type: 'file',
-          filename: `logs/${returnCurrentDateAndTime()}.log`
+          filename: `../logs/${returnCurrentDateAndTime()}.log`
         },
         console: {
           type: 'console'
@@ -111,7 +111,7 @@ const configureLogService = async () => {
 
 const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
   return new Promise((res) => {
-    const dir = `afd/${dirName}/`;
+    const dir = `../afd/${dirName}/`;
     const filename = `afd_${dirName}_rlg${dirItem}_ip${dirIpFinal}.txt`;
     const outputFilePath = path.join(dir, filename);
 
@@ -165,6 +165,8 @@ const returnJsonLine = (ln) => {
           .concat(' ', ln.slice(18, 20).concat(':', ln.slice(21, 23)))
       : 0;
 
+  let hour = lnLength === 50 ? ln.slice(21, 26) : lnLength === 38 ? ln.slice(18, 20).concat(':', ln.slice(21, 23)) : 0;
+
   const punchSystemTimestamp = punchUserTimestamp;
   const punchType = parseInt(1);
 
@@ -173,7 +175,8 @@ const returnJsonLine = (ln) => {
     punchSystemTimestamp,
     punchUserTimestamp,
     punchType,
-    lnLength
+    lnLength,
+    hour
   };
 
   return result;
@@ -195,6 +198,16 @@ const makeChunk = (array, length) => {
   return chunks;
 };
 
+const subtractHours = (date, hours) => {
+  date.setHours(date.getHours() - hours);
+
+  const hour = date.toLocaleTimeString();
+
+  const etl = hour.split(':');
+
+  return `${etl[0]}:${etl[1]}`;
+};
+
 exports.assembleArrayObjects = assembleArrayObjects;
 exports.configureLogService = configureLogService;
 exports.asyncForEach = asyncForEach;
@@ -204,3 +217,4 @@ exports.writeAfdTxt = writeAfdTxt;
 exports.returnObjCorrectType = returnObjCorrectType;
 exports.isDeviceOnline = isDeviceOnline;
 exports.returnJsonLine = returnJsonLine;
+exports.subtractHours = subtractHours;

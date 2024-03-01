@@ -4,7 +4,7 @@ const path = require('path');
 const { ConsincoService } = require('./consinco.service');
 const axios = require('axios');
 const https = require('https');
-const { returnJsonLine } = require('../utils');
+const { returnJsonLine, subtractHours } = require('../utils');
 const { promisify } = require('util');
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
@@ -104,7 +104,7 @@ class StationService {
   static startSendLines = async (emp, it, ip) => {
     const readFileAsync = promisify(fs.readFile);
 
-    const dir = `afd/${emp}/`;
+    const dir = `../afd/${emp}/`;
     const filename = `afd_${emp}_rlg${it}_ip${ip}.txt`;
     const file = path.join(dir, filename);
 
@@ -128,21 +128,28 @@ class StationService {
           continue;
         }
 
-        //i++;
-        const cod = await ConsincoService.getCodPessoa(data.id, data.lnLength);
+        let punchHour = data.hour;
+        let previousHour = subtractHours(new Date(), 1);
+        let testHour = punchHour >= previousHour ? true : false;
 
-        data.cardId = cod;
-        delete data.lnLength;
-        delete data.id;
+        if (testHour === true) {
+          //i++;
+          const cod = await ConsincoService.getCodPessoa(data.id, data.lnLength);
 
-        const punch = {
-          cardId: data.cardId,
-          punchSystemTimestamp: data.punchSystemTimestamp,
-          punchUserTimestamp: data.punchUserTimestamp,
-          punchType: data.punchType
-        };
+          data.cardId = cod;
+          delete data.lnLength;
+          delete data.id;
+          delete data.hour;
 
-        arr.push(punch);
+          const punch = {
+            cardId: data.cardId,
+            punchSystemTimestamp: data.punchSystemTimestamp,
+            punchUserTimestamp: data.punchUserTimestamp,
+            punchType: data.punchType
+          };
+
+          arr.push(punch);
+        }
       }
       return arr;
 
