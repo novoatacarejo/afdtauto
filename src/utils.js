@@ -91,7 +91,7 @@ const configureLogService = async () => {
       appenders: {
         logger: {
           type: 'file',
-          filename: `../logs/${returnCurrentDateAndTime()}.log`
+          filename: `./logs/${returnCurrentDateAndTime()}.log`
         },
         console: {
           type: 'console'
@@ -111,7 +111,7 @@ const configureLogService = async () => {
 
 const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
   return new Promise((res) => {
-    const dir = `../afd/${dirName}/`;
+    const dir = `./afd/${dirName}/`;
     const filename = `afd_${dirName}_rlg${dirItem}_ip${dirIpFinal}.txt`;
     const outputFilePath = path.join(dir, filename);
 
@@ -134,7 +134,7 @@ const isDeviceOnline = async (host) => {
         reject(stderr);
         return `[NETWORK-CHECK] Station ${host} is not accessible:\n${stderr}`;
       }
-      logger.info(`[CONNECT] Working on station: ${host}`);
+      logger.info(`[CONNECTING] Working on station: ${host}`);
       resolve(!stderr); // Device is online if there's no error
     });
   });

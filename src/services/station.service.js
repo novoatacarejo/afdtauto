@@ -104,7 +104,7 @@ class StationService {
   static startSendLines = async (emp, it, ip) => {
     const readFileAsync = promisify(fs.readFile);
 
-    const dir = `../afd/${emp}/`;
+    const dir = `./afd/${emp}/`;
     const filename = `afd_${emp}_rlg${it}_ip${ip}.txt`;
     const file = path.join(dir, filename);
 
