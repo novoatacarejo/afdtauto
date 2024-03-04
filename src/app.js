@@ -74,7 +74,7 @@ const startApplication = async () => {
           await TlanticService.postPunch(chunk);
           round++;
           total += chunk.length;
-          logger.info(`Round ${round} - punches sent: ${total}`);
+          logger.info(`[SENDING] Round ${round} - punches sent: ${total}`);
         }
       })
     );
