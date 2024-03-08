@@ -39,52 +39,6 @@ const returnObjCorrectType = (arrayObj) => {
   return data;
 };
 
-const returnCurrentDateAndTime = () => {
-  const currentDate = new Date();
-  const year = currentDate.getFullYear();
-  let month = currentDate.getMonth() + 1;
-  let day = currentDate.getDate();
-  let hours = currentDate.getHours();
-  let minutes = currentDate.getMinutes();
-  let seconds = currentDate.getSeconds();
-
-  if (day < 10) {
-    day = '0' + day;
-  }
-
-  if (month < 10) {
-    month = '0' + month;
-  }
-
-  if (hours < 10) {
-    hours = '0' + hours;
-  }
-
-  if (minutes < 10) {
-    minutes = '0' + minutes;
-  }
-
-  if (seconds < 10) {
-    seconds = '0' + seconds;
-  }
-
-  return `${day}-${month}-${year}`;
-};
-
-const returnAfdDate = (days) => {
-  const date = new Date();
-  const previousDate = new Date(date.setDate(date.getDate() + days));
-  const year = previousDate.getFullYear();
-  let month = previousDate.getMonth() + 1;
-  let day = previousDate.getDate();
-
-  return {
-    year: `${year}`,
-    month: `${month}`,
-    day: `${day}`
-  };
-};
-
 const configureLogService = async () => {
   return new Promise((res) => {
     configure({
@@ -208,6 +162,100 @@ const subtractHours = (date, hours) => {
   return `${etl[0]}:${etl[1]}`;
 };
 
+const dataHoraAtual = () => {
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  let month = currentDate.getMonth() + 1;
+  let day = currentDate.getDate();
+  let hours = currentDate.getHours();
+  let minutes = currentDate.getMinutes();
+  let seconds = currentDate.getSeconds();
+
+  if (day < 10) {
+    day = '0' + day;
+  }
+
+  if (month < 10) {
+    month = '0' + month;
+  }
+
+  if (hours < 10) {
+    hours = '0' + hours;
+  }
+
+  if (minutes < 10) {
+    minutes = '0' + minutes;
+  }
+
+  if (seconds < 10) {
+    seconds = '0' + seconds;
+  }
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};
+
+const returnCurrentDateAndTime = () => {
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  let month = currentDate.getMonth() + 1;
+  let day = currentDate.getDate();
+  let hours = currentDate.getHours();
+  let minutes = currentDate.getMinutes();
+  let seconds = currentDate.getSeconds();
+
+  if (day < 10) {
+    day = '0' + day;
+  }
+
+  if (month < 10) {
+    month = '0' + month;
+  }
+
+  if (hours < 10) {
+    hours = '0' + hours;
+  }
+
+  if (minutes < 10) {
+    minutes = '0' + minutes;
+  }
+
+  if (seconds < 10) {
+    seconds = '0' + seconds;
+  }
+
+  return `${day}-${month}-${year}_${hours}h${minutes}m`;
+};
+
+const returnHourMinute = (type) => {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  if (type === 'hh') {
+    return `${currentHour}`;
+  } else if (type === 'hhmm') {
+    return `${currentHour}:${currentMinute}`;
+  } else if (type === 'mm') {
+    return `${currentMinute}`;
+  } else {
+    return null;
+  }
+};
+
+const returnAfdDate = (days) => {
+  const date = new Date();
+  const previousDate = new Date(date.setDate(date.getDate() + days));
+  const year = previousDate.getFullYear();
+  let month = previousDate.getMonth() + 1;
+  let day = previousDate.getDate();
+
+  return {
+    year: `${year}`,
+    month: `${month}`,
+    day: `${day}`
+  };
+};
+
 exports.assembleArrayObjects = assembleArrayObjects;
 exports.configureLogService = configureLogService;
 exports.asyncForEach = asyncForEach;
@@ -218,3 +266,5 @@ exports.returnObjCorrectType = returnObjCorrectType;
 exports.isDeviceOnline = isDeviceOnline;
 exports.returnJsonLine = returnJsonLine;
 exports.subtractHours = subtractHours;
+exports.dataHoraAtual = dataHoraAtual;
+exports.returnHourMinute = returnHourMinute;

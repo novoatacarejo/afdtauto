@@ -8,16 +8,19 @@ const {
   returnObjCorrectType,
   isDeviceOnline,
   writeAfdTxt,
-  makeChunk
+  makeChunk,
+  dataHoraAtual
 } = require('./utils');
 
 let logger = getLogger('LOG');
-let round = 0;
-let total = 0;
+let cron = require('node-cron');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const startApplication = async () => {
+  let round = 0;
+  let total = 0;
+
   try {
     await configureLogService();
 
@@ -80,8 +83,14 @@ const startApplication = async () => {
     );
   } catch (error) {
     logger.error('Error on startApplication', error);
-  } finally {
-    process.exit(1);
   }
 };
-startApplication();
+
+console.log(`Envio automático de batidas H-1 iniciado em ${dataHoraAtual()}`);
+
+cron.schedule('0 * * * *', async () => {
+  let dataHorAtual = await dataHoraAtual();
+
+  logger.info(`[STARTING] Iniciando JOB em ${dataHorAtual}`);
+  await startApplication();
+});
