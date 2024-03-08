@@ -116,7 +116,7 @@ const returnJsonLine = (ln) => {
           .slice(14, 18)
           .concat('-', ln.slice(12, 14))
           .concat('-', ln.slice(10, 12))
-          .concat(' ', ln.slice(18, 20).concat(':', ln.slice(21, 23)))
+          .concat(' ', ln.slice(18, 20).concat(':', ln.slice(21, 22)))
       : 0;
 
   let hour = lnLength === 50 ? ln.slice(21, 26) : lnLength === 38 ? ln.slice(18, 20).concat(':', ln.slice(21, 23)) : 0;
@@ -160,6 +160,22 @@ const subtractHours = (date, hours) => {
   const etl = hour.split(':');
 
   return `${etl[0]}:${etl[1]}`;
+};
+
+const dataHoraAtual2 = () => {
+  const dataHora = new Date();
+  const opcoes = {
+    timeZone: 'America/Recife',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+  };
+  const dataHoraBrasil = dataHora.toLocaleString('pt-BR', opcoes);
+
+  return dataHoraBrasil;
 };
 
 const dataHoraAtual = () => {
@@ -267,4 +283,5 @@ exports.isDeviceOnline = isDeviceOnline;
 exports.returnJsonLine = returnJsonLine;
 exports.subtractHours = subtractHours;
 exports.dataHoraAtual = dataHoraAtual;
+exports.dataHoraAtual2 = dataHoraAtual2;
 exports.returnHourMinute = returnHourMinute;

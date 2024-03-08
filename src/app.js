@@ -13,7 +13,7 @@ const {
 } = require('./utils');
 
 let logger = getLogger('LOG');
-let cron = require('node-cron');
+//let cron = require('node-cron');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -22,7 +22,10 @@ const startApplication = async () => {
   let total = 0;
 
   try {
+    let dataHorAtual = await dataHoraAtual();
     await configureLogService();
+
+    logger.info(`[STARTING] Iniciando JOB em ${dataHorAtual}`);
 
     const stations = await StationService.getStationsInfo();
     const afdDate = returnAfdDate(0);
@@ -88,9 +91,13 @@ const startApplication = async () => {
 
 console.log(`Envio automático de batidas H-1 iniciado em ${dataHoraAtual()}`);
 
-cron.schedule('0 * * * *', async () => {
-  let dataHorAtual = await dataHoraAtual();
-
-  logger.info(`[STARTING] Iniciando JOB em ${dataHorAtual}`);
+/* cron.schedule('0 * * * *', async () => {
   await startApplication();
-});
+}); */
+
+const start = async () => {
+  await startApplication();
+  return;
+};
+
+start();

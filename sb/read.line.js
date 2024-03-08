@@ -3,8 +3,8 @@ const fs = require('fs');
 const { ConsincoService } = require('../src/services/consinco.service');
 const { promisify } = require('util');
 
-//const filePath = `${__dirname}/afd_2-CARPINA_rlg1_ip80.txt`;
-const filePath = `${__dirname}/afd_29-ARARIPINA_rlg1_ip80.txt`;
+const filePath = `${__dirname}/afd_2-CARPINA_rlg1_ip80.txt`;
+//const filePath = `${__dirname}/afd_29-ARARIPINA_rlg1_ip80.txt`;
 
 const returnJsonLine = (ln) => {
   const lnLength = ln.length;
@@ -28,7 +28,7 @@ const returnJsonLine = (ln) => {
           .slice(14, 18)
           .concat('-', ln.slice(12, 14))
           .concat('-', ln.slice(10, 12))
-          .concat(' ', ln.slice(18, 20).concat(':', ln.slice(21, 23)))
+          .concat(' ', ln.slice(18, 20).concat(':', ln.slice(21, 22)))
       : 0;
 
   const punchSystemTimestamp = punchUserTimestamp;
@@ -66,8 +66,8 @@ const readLastSync = async (file) => {
       const cod = await ConsincoService.getCodPessoa(data.id, data.lnLength);
 
       data.cardId = cod;
-      delete data.lnLength;
-      delete data.id;
+      //delete data.lnLength;
+      //delete data.id;
 
       console.log(`punch ${i}:`, data);
     }
