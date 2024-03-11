@@ -86,6 +86,10 @@ const startApplication = async () => {
     );
   } catch (error) {
     logger.error('Error on startApplication', error);
+  } finally {
+    let dataHorAtual = await dataHoraAtual();
+    logger.info(`[ENDING] Finalizando JOB em ${dataHorAtual}`);
+    process.exit(1);
   }
 };
 
@@ -97,7 +101,6 @@ console.log(`Envio automático de batidas H-1 iniciado em ${dataHoraAtual()}`);
 
 const start = async () => {
   await startApplication();
-  return;
 };
 
 start();
