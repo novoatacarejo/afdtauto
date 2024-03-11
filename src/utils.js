@@ -276,7 +276,7 @@ const exitProcess = async (pid) => {
   let dataHorAtual = await dataHoraAtual('hhmm');
   logger.info(`[ENDING] Finalizando JOB pid: ${pid} em ${dataHorAtual}`);
 
-  setTimeout(() => {
+  setTimeout((pid) => {
     process.kill(pid, 2);
   }, 180000);
 

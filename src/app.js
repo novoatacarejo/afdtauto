@@ -9,8 +9,7 @@ const {
   isDeviceOnline,
   writeAfdTxt,
   makeChunk,
-  dataHoraAtual,
-  exitProcess
+  dataHoraAtual
 } = require('./utils');
 
 let logger = getLogger('LOG');
@@ -94,13 +93,15 @@ const startApplication = async () => {
   }
 };
 
-/* const start = async () => {
+const start = async () => {
   await startApplication();
   //exitProcess(processPid);
-}; */
+};
 
-//start();
+//
+
+start();
 
 cron.schedule('0 * * * *', async () => {
-  await startApplication();
+  start();
 });

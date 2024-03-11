@@ -36,7 +36,9 @@ class StationService {
       });
 
       if (!response.data) {
-        throw new Error('error when trying to fetch the token');
+        throw new Error(
+          `getToken - error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
+        );
       }
 
       let token = response.data.session;
@@ -67,7 +69,9 @@ class StationService {
       };
 
       if (!token) {
-        throw new Error('error when trying to fetch the token');
+        throw new Error(
+          `getAfd - error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
+        );
       }
 
       const options = {
