@@ -9,23 +9,28 @@ const {
   isDeviceOnline,
   writeAfdTxt,
   makeChunk,
-  dataHoraAtual
+  dataHoraAtual,
+  exitProcess
 } = require('./utils');
 
 let logger = getLogger('LOG');
-//let cron = require('node-cron');
+let cron = require('node-cron');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-const startApplication = async () => {
-  let round = 0;
-  let total = 0;
+let dataHorAtual = dataHoraAtual();
 
+console.log(`Envio automático de batidas H-1 iniciado em ${dataHorAtual}`);
+
+const startApplication = async () => {
   try {
-    let dataHorAtual = await dataHoraAtual();
+    let round = 0;
+    let total = 0;
+    let processPid = process.pid;
+
     await configureLogService();
 
-    logger.info(`[STARTING] Iniciando JOB em ${dataHorAtual}`);
+    logger.info(`[STARTING] Iniciando JOB pid: ${processPid} em ${dataHorAtual}`);
 
     const stations = await StationService.getStationsInfo();
     const afdDate = returnAfdDate(0);
@@ -86,21 +91,16 @@ const startApplication = async () => {
     );
   } catch (error) {
     logger.error('Error on startApplication', error);
-  } finally {
-    let dataHorAtual = await dataHoraAtual();
-    logger.info(`[ENDING] Finalizando JOB em ${dataHorAtual}`);
-    process.exit(1);
   }
 };
 
-console.log(`Envio automático de batidas H-1 iniciado em ${dataHoraAtual()}`);
-
-/* cron.schedule('0 * * * *', async () => {
+/* const start = async () => {
   await startApplication();
-}); */
+  //exitProcess(processPid);
+}; */
 
-const start = async () => {
+//start();
+
+cron.schedule('0 * * * *', async () => {
   await startApplication();
-};
-
-start();
+});

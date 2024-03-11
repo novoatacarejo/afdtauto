@@ -61,3 +61,7 @@ node_modules
 .env
 .ENV
 logs
+sb
+./sb
+afd
+./src/sb

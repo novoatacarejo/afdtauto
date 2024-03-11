@@ -272,6 +272,17 @@ const returnAfdDate = (days) => {
   };
 };
 
+const exitProcess = async (pid) => {
+  let dataHorAtual = await dataHoraAtual('hhmm');
+  logger.info(`[ENDING] Finalizando JOB pid: ${pid} em ${dataHorAtual}`);
+
+  setTimeout(() => {
+    process.kill(pid, 2);
+  }, 180000);
+
+  logger.info(`[ENDING] Finalizado!`);
+};
+
 exports.assembleArrayObjects = assembleArrayObjects;
 exports.configureLogService = configureLogService;
 exports.asyncForEach = asyncForEach;
@@ -285,3 +296,4 @@ exports.subtractHours = subtractHours;
 exports.dataHoraAtual = dataHoraAtual;
 exports.dataHoraAtual2 = dataHoraAtual2;
 exports.returnHourMinute = returnHourMinute;
+exports.exitProcess = exitProcess;
