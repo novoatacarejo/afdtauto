@@ -44,7 +44,7 @@ const startApplication = async () => {
         round++;
         let clock = returnObjCorrectType(station);
 
-        let netCheck = await isDeviceOnline(clock.ip);
+        const netCheck = await isDeviceOnline(clock.ip);
 
         if (!netCheck) {
           logger.error(`Station ip: ${clock.ip} not respond`);

@@ -272,6 +272,14 @@ const returnAfdDate = (days) => {
   };
 };
 
+const currentDateHour = () => {
+  const options = { timeZone: 'America/Recife' };
+  let dataAtual = new Date();
+  let dataHoraBrasil = dataAtual.toLocaleString('pt-BR', options);
+
+  return dataHoraBrasil;
+};
+
 const exitProcess = async (pid) => {
   let dataHorAtual = await dataHoraAtual('hhmm');
   logger.info(`[ENDING] Finalizando JOB pid: ${pid} em ${dataHorAtual}`);
@@ -297,3 +305,4 @@ exports.dataHoraAtual = dataHoraAtual;
 exports.dataHoraAtual2 = dataHoraAtual2;
 exports.returnHourMinute = returnHourMinute;
 exports.exitProcess = exitProcess;
+exports.currentDateHour = currentDateHour;
