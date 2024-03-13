@@ -65,7 +65,12 @@ const startApplication = async () => {
           return;
         }
 
-        const punchesFormated = punches.map((punch) => {
+        const punchesFormated = punches.map(async (punch) => {
+          await StationService.sendWfmOrcl({
+            codpessoa: new String(punch.cardId),
+            punch: punch.punchUserTimestamp
+          });
+
           return {
             punch: {
               cardId: new String(punch.cardId),

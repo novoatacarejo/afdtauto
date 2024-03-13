@@ -192,6 +192,37 @@ class StationService {
       logger.error(SERVICE_NAME, error);
     }
   };
+
+  static sendWfmOrcl = async (data) => {
+    try {
+      const url = `http://localhost:8086/wfm/afd`;
+
+      const options = {
+        method: 'POST',
+        url,
+        insecureHTTPParser: false,
+        headers: { 'Content-Type': 'application/json', 'User-Agent': 'node-js' },
+        data
+      };
+
+      axios
+        .request(options)
+        .then((response) => {
+          //logger.info(JSON.stringify(response.data));
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      if (!response) {
+        throw new Error('error when trying to logout:\n' + response);
+      }
+      return;
+    } catch (error) {
+      logger.error(SERVICE_NAME, error);
+    }
+  };
 }
 
 exports.StationService = StationService;

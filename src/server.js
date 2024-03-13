@@ -6,7 +6,13 @@ const port = 8086;
 const { currentDateHour } = require('./utils');
 const bodyParser = require('body-parser');
 
-const SERVICE_NAME = 'ExpressService';
+const conn = OracleService.connect();
+
+const server = app.listen(port, () => {
+  console.log(`Server Https started on port ${port} at ${currentDateHour()}`);
+});
+
+const SERVICE_NAME = 'ExpressHttpService';
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,48 +22,35 @@ const dataHorAtual = {
   timezone: 'America/Recife'
 };
 
-const server = app.listen(port, () => {
-  console.log(`Server started on port ${port} at ${currentDateHour()}`);
-});
-
-app.post('/add', async (req, res) => {
-  const client = await OracleService.connect();
+app.post('/wfm/afd', async (req, res) => {
   const data = req.body;
   console.log(data);
   const sql = `INSERT INTO
-    WFM_DEV.DEV_AFD (DTAGERACAO, PROCESSO, IP, NROEMPRESA, CODPESSOA, PUNCH)
+    WFM_DEV.DEV_AFD (DTAGERACAO, CODPESSOA, PUNCH)
     VALUES (
-      TO_DATE( :DTAGERACAO, 'YYYY-MM-DD HH24:MI:SS'),
-      :PROCESSO,
-      :IP,
-      :NROEMPRESA,
+      SYSDATE,
       :CODPESSOA,
       TO_DATE(:PUNCH, 'YYYY-MM-DD HH24:MI:SS')
       )`;
 
-  await client.execute(sql, data, (err, result) => {
-    if (row.length === 0) {
-      res.json({ message: `Id ${param} or user not exists!` });
-    } else if (err) {
-      res.status(400).send(SERVICE_NAME, 'Adding Error', err);
+  await conn.execute(sql, data, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(400).json({ service: SERVICE_NAME, erro: err });
     } else {
       res.status(200).json({
         data: {
           status: '200',
-          message: 'OK',
-          body: {
-            ...req.body
-          }
+          message: result
         }
       });
     }
   });
 
-  await client.commit();
-  return;
+  await conn.commit();
 });
 
-app.get('/', (req, res) => {
+app.get('/wfm', (req, res) => {
   res.status(200).json({
     status: 'ready',
     port,
