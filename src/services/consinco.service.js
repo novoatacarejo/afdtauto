@@ -70,6 +70,33 @@ class ConsincoService {
     }
   };
 
+  static insertAfd = async (data) => {
+    try {
+      const client = await OracleService.connect();
+
+      const sql = `INSERT INTO
+      WFM_DEV.DEV_AFD (DTAGERACAO, CODPESSOA, PUNCH)
+      VALUES (
+      SYSDATE,
+      :CODPESSOA,
+      TO_DATE(:PUNCH, 'YYYY-MM-DD HH24:MI:SS')
+      )`;
+
+      const response1 = await client.execute(sql, data, (err, result) => {
+        if (err) {
+          console.log(CONSINCO_SERVICE_NAME, err);
+        } else {
+          client.commit();
+          return result;
+        }
+      });
+
+      return response1;
+    } catch (error) {
+      logger.error(CONSINCO_SERVICE_NAME, error);
+    }
+  };
+
   static closeConnection = async () => {
     await client.close();
     return;

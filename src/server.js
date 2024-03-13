@@ -1,12 +1,10 @@
 require('dotenv').config({ path: '../.env' });
-const { OracleService } = require('./services/oracle.service');
+const { ConsincoService } = require('./services/consinco.service');
 const express = require('express');
 const app = express();
 const port = 8086;
 const { currentDateHour } = require('./utils');
 const bodyParser = require('body-parser');
-
-const conn = OracleService.connect();
 
 const server = app.listen(port, () => {
   console.log(`Server Https started on port ${port} at ${currentDateHour()}`);
@@ -24,30 +22,16 @@ const dataHorAtual = {
 
 app.post('/wfm/afd', async (req, res) => {
   const data = req.body;
-  console.log(data);
-  const sql = `INSERT INTO
-    WFM_DEV.DEV_AFD (DTAGERACAO, CODPESSOA, PUNCH)
-    VALUES (
-      SYSDATE,
-      :CODPESSOA,
-      TO_DATE(:PUNCH, 'YYYY-MM-DD HH24:MI:SS')
-      )`;
 
-  await conn.execute(sql, data, (err, result) => {
+  console.log(data);
+
+  await ConsincoService.insertAfd(data, (err, result) => {
     if (err) {
       console.log(err);
-      res.status(400).json({ service: SERVICE_NAME, erro: err });
     } else {
-      res.status(200).json({
-        data: {
-          status: '200',
-          message: result
-        }
-      });
+      res.status(200).json({ data });
     }
   });
-
-  await conn.commit();
 });
 
 app.get('/wfm', (req, res) => {
