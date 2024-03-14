@@ -4,7 +4,7 @@ const path = require('path');
 const { ConsincoService } = require('./consinco.service');
 const axios = require('axios');
 const https = require('https');
-const { returnJsonLine, subtractHours } = require('../utils');
+const { returnJsonLine, subtractHours, currentDate } = require('../utils');
 const { promisify } = require('util');
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
@@ -133,23 +133,29 @@ class StationService {
         }
 
         let punchHour = data.hour;
+        let punchDate = data.date;
+        let today = currentDate();
+
         let previousHour = subtractHours(new Date(), 1);
         let testHour = punchHour >= previousHour ? true : false;
+        let testDate = (punchDate = today ? true : false);
 
-        if (testHour === true) {
+        if (testHour === true && testDate === true) {
           //i++;
           const cod = await ConsincoService.getCodPessoa(data.id, data.lnLength);
 
           data.cardId = cod;
-          delete data.lnLength;
-          delete data.id;
+          //delete data.lnLength;
+          //delete data.id;
           delete data.hour;
 
           const punch = {
             cardId: data.cardId,
             punchSystemTimestamp: data.punchSystemTimestamp,
             punchUserTimestamp: data.punchUserTimestamp,
-            punchType: data.punchType
+            punchType: data.punchType,
+            punchLength: data.lnLength,
+            punchId: data.id
           };
 
           arr.push(punch);
@@ -205,22 +211,15 @@ class StationService {
         data
       };
 
-      axios
-        .request(options)
-        .then((response) => {
-          //logger.info(JSON.stringify(response.data));
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      const response = await axios.request(options);
 
       if (!response) {
         throw new Error('error when trying to logout:\n' + response);
       }
-      return;
+
+      return response.data.data;
     } catch (error) {
-      logger.error(SERVICE_NAME, error);
+      logger.error(SERVICE_NAME, 'sendWfmOrcl', error);
     }
   };
 }

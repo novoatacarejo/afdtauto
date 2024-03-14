@@ -63,21 +63,16 @@ class TlanticService {
       const response = await instance.request(options);
 
       if (!response.data.success) {
-        /*
-        logger.error(
-          SERVICE_NAME,
-          'Error when trying to post data \nStatus:' + response.data.data.result[0].status + '\nMessage:',
-          +response.data.data.result[0].message
-        );
-        */
-
         throw new Error(
           'error when trying to post data \nStatus:' + response.data.data.result[0].status + '\nMessage:',
           +response.data.data.result[0].message
         );
       }
+
+      return true;
     } catch (error) {
       logger.error(SERVICE_NAME, error);
+      return false;
     }
   };
 }

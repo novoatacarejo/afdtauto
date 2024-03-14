@@ -1,3 +1,4 @@
+require('dotenv').config('../../.env');
 const { initOracleClient, getConnection } = require('oracledb');
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');

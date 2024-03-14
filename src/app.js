@@ -1,6 +1,7 @@
 require('dotenv').config('../.env');
 const { TlanticService } = require('./services/tlantic.service');
 const { StationService } = require('./services/station.service');
+const { ConsincoService } = require('./services/consinco.service');
 const { getLogger } = require('log4js');
 const {
   configureLogService,
@@ -9,7 +10,8 @@ const {
   isDeviceOnline,
   writeAfdTxt,
   makeChunk,
-  dataHoraAtual
+  dataHoraAtual,
+  formatDate
 } = require('./utils');
 
 let logger = getLogger('LOG');
@@ -65,17 +67,32 @@ const startApplication = async () => {
           return;
         }
 
-        const punchesFormated = punches.map(async (punch) => {
-          await StationService.sendWfmOrcl({
-            codpessoa: new String(punch.cardId),
-            punch: punch.punchUserTimestamp
-          });
+        punches.map(async (p) => {
+          const punchFormat = formatDate(p.punchUserTimestamp);
+          const ln = p.punchLength;
+          const id = p.punchId;
+          const cardId = new String(p.cardId);
+
+          const cod = !cardId ? await ConsincoService.getCodPessoa(id, ln) : cardId;
+
+          const obj = { codpessoa: parseInt(cod), punch: punchFormat };
+
+          await ConsincoService.insertAfd(obj);
+        });
+
+        const punchesFormated = punches.map((punch) => {
+          const punchFormat = formatDate(punch.punchUserTimestamp);
+          const ln = punch.punchLength;
+          const id = punch.punchId;
+          const cardId = new String(punch.cardId);
+
+          const cod = !cardId ? ConsincoService.getCodPessoa(id, ln) : cardId;
 
           return {
             punch: {
-              cardId: new String(punch.cardId),
-              punchSystemTimestamp: punch.punchSystemTimestamp,
-              punchUserTimestamp: punch.punchUserTimestamp,
+              cardId: new String(cod),
+              punchSystemTimestamp: punchFormat,
+              punchUserTimestamp: punchFormat,
               punchType: new String(punch.punchType)
             }
           };
@@ -86,7 +103,8 @@ const startApplication = async () => {
         const chunks = makeChunk(punchesFormated, chunkLength);
 
         for (const chunk of chunks) {
-          await TlanticService.postPunch(chunk);
+          const result = await TlanticService.postPunch(chunk);
+
           round++;
           total += chunk.length;
           logger.info(`[SENDING] Round ${round} - punches sent: ${total}`);
@@ -105,7 +123,7 @@ const start = async () => {
 
 //
 
-start();
+//start();
 
 cron.schedule('0 * * * *', async () => {
   start();

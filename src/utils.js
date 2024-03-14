@@ -116,13 +116,20 @@ const returnJsonLine = (ln) => {
           .slice(14, 18)
           .concat('-', ln.slice(12, 14))
           .concat('-', ln.slice(10, 12))
-          .concat(' ', ln.slice(18, 20).concat(':', ln.slice(21, 22)))
-      : 0;
+          .concat(' ', new String(ln.slice(18, 20)).concat(':', new String(ln.slice(21, 22))))
+      : '01/01/1900 00:00';
 
-  let hour = lnLength === 50 ? ln.slice(21, 26) : lnLength === 38 ? ln.slice(18, 20).concat(':', ln.slice(21, 23)) : 0;
+  let hour = lnLength === 50 ? ln.slice(21, 26) : lnLength === 38 ? ln.slice(18, 20).concat(':', ln.slice(21, 22)) : 0;
 
   const punchSystemTimestamp = punchUserTimestamp;
   const punchType = parseInt(1);
+
+  let date =
+    lnLength === 50
+      ? new String(ln.slice(18, 20)) + '/' + new String(ln.slice(15, 17)) + '/' + ln.slice(10, 14)
+      : lnLength === 38
+      ? ln.slice(10, 12) + '/' + ln.slice(12, 14) + '/' + ln.slice(14, 18)
+      : '01/01/1900';
 
   const result = {
     id,
@@ -130,7 +137,8 @@ const returnJsonLine = (ln) => {
     punchUserTimestamp,
     punchType,
     lnLength,
-    hour
+    hour,
+    date
   };
 
   return result;
@@ -280,6 +288,16 @@ const currentDateHour = () => {
   return dataHoraBrasil;
 };
 
+const currentDate = () => {
+  const options = { timeZone: 'America/Recife' };
+  let dataAtual = new Date();
+  let dataHoraBrasil = dataAtual.toLocaleString('pt-BR', options);
+
+  let date = dataHoraBrasil.slice(0, 10);
+
+  return date;
+};
+
 const exitProcess = async (pid) => {
   let dataHorAtual = await dataHoraAtual('hhmm');
   logger.info(`[ENDING] Finalizando JOB pid: ${pid} em ${dataHorAtual}`);
@@ -289,6 +307,31 @@ const exitProcess = async (pid) => {
   }, 180000);
 
   logger.info(`[ENDING] Finalizado!`);
+};
+
+const formatDate = (dateStr) => {
+  // Split the date string into date and time parts
+  const [datePart, timePart] = dateStr.split(' ');
+
+  // Check if the time part contains a colon (:) indicating it's a time
+  if (timePart.includes(':')) {
+    // Split the time part into hours and minutes
+    const [hours, minutes] = timePart.split(':');
+
+    // Pad the minutes with a leading zero if it's a single-digit number
+    const paddedMinutes = minutes.padStart(2, '0');
+
+    // Reconstruct the time part with padded minutes
+    const paddedTimePart = `${hours}:${paddedMinutes}`;
+
+    // Reconstruct the date string with the updated time part
+    const paddedDateString = `${datePart} ${paddedTimePart}`;
+
+    return paddedDateString; // Output: 2024-03-12 22:06
+  } else {
+    // If it's a complete date, no modification is needed
+    return dateString;
+  }
 };
 
 exports.assembleArrayObjects = assembleArrayObjects;
@@ -306,3 +349,5 @@ exports.dataHoraAtual2 = dataHoraAtual2;
 exports.returnHourMinute = returnHourMinute;
 exports.exitProcess = exitProcess;
 exports.currentDateHour = currentDateHour;
+exports.formatDate = formatDate;
+exports.currentDate = currentDate;
