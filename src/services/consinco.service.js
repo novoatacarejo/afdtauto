@@ -36,7 +36,7 @@ class ConsincoService {
        TO_NUMBER(PORTARIA) AS PORTARIA
        FROM WFM_DEV.DEV_VW_RM_DEVICES
        WHERE 1=1
-       AND CODFILIAL NOT IN (1,8,18)
+       --AND CODFILIAL NOT IN (1,8,18)
        ORDER BY 1
        -- FETCH FIRST 4 ROWS ONLY
        `;
@@ -47,7 +47,7 @@ class ConsincoService {
 
       return products;
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, error);
+      logger.error(CONSINCO_SERVICE_NAME, 'getStationsInfo', error);
     }
   };
 
@@ -55,10 +55,10 @@ class ConsincoService {
     try {
       const client1 = await OracleService.connect();
 
-      const tp = lng === 50 ? `CPF` : lng === 38 ? `PISPASEP` : ``;
+      const tp = lng === 50 ? `CPF` : lng === 38 ? `PIS` : ``;
       const newId = new String(idt);
 
-      const sql1 = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_FUNCIONARIO H WHERE 1 = 1 AND ${tp} = '${newId}'`;
+      const sql1 = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_CODPESSOA H WHERE 1 = 1 AND ${tp} = '${newId}'`;
 
       const response1 = await client1.execute(sql1);
 
@@ -74,7 +74,7 @@ class ConsincoService {
     try {
       const client = await OracleService.connect();
       if (!data.codpessoa) {
-        logger.info(`[WARNING - Usuario sem codpessoa]`);
+        logger.info(`[WARNING - Usuario sem codpessoa]: ${data}`);
       } else {
         const sql = `INSERT INTO WFM_DEV.DEV_AFD (DTAGERACAO, CODPESSOA, PUNCH) VALUES ( SYSDATE, :a, TO_DATE( :b, 'YYYY-MM-DD HH24:MI:SS') )`;
 
@@ -84,7 +84,7 @@ class ConsincoService {
 
         const response = await client.execute(sql, bind, options);
 
-        //  logger.info(`[INSERTING] ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`);
+        logger.info(`[INSERTING] ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`);
       }
     } catch (error) {
       logger.error(CONSINCO_SERVICE_NAME, 'insertAfd', error);

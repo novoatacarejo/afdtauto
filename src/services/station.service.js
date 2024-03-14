@@ -138,7 +138,7 @@ class StationService {
 
         let previousHour = subtractHours(new Date(), 1);
         let testHour = punchHour >= previousHour ? true : false;
-        let testDate = (punchDate = today ? true : false);
+        let testDate = punchDate == today ? true : false;
 
         if (testHour === true && testDate === true) {
           //i++;

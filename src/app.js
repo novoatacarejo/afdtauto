@@ -1,7 +1,6 @@
 require('dotenv').config('../.env');
-const { TlanticService } = require('./services/tlantic.service');
 const { StationService } = require('./services/station.service');
-const { ConsincoService } = require('./services/consinco.service');
+const { TlanticService } = require('./services/tlantic.service');
 const { getLogger } = require('log4js');
 const {
   configureLogService,
@@ -11,7 +10,8 @@ const {
   writeAfdTxt,
   makeChunk,
   dataHoraAtual,
-  formatDate
+  formatDate,
+  clearScreen
 } = require('./utils');
 
 let logger = getLogger('LOG');
@@ -25,6 +25,7 @@ console.log(`Envio automático de batidas H-1 iniciado em ${dataHorAtual}`);
 
 const startApplication = async () => {
   try {
+    clearScreen();
     let round = 0;
     let total = 0;
     let processPid = process.pid;
@@ -67,30 +68,12 @@ const startApplication = async () => {
           return;
         }
 
-        punches.map(async (p) => {
-          const punchFormat = formatDate(p.punchUserTimestamp);
-          const ln = p.punchLength;
-          const id = p.punchId;
-          const cardId = new String(p.cardId);
-
-          const cod = !cardId ? await ConsincoService.getCodPessoa(id, ln) : cardId;
-
-          const obj = { codpessoa: parseInt(cod), punch: punchFormat };
-
-          await ConsincoService.insertAfd(obj);
-        });
-
         const punchesFormated = punches.map((punch) => {
           const punchFormat = formatDate(punch.punchUserTimestamp);
-          const ln = punch.punchLength;
-          const id = punch.punchId;
-          const cardId = new String(punch.cardId);
-
-          const cod = !cardId ? ConsincoService.getCodPessoa(id, ln) : cardId;
 
           return {
             punch: {
-              cardId: new String(cod),
+              cardId: new String(punch.cardId),
               punchSystemTimestamp: punchFormat,
               punchUserTimestamp: punchFormat,
               punchType: new String(punch.punchType)
@@ -116,15 +99,14 @@ const startApplication = async () => {
   }
 };
 
-const start = async () => {
+const send = async () => {
   await startApplication();
-  //exitProcess(processPid);
 };
 
 //
 
-//start();
+send();
 
 cron.schedule('0 * * * *', async () => {
-  start();
+  send();
 });

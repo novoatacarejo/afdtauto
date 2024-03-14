@@ -2,7 +2,6 @@ const { configure } = require('log4js');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
-const { promisify } = require('util');
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
 
@@ -334,6 +333,38 @@ const formatDate = (dateStr) => {
   }
 };
 
+const listTxtFiles = (dir) => {
+  let files = [];
+  let fullDir = [];
+
+  fs.readdirSync(dir).forEach((file) => {
+    const filePath = path.join(dir, file);
+    if (fs.statSync(filePath).isDirectory()) {
+      files.push(listTxtFiles(filePath));
+    } else {
+      if (path.extname(file).toLowerCase() === '.txt') {
+        files.push(filePath);
+      }
+    }
+  });
+
+  files.map(async (item) => {
+    let itemA = new String(item);
+    let itemB = itemA.replace(/\s/g, '');
+    let itemC = itemB.split(',');
+
+    for (let file of itemC) {
+      fullDir.push(file);
+    }
+  });
+
+  return fullDir;
+};
+
+const clearScreen = () => {
+  process.stdout.write('\x1B[2J\x1B[H');
+};
+
 exports.assembleArrayObjects = assembleArrayObjects;
 exports.configureLogService = configureLogService;
 exports.asyncForEach = asyncForEach;
@@ -351,3 +382,5 @@ exports.exitProcess = exitProcess;
 exports.currentDateHour = currentDateHour;
 exports.formatDate = formatDate;
 exports.currentDate = currentDate;
+exports.listTxtFiles = listTxtFiles;
+exports.clearScreen = clearScreen;
