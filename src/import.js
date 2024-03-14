@@ -59,7 +59,7 @@ const readEachLine = async (file) => {
   }
 };
 
-const startApplication = async () => {
+const insertApplication = async () => {
   try {
     clearScreen();
     let round = 0;
@@ -108,9 +108,8 @@ const insert = async () => {
   //exitProcess(processPid);
 };
 
-//
-//start();
+//insert();
 
-cron.schedule('0 5 * * *', async () => {
+cron.schedule('5 * * * *', async () => {
   insert();
 });
