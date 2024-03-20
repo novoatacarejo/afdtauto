@@ -1,6 +1,7 @@
 require('dotenv').config('../.env');
 const { StationService } = require('./services/station.service');
 const { TlanticService } = require('./services/tlantic.service');
+const { ConsincoService } = require('./services/consinco.service');
 const { getLogger } = require('log4js');
 const {
   configureLogService,
@@ -8,7 +9,11 @@ const {
   returnObjCorrectType,
   isDeviceOnline,
   writeAfdTxt,
+  listTxtFiles,
   makeChunk,
+  readEachLine,
+  currentDate,
+  subtractHours,
   dataHoraAtual,
   formatDate,
   clearScreen
@@ -19,18 +24,14 @@ let cron = require('node-cron');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-let dataHorAtual = dataHoraAtual();
+const dirPath = 'C:/node/afdtauto/afd';
 
-console.log(`Envio automático de batidas H-1 iniciado em ${dataHorAtual}`);
-
-const startApplication = async () => {
+const gettingAfd = async () => {
   try {
     clearScreen();
-    let round = 0;
-    let total = 0;
-    let processPid = process.pid;
+    let dataHorAtual = dataHoraAtual();
 
-    await configureLogService();
+    let processPid = process.pid;
 
     logger.info(`[STARTING] Iniciando JOB pid: ${processPid} em ${dataHorAtual}`);
 
@@ -44,7 +45,6 @@ const startApplication = async () => {
 
     await Promise.all(
       stations.map(async (station) => {
-        round++;
         let clock = returnObjCorrectType(station);
 
         const netCheck = await isDeviceOnline(clock.ip);
@@ -60,53 +60,123 @@ const startApplication = async () => {
 
           await StationService.logoutStation(clock.ip, token);
         }
-
-        const punches = await StationService.startSendLines(clock.empresaDir, clock.item, clock.ipFInal);
-
-        if (punches.length === 0) {
-          logger.info('No punches to send');
-          return;
-        }
-
-        const punchesFormated = punches.map((punch) => {
-          const punchFormat = formatDate(punch.punchUserTimestamp);
-
-          return {
-            punch: {
-              cardId: new String(punch.cardId),
-              punchSystemTimestamp: punchFormat,
-              punchUserTimestamp: punchFormat,
-              punchType: new String(punch.punchType)
-            }
-          };
-        });
-
-        const chunkLength = 100;
-
-        const chunks = makeChunk(punchesFormated, chunkLength);
-
-        for (const chunk of chunks) {
-          const result = await TlanticService.postPunch(chunk);
-
-          round++;
-          total += chunk.length;
-          logger.info(`[SENDING] Round ${round} - punches sent: ${total}`);
-        }
       })
     );
+  } catch (error) {
+    logger.error('Error on startApplication', 'gettingAfdFiles', error);
+  }
+};
+
+const importEachAfdLine = async () => {
+  try {
+    let round = 0;
+    clearScreen();
+    dataHorAtual = dataHoraAtual();
+
+    console.log(`Inserção em Tabela Oracle iniciada em ${dataHorAtual}`);
+
+    const files = await listTxtFiles(dirPath);
+
+    files.map(async (file) => {
+      const punches = await readEachLine(file);
+
+      await punches.map(async (p) => {
+        const h = p.hour;
+        const d = p.date;
+        const punch = formatDate(p.punchUserTimestamp);
+        const date = p.date;
+
+        if (new String(p.id) !== '0' && (p.lnLength === 50 || p.lnLength === 38)) {
+          let today = currentDate();
+          let previousHour = subtractHours(new Date(), 1);
+
+          const testHour = h > previousHour ? true : false;
+          const testDate = d == today ? true : false;
+
+          if (testHour === true && testDate === true) {
+            round++;
+            const obj = {
+              idNumber: p.id,
+              idLength: p.lnLength,
+              punch
+            };
+
+            logger.info(`[IMPORTING] Attempt ${round} --> Id: ${p.id}, punch: ${punch} `);
+            await ConsincoService.insertwfmDevAfd(obj);
+          }
+        }
+      });
+    });
   } catch (error) {
     logger.error('Error on startApplication', error);
   }
 };
 
-const send = async () => {
+const sendingWfmApi = async () => {
+  try {
+    let round = 0;
+    let total = 0;
+    clearScreen();
+    dataHorAtual = dataHoraAtual();
+
+    console.log(`Envio automático de batidas H-1 iniciado em ${dataHorAtual}`);
+
+    const punches = await ConsincoService.getPunchesByHour();
+
+    if (punches.length === 0) {
+      logger.info('No punches to send');
+      return;
+    }
+
+    const punchesFormated = punches.map((p) => {
+      const cardId = new String(p.codPessoa);
+      const punchFormat = formatDate(p.punchTime);
+      const punchType = new String(1);
+
+      return {
+        punch: {
+          cardId,
+          punchSystemTimestamp: punchFormat,
+          punchUserTimestamp: punchFormat,
+          punchType
+        }
+      };
+    });
+
+    const chunkLength = 100;
+
+    const chunks = makeChunk(punchesFormated, chunkLength);
+
+    for (const chunk of chunks) {
+      const result = await TlanticService.postPunch(chunk);
+
+      round++;
+      total += chunk.length;
+      logger.info(`[SENDING] Round ${round} - punches sent: ${total}`);
+    }
+  } catch (error) {
+    logger.error('Error on startApplication', error);
+  }
+};
+
+const startApplication = async () => {
+  await configureLogService();
+
+  await gettingAfd();
+
+  await importEachAfdLine();
+
+  await sendingWfmApi();
+};
+
+const app = async () => {
   await startApplication();
 };
 
 //
 
-send();
+app();
 
 cron.schedule('0 * * * *', async () => {
-  send();
+  app();
 });

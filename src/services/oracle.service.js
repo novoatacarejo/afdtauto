@@ -1,7 +1,12 @@
-require('dotenv').config('../../.env');
-const { initOracleClient, getConnection } = require('oracledb');
-const { getLogger } = require('log4js');
-let logger = getLogger('LOG');
+require('dotenv').config({ path: '../../.env' });
+const oracledb = require('oracledb');
+const log4js = require('log4js');
+
+log4js.configure({
+  appenders: { console: { type: 'console' } },
+  categories: { default: { appenders: ['console'], level: 'info' } }
+});
+const logger = log4js.getLogger('LOG');
 
 const ENV_VARS = {
   ORACLE_LIB_DIR: process.env.ORACLE_LIB_DIR,
@@ -10,37 +15,42 @@ const ENV_VARS = {
   ORACLE_PASSWORD: process.env.ORACLE_PASSWORD
 };
 
-const ORACLE_SERVICE_NAME = 'OracleService';
-
 class OracleService {
-  static connection;
-
-  static initOracleClient = async () => {
+  static async initOracleClient() {
     try {
-      const propsInitOracle = { configDir: ENV_VARS.ORACLE_LIB_DIR, libDir: ENV_VARS.ORACLE_LIB_DIR };
-
-      initOracleClient(propsInitOracle);
+      await oracledb.initOracleClient({ libDir: ENV_VARS.ORACLE_LIB_DIR });
     } catch (error) {
-      logger.error(ORACLE_SERVICE_NAME, error);
+      logger.error('OracleService', 'initOracleClient', error);
+      throw error;
     }
-  };
+  }
 
-  static connect = async () => {
+  static async connect() {
     try {
+      await this.initOracleClient();
       const propsConnect = {
         connectionString: ENV_VARS.ORACLE_CONNECTION_STRING,
         user: ENV_VARS.ORACLE_USER,
         password: ENV_VARS.ORACLE_PASSWORD
       };
 
-      if (!this.connection) {
-        this.connection = await getConnection(propsConnect);
-      }
-      return this.connection;
+      return await oracledb.getConnection(propsConnect);
     } catch (error) {
-      logger.error(ORACLE_SERVICE_NAME, error);
+      logger.error('OracleService', 'connect', error);
+      throw error;
     }
-  };
+  }
+
+  static async close(connection) {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        logger.error('OracleService', 'close', err);
+        throw err;
+      }
+    }
+  }
 }
 
 exports.OracleService = OracleService;

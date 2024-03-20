@@ -49,7 +49,7 @@ class StationService {
 
       return token;
     } catch (error) {
-      logger.error(SERVICE_NAME, error);
+      logger.error(SERVICE_NAME, 'getToken', error);
       return false;
     }
   };
@@ -92,7 +92,7 @@ class StationService {
 
       return answer;
     } catch (error) {
-      logger.error(SERVICE_NAME, error);
+      logger.error(SERVICE_NAME, 'getAfd', error);
     }
   };
 
@@ -101,7 +101,7 @@ class StationService {
       const result = await ConsincoService.getStationsInfo();
       return result;
     } catch (err) {
-      logger.error(err);
+      logger.error(SERVICE_NAME, 'getStationsInfo', err);
     }
   };
 
@@ -165,7 +165,7 @@ class StationService {
 
       return;
     } catch (err) {
-      logger.error(err);
+      logger.error(SERVICE_NAME, 'startSendLines', err);
       throw false;
     }
   };
@@ -195,7 +195,7 @@ class StationService {
 
       return answer;
     } catch (error) {
-      logger.error(SERVICE_NAME, error);
+      logger.error(SERVICE_NAME, 'logoutStation', error);
     }
   };
 

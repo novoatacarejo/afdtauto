@@ -33,7 +33,7 @@ class TlanticService {
 
       return token;
     } catch (error) {
-      logger.error(SERVICE_NAME, error);
+      logger.error(SERVICE_NAME, 'getToken', error);
       return false;
     }
   };
@@ -71,7 +71,7 @@ class TlanticService {
 
       return true;
     } catch (error) {
-      logger.error(SERVICE_NAME, error);
+      logger.error(SERVICE_NAME, 'postPunch', error);
       return false;
     }
   };

@@ -21,7 +21,6 @@ let cron = require('node-cron');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 let dataHorAtual = dataHoraAtual();
-const today = currentDate();
 
 console.log(`Inserção em Tabela Oracle iniciada em ${dataHorAtual}`);
 
@@ -81,6 +80,8 @@ const insertApplication = async () => {
         const d = p.date;
         const cardId = new String(p.cardId);
 
+        const today = currentDate();
+
         const cod = !cardId ? await ConsincoService.getCodPessoa(id, ln) : cardId;
         const codpessoa = parseInt(cod);
         const punch = formatDate(p.punchUserTimestamp);
@@ -108,7 +109,7 @@ const insert = async () => {
   //exitProcess(processPid);
 };
 
-//insert();
+insert();
 
 cron.schedule('5 * * * *', async () => {
   insert();

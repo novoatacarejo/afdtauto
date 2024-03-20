@@ -1,6 +1,7 @@
 const { configure } = require('log4js');
 const fs = require('fs');
 const path = require('path');
+const { promisify } = require('util');
 const { exec } = require('child_process');
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
@@ -365,6 +366,32 @@ const clearScreen = () => {
   process.stdout.write('\x1B[2J\x1B[H');
 };
 
+const readEachLine = async (file) => {
+  const readFileAsync = promisify(fs.readFile);
+
+  try {
+    const data = await readFileAsync(file);
+    const result = data.toString();
+    let arrayData = result.split('\r\n');
+
+    arrayData = arrayData.map((item) => {
+      return returnJsonLine(item);
+    });
+
+    let i = 0;
+    for (const data of arrayData) {
+      if (!data.id && data.id === 0 && data.id === undefined) {
+        continue;
+      }
+      i++;
+    }
+    return arrayData;
+  } catch (err) {
+    logger.error(err);
+    throw false;
+  }
+};
+
 exports.assembleArrayObjects = assembleArrayObjects;
 exports.configureLogService = configureLogService;
 exports.asyncForEach = asyncForEach;
@@ -384,3 +411,4 @@ exports.formatDate = formatDate;
 exports.currentDate = currentDate;
 exports.listTxtFiles = listTxtFiles;
 exports.clearScreen = clearScreen;
+exports.readEachLine = readEachLine;

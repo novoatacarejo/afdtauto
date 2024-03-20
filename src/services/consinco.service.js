@@ -16,15 +16,16 @@ const columnsName = [
   { name: 'portaria' }
 ];
 
+const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
+
 const CONSINCO_SERVICE_NAME = 'ConsincoService';
 
 class ConsincoService {
   static getStationsInfo = async () => {
     try {
-      const client0 = await OracleService.connect();
+      const client = await OracleService.connect();
 
-      const sql0 = `SELECT
-       CODFILIAL,
+      const sql = `SELECT CODFILIAL,
        EMPRESA,
        EMPRESADIR,
        PISO,
@@ -34,16 +35,17 @@ class ConsincoService {
        USERNAME,
        USERPASS,
        TO_NUMBER(PORTARIA) AS PORTARIA
-       FROM WFM_DEV.DEV_VW_RM_DEVICES
-       WHERE 1=1
-       --AND CODFILIAL NOT IN (1,8,18)
-       ORDER BY 1
-       -- FETCH FIRST 4 ROWS ONLY
-       `;
+       FROM
+       WFM_DEV.DEV_VW_RM_DEVICES
+       WHERE 1 = 1
+       AND CODFILIAL NOT IN (1)
+       AND IP NOT IN ('192.168.26.81', '192.168.17.80', '10.1.10.80','192.168.4.81')`;
 
-      const response0 = await client0.execute(sql0);
+      const response = await client.execute(sql);
 
-      const products = assembleArrayObjects(columnsName, response0.rows);
+      const products = assembleArrayObjects(columnsName, response.rows);
+
+      await OracleService.close(client);
 
       return products;
     } catch (error) {
@@ -51,18 +53,38 @@ class ConsincoService {
     }
   };
 
+  static getPunchesByHour = async () => {
+    try {
+      const client = await OracleService.connect();
+
+      const sql = `SELECT CODPESSOA, PUNCHTIME FROM WFM_DEV.DEV_VW_DATE_TEST`;
+
+      const response = await client.execute(sql);
+
+      const punches = assembleArrayObjects(punchName, response.rows);
+
+      await OracleService.close(client);
+
+      return punches;
+    } catch (error) {
+      logger.error(CONSINCO_SERVICE_NAME, 'getPunchesByHour', error);
+    }
+  };
+
   static getCodPessoa = async (idt, lng) => {
     try {
-      const client1 = await OracleService.connect();
+      const client = await OracleService.connect();
 
       const tp = lng === 50 ? `CPF` : lng === 38 ? `PIS` : ``;
       const newId = new String(idt);
 
-      const sql1 = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_CODPESSOA H WHERE 1 = 1 AND ${tp} = '${newId}'`;
+      const sql = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_CODPESSOA H WHERE 1 = 1 AND ${tp} = '${newId}'`;
 
-      const response1 = await client1.execute(sql1);
+      const response1 = await client.execute(sql);
 
       const employeeId = new String(response1.rows);
+
+      await OracleService.close(client);
 
       return employeeId;
     } catch (error) {
@@ -85,53 +107,38 @@ class ConsincoService {
         const response = await client.execute(sql, bind, options);
 
         logger.info(`[INSERTING] ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`);
+
+        await OracleService.close(client);
       }
     } catch (error) {
       logger.error(CONSINCO_SERVICE_NAME, 'insertAfd', error);
     }
   };
 
-  /*
-
-let sql = "INSERT ALL \n" +
-              "  INTO nodb_tab_ia1 (id, content) VALUES (100, :a) \n" +
-              "  INTO nodb_tab_ia1 (id, content) VALUES (200, :b) \n" +
-              "  INTO nodb_tab_ia1 (id, content) VALUES (300, :c) \n" +
-              "SELECT * FROM DUAL";
-    let result = await conn.execute(
-      sql,
-      ['Changjie', 'Shelly', 'Chris']
-    );
-  */
-
-  static insertAllAfd = async (data) => {
+  static insertwfmDevAfd = async (data) => {
     try {
       const client = await OracleService.connect();
+      if (!data.idNumber) {
+        logger.info(`[WARNING - Usuario sem codpessoa]: ${data}`);
+      } else {
+        const sql = `INSERT INTO WFM_DEV.DEV_RM_AFD (DTAGERACAO, IDNUMBER, IDLENGTH, PUNCH) VALUES ( SYSDATE, :a, :b, TO_DATE( :c, 'YYYY-MM-DD HH24:MI:SS') )`;
 
-      //const sql = `INSERT ALL INTO WFM_DEV.DEV_AFD (DTAGERACAO, CODPESSOA, PUNCH) VALUES ( SYSDATE, :a, TO_DATE( :b, 'YYYY-MM-DD HH24:MI:SS') )`;
+        const bind = {
+          a: data.idNumber,
+          b: parseInt(data.idLength),
+          c: data.punch
+        };
 
-      const options = { autoCommit: true };
+        const options = { autoCommit: true };
 
-      let sql = 'INSERT ALL \n';
-      let bindParams = [];
-      for (let i = 0; i < data.length; i++) {
-        sql += `  INTO WFM_DEV.DEV_AFD (DTAGERACAO, CODPESSOA, PUNCH) VALUES ( SYSDATE, :a${i}, TO_DATE(:b${i}, 'YYYY-MM-DD HH24:MI:SS') ) \n`;
+        const response = await client.execute(sql, bind, options);
 
-        let codpessoa = data[i].punch.cardId;
-        let punch = data[i].punch.punchUserTimestamp;
+        logger.info(`[INSERTING] ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`);
 
-        bindParams.push([codpessoa, punch]);
+        await OracleService.close(client);
       }
-      sql += 'SELECT * FROM DUAL';
-
-      console.log(bindParams);
-
-      console.log(sql);
-
-      const result = await client.execute(sql, bindParams, options);
-      console.log(result);
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, 'insertAllAfd', error);
+      logger.error(CONSINCO_SERVICE_NAME, 'insertDevRmAfd', error);
     }
   };
 }
