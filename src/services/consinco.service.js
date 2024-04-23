@@ -39,6 +39,7 @@ class ConsincoService {
        WFM_DEV.DEV_VW_RM_DEVICES
        WHERE 1 = 1
        AND CODFILIAL NOT IN (1)
+       -- and nroempresa = 33
        AND IP NOT IN ('192.168.26.81', '192.168.17.80', '10.1.10.80','192.168.4.81')`;
 
       const response = await client.execute(sql);

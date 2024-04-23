@@ -124,7 +124,7 @@ const sendingWfmApi = async () => {
     const punches = await ConsincoService.getPunchesByHour();
 
     if (punches.length === 0) {
-      logger.info('No punches to send');
+      logger.info('sendingWfmApi', 'No punches to send');
       return;
     }
 
@@ -166,7 +166,9 @@ const startApplication = async () => {
 
   await importEachAfdLine();
 
-  await sendingWfmApi();
+  setTimeout(async () => {
+    await sendingWfmApi();
+  }, 360000);
 };
 
 const app = async () => {

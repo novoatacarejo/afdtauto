@@ -1,17 +1,19 @@
 require('dotenv').config('../.env');
+const { StationService } = require('./services/station.service');
 const { ConsincoService } = require('./services/consinco.service');
-const fs = require('fs');
-const path = require('path');
 const { getLogger } = require('log4js');
-const { promisify } = require('util');
 const {
   configureLogService,
-  dataHoraAtual,
-  formatDate,
-  returnJsonLine,
+  returnAfdDate,
+  returnObjCorrectType,
+  isDeviceOnline,
+  writeAfdTxt,
   listTxtFiles,
+  readEachLine,
   currentDate,
   subtractHours,
+  dataHoraAtual,
+  formatDate,
   clearScreen
 } = require('./utils');
 
@@ -20,82 +22,75 @@ let cron = require('node-cron');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-let dataHorAtual = dataHoraAtual();
-
-console.log(`Inserção em Tabela Oracle iniciada em ${dataHorAtual}`);
-
 const dirPath = 'C:/node/afdtauto/afd';
 
-const readEachLine = async (file) => {
-  const readFileAsync = promisify(fs.readFile);
-
+const gettingAfd = async () => {
   try {
-    const data = await readFileAsync(file);
-    const result = data.toString();
-    let arrayData = result.split('\r\n');
+    clearScreen();
+    let dataHorAtual = dataHoraAtual();
 
-    arrayData = arrayData.map((item) => {
-      return returnJsonLine(item);
-    });
+    let processPid = process.pid;
 
-    let i = 0;
-    for (const data of arrayData) {
-      if (!data.id) {
-        continue;
-      }
-      i++;
+    logger.info(`[STARTING] Iniciando JOB pid: ${processPid} em ${dataHorAtual}`);
 
-      data.cardId = await ConsincoService.getCodPessoa(data.id, data.lnLength);
-      //delete data.lnLength;
-      //delete data.id;
+    const stations = await StationService.getStationsInfo();
+    const afdDate = returnAfdDate(0);
 
-      // console.log(`punch ${i}:`, data);
+    if (stations.length === 0) {
+      logger.info('No Stations finded. Please, check the database connection');
+      return;
     }
-    return arrayData;
-  } catch (err) {
-    logger.error(err);
-    throw false;
+
+    await Promise.all(
+      stations.map(async (station) => {
+        let clock = returnObjCorrectType(station);
+
+        const netCheck = await isDeviceOnline(clock.ip);
+
+        if (!netCheck) {
+          logger.error(`Station ip: ${clock.ip} not respond`);
+        } else {
+          let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
+
+          let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
+
+          await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, afd);
+
+          await StationService.logoutStation(clock.ip, token);
+        }
+      })
+    );
+  } catch (error) {
+    logger.error('Error on startApplication', 'gettingAfdFiles', error);
   }
 };
 
-const insertApplication = async () => {
+const importEachAfdLine = async () => {
   try {
-    clearScreen();
     let round = 0;
-    let processPid = process.pid;
+    clearScreen();
+    dataHorAtual = dataHoraAtual();
 
-    await configureLogService();
-
-    logger.info(`[STARTING] Iniciando JOB pid: ${processPid} em ${dataHorAtual}`);
+    console.log(`Inserção em Tabela Oracle iniciada em ${dataHorAtual}`);
 
     const files = await listTxtFiles(dirPath);
 
     files.map(async (file) => {
       const punches = await readEachLine(file);
 
-      punches.map(async (p) => {
-        const ln = p.punchLength;
-        const id = p.punchId;
-        const h = p.hour;
-        const d = p.date;
-        const cardId = new String(p.cardId);
-
-        const today = currentDate();
-
-        const cod = !cardId ? await ConsincoService.getCodPessoa(id, ln) : cardId;
-        const codpessoa = parseInt(cod);
+      await punches.map(async (p) => {
         const punch = formatDate(p.punchUserTimestamp);
 
-        let previousHour = subtractHours(new Date(), 1);
-
-        const testHour = h > previousHour ? true : false;
-        const testDate = d == today ? true : false;
-
-        if (testHour === true && testDate === true) {
+        if (new String(p.id) !== '0' && (p.lnLength === 50 || p.lnLength === 38)) {
           round++;
-          const obj = { codpessoa, punch };
-          logger.info(`[IMPORTING] Attempt ${round} `);
-          await ConsincoService.insertAfd(obj);
+          const obj = {
+            idNumber: p.id,
+            idLength: p.lnLength,
+            punch
+          };
+
+          logger.info(`[IMPORTING] Attempt ${round} --> Id: ${p.id}, punch: ${punch} `);
+          await ConsincoService.insertwfmDevAfd(obj);
         }
       });
     });
@@ -104,13 +99,22 @@ const insertApplication = async () => {
   }
 };
 
-const insert = async () => {
-  await insertApplication();
-  //exitProcess(processPid);
+const startApplication = async () => {
+  await configureLogService();
+
+  await gettingAfd();
+
+  await importEachAfdLine();
 };
 
-insert();
+const app = async () => {
+  await startApplication();
+};
 
-cron.schedule('5 * * * *', async () => {
-  insert();
-});
+//
+
+app();
+/* 
+cron.schedule('0 * * * *', async () => {
+  app();
+}); */

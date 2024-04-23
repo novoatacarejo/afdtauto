@@ -40,6 +40,36 @@ const returnObjCorrectType = (arrayObj) => {
 };
 
 const configureLogService = async () => {
+  const logname = `./logs/${returnCurrentDateAndTime()}.log`;
+
+  setTimeout(() => {
+    sendLogToTelegram(`${logname}`);
+  }, 600000);
+
+  return new Promise((res) => {
+    configure({
+      appenders: {
+        logger: {
+          type: 'file',
+          filename: `${logname}`
+        },
+        console: {
+          type: 'console'
+        }
+      },
+      categories: {
+        default: {
+          appenders: ['logger', 'console'],
+          level: 'info'
+        }
+      }
+    });
+
+    res(true);
+  });
+};
+
+const configureLogService2 = async () => {
   return new Promise((res) => {
     configure({
       appenders: {
@@ -390,6 +420,25 @@ const readEachLine = async (file) => {
     logger.error(err);
     throw false;
   }
+};
+
+const sendLogToTelegram = (logname) => {
+  const telegram = {
+    token: process.env.BOT_TOKEN,
+    chatId: process.env.CHAT_ID
+  };
+
+  const bot = new Telegraf(telegram.token);
+
+  const filename = `${logname}`;
+
+  fs.readFile(filename, 'utf8', async (err, data) => {
+    if (err) throw err;
+    let file = 'File: ' + filename;
+    let msg = `Integração Amicci: \n\n\n${file} \n\n\n${data}`;
+
+    await bot.telegram.sendMessage(telegram.chatId, msg);
+  });
 };
 
 exports.assembleArrayObjects = assembleArrayObjects;
