@@ -4,7 +4,7 @@ const { TlanticService } = require('./services/tlantic.service');
 const { ConsincoService } = require('./services/consinco.service');
 const { getLogger } = require('log4js');
 const {
-  configureLogService,
+  configureLogWithTelegram,
   returnAfdDate,
   returnObjCorrectType,
   isDeviceOnline,
@@ -159,7 +159,6 @@ const sendingWfmApi = async () => {
 };
 
 const startApplication = async () => {
-  //await configureLogService();
   await configureLogWithTelegram();
   await gettingAfd();
   await importEachAfdLine();
