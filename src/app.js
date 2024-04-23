@@ -4,7 +4,7 @@ const { TlanticService } = require('./services/tlantic.service');
 const { ConsincoService } = require('./services/consinco.service');
 const { getLogger } = require('log4js');
 const {
-  configureLogWithTelegram,
+  configureLogService,
   returnAfdDate,
   returnObjCorrectType,
   isDeviceOnline,
@@ -159,7 +159,7 @@ const sendingWfmApi = async () => {
 };
 
 const startApplication = async () => {
-  await configureLogWithTelegram();
+  await configureLogService();
   await gettingAfd();
   await importEachAfdLine();
   await ConsincoService.deleteDuplicates();
@@ -175,7 +175,7 @@ const app = async () => {
 
 //
 
-// app();
+app();
 
 cron.schedule('0 * * * *', async () => {
   app();
