@@ -1,11 +1,12 @@
+require('dotenv').config('../.env');
 const { configure } = require('log4js');
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
 const { exec } = require('child_process');
-const { getLogger } = require('log4js');
 const { Telegraf } = require('telegraf');
 
+const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
 
 const assembleArrayObjects = (columnsName, lines) => {
@@ -46,7 +47,7 @@ const configureLogWithTelegram = async () => {
 
   setTimeout(() => {
     sendLogToTelegram(`${logname}`);
-  }, 600000);
+  }, 190000);
 
   return new Promise((res) => {
     configure({
@@ -447,10 +448,12 @@ const sendLogToTelegram = (logname) => {
   fs.readFile(filename, 'utf8', async (err, data) => {
     if (err) throw err;
     let file = 'File: ' + filename;
-    let msg = `Integração Amicci: \n\n\n${file} \n\n\n${data}`;
+    let msg = `Integração Tlantic: \n\n\n${file} \n\n\n${data}`;
 
     await bot.telegram.sendMessage(telegram.chatId, msg);
   });
+
+  logger.info(`[TELEGRAM] send log to Telegram Group`);
 };
 
 exports.assembleArrayObjects = assembleArrayObjects;

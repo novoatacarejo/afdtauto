@@ -78,6 +78,8 @@ const importEachAfdLine = async () => {
 
     const files = await listTxtFiles(dirPath);
 
+    const obj = [];
+
     files.map(async (file) => {
       const punches = await readEachLine(file);
 
@@ -93,19 +95,17 @@ const importEachAfdLine = async () => {
           let previousHour = subtractHours(new Date(), 1);
 
           if (hour > previousHour === true && (date == today) === true) {
-            round++;
-            const obj = {
+            obj.push({
               idNumber: p.id,
               idLength: p.lnLength,
               punch
-            };
-
-            logger.info(`[IMPORTING] Attempt ${round} --> Id: ${p.id}, punch: ${punch} `);
-            await ConsincoService.insertwfmDevAfd(obj);
+            });
           }
         }
       });
     });
+
+    await ConsincoService.insertMany(obj);
   } catch (error) {
     logger.error('Error on startApplication', error);
   }
@@ -118,7 +118,7 @@ const sendingWfmApi = async () => {
     clearScreen();
     dataHorAtual = dataHoraAtual();
 
-    console.log(`Envio automático de batidas H-1 iniciado em ${dataHorAtual}`);
+    console.log(`Envio automático de batidas H-1 para API Tlantic iniciado em ${dataHorAtual}`);
 
     const punches = await ConsincoService.getPunchesByHour();
 
@@ -159,15 +159,15 @@ const sendingWfmApi = async () => {
 };
 
 const startApplication = async () => {
-  await configureLogService();
-
+  //await configureLogService();
+  await configureLogWithTelegram();
   await gettingAfd();
-
   await importEachAfdLine();
+  await ConsincoService.deleteDuplicates();
 
   setTimeout(async () => {
     await sendingWfmApi();
-  }, 360000);
+  }, 180000);
 };
 
 const app = async () => {

@@ -116,7 +116,7 @@ class ConsincoService {
     }
   };
 
-  static insertwfmDevAfd = async (data) => {
+  static insertOne = async (data) => {
     try {
       const client = await OracleService.connect();
 
@@ -135,6 +135,7 @@ class ConsincoService {
 
         const options = {
           autoCommit: true,
+          fetchArraySize: 100,
           poolMax: 25,
           poolMin: 5,
           poolIncrement: 5,
@@ -150,6 +151,82 @@ class ConsincoService {
       }
     } catch (error) {
       logger.error(CONSINCO_SERVICE_NAME, 'insertDevRmAfd', error);
+    }
+  };
+
+  static deleteDuplicates = async () => {
+    try {
+      const client = await OracleService.connect();
+
+      client.callTimeout = 10 * 1000;
+
+      const sql = `
+      BEGIN \
+          DELETE FROM DEV_RM_AFD A \
+          WHERE 1 = 1 \
+          AND NOT EXISTS ( \
+                SELECT 1 \
+                FROM (SELECT IDNUMBER, \
+                              TRUNC(PUNCH) AS DTABATIDA, \
+                              HHMM, \
+                              COUNT(*) AS QTD_ROWS, \
+                              MIN(T.ROWID) AS MINROWID \
+                        FROM DEV_RM_AFD T \
+                        GROUP BY IDNUMBER, TRUNC(PUNCH), HHMM) B \
+                WHERE 1 = 1 \
+                AND B.MINROWID = A.ROWID); \
+          COMMIT; \
+      END;`;
+
+      const response = await client.execute(sql);
+
+      logger.info(`oracle[DELETING DUPLICATES ROWS from WFM_DEV.DEV_RM_AFD]`);
+
+      await OracleService.close(client);
+
+      return response;
+    } catch (error) {
+      logger.error(CONSINCO_SERVICE_NAME, 'deleteDuplicates', error);
+    }
+  };
+
+  static insertMany = async (data) => {
+    try {
+      var content = [];
+
+      const client = await OracleService.connect();
+
+      client.callTimeout = 10 * 1000;
+
+      const sql = `INSERT INTO WFM_DEV.DEV_RM_AFD (DTAGERACAO, IDNUMBER, IDLENGTH, PUNCH) VALUES ( SYSDATE, :a, :b, TO_DATE( :c, 'YYYY-MM-DD HH24:MI:SS') )`;
+
+      for (let i = 0; i < data.length; i++) {
+        var temp = [];
+        temp.push(data[i].idNumber);
+        temp.push(parseInt(data[i].idLength));
+        temp.push(data[i].punch);
+        content.push(temp);
+      }
+
+      const options = {
+        autoCommit: true,
+        fetchArraySize: 100,
+        poolMax: 25,
+        poolMin: 5,
+        poolIncrement: 5,
+        poolTimeout: 1800,
+        poolPingInterval: 300
+      };
+
+      const response = await client.executeMany(sql, content, options);
+
+      logger.info(`oracle[INSERTING MANY ROWS] - Rows qtd: ${data.length}`);
+
+      await OracleService.close(client);
+
+      return response;
+    } catch (error) {
+      logger.error(CONSINCO_SERVICE_NAME, 'insertMany', error);
     }
   };
 }
