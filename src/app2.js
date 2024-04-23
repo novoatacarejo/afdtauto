@@ -16,8 +16,8 @@ const {
   subtractHours,
   dataHoraAtual,
   formatDate,
-  formatHour,
-  clearScreen
+  clearScreen,
+  formatHour
 } = require('./utils');
 
 let logger = getLogger('LOG');
@@ -74,9 +74,11 @@ const importEachAfdLine = async () => {
     clearScreen();
     dataHorAtual = dataHoraAtual();
 
-    console.log(`Inserção em Tabela Oracle iniciada em ${dataHorAtual}`);
+    console.log(`Tratamento em cada linha de cada AFD para importação em tabela iniciada em ${dataHorAtual}`);
 
     const files = await listTxtFiles(dirPath);
+
+    const obj = [];
 
     files.map(async (file) => {
       const punches = await readEachLine(file);
@@ -93,21 +95,32 @@ const importEachAfdLine = async () => {
           let previousHour = subtractHours(new Date(), 1);
 
           if (hour > previousHour === true && (date == today) === true) {
-            round++;
-            const obj = {
+            obj.push({
               idNumber: p.id,
               idLength: p.lnLength,
               punch
-            };
-
-            logger.info(`[IMPORTING] Attempt ${round} --> Id: ${p.id}, punch: ${punch} `);
-            await ConsincoService.insertwfmDevAfd(obj);
+            });
           }
+
+          //logger.info(`[IMPORTING] Attempt ${round} --> Id: ${p.id}, punch: ${punch} `);
+          //await ConsincoService.insertwfmDevAfd(obj);
         }
       });
     });
+
+    const chunkLength = 100;
+
+    const chunks = makeChunk(obj, chunkLength);
+
+    for (const chunk of chunks) {
+      const result = await ConsincoService.inserAlltWfmDevAfd(chunk);
+
+      round++;
+      total += chunk.length;
+      logger.info(`[SENDING] Round ${round} - punches sent: ${total}`);
+    }
   } catch (error) {
-    logger.error('Error on startApplication', error);
+    logger.error('Error', 'startApplication', error);
   }
 };
 
@@ -161,13 +174,9 @@ const sendingWfmApi = async () => {
 const startApplication = async () => {
   await configureLogService();
 
-  await gettingAfd();
+  //await gettingAfd();
 
   await importEachAfdLine();
-
-  setTimeout(async () => {
-    await sendingWfmApi();
-  }, 360000);
 };
 
 const app = async () => {
@@ -176,7 +185,7 @@ const app = async () => {
 
 //
 
-// app();
+app();
 
 cron.schedule('0 * * * *', async () => {
   app();

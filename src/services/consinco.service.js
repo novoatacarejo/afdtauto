@@ -119,6 +119,9 @@ class ConsincoService {
   static insertwfmDevAfd = async (data) => {
     try {
       const client = await OracleService.connect();
+
+      client.callTimeout = 10 * 1000;
+
       if (!data.idNumber) {
         logger.info(`[WARNING - Usuario sem codpessoa]: ${data}`);
       } else {
@@ -130,7 +133,14 @@ class ConsincoService {
           c: data.punch
         };
 
-        const options = { autoCommit: true };
+        const options = {
+          autoCommit: true,
+          poolMax: 25,
+          poolMin: 5,
+          poolIncrement: 5,
+          poolTimeout: 1800,
+          poolPingInterval: 300
+        };
 
         const response = await client.execute(sql, bind, options);
 

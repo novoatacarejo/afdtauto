@@ -4,6 +4,8 @@ const path = require('path');
 const { promisify } = require('util');
 const { exec } = require('child_process');
 const { getLogger } = require('log4js');
+const { Telegraf } = require('telegraf');
+
 let logger = getLogger('LOG');
 
 const assembleArrayObjects = (columnsName, lines) => {
@@ -39,7 +41,7 @@ const returnObjCorrectType = (arrayObj) => {
   return data;
 };
 
-const configureLogService = async () => {
+const configureLogWithTelegram = async () => {
   const logname = `./logs/${returnCurrentDateAndTime()}.log`;
 
   setTimeout(() => {
@@ -69,7 +71,7 @@ const configureLogService = async () => {
   });
 };
 
-const configureLogService2 = async () => {
+const configureLogService = async () => {
   return new Promise((res) => {
     configure({
       appenders: {
@@ -364,6 +366,16 @@ const formatDate = (dateStr) => {
   }
 };
 
+const formatHour = (hour) => {
+  const [hours, minutes] = hour.split(':');
+
+  const paddedMinutes = minutes.padStart(2, '0');
+
+  const paddedTimePart = `${hours}:${paddedMinutes}`;
+
+  return paddedTimePart;
+};
+
 const listTxtFiles = (dir) => {
   let files = [];
   let fullDir = [];
@@ -443,6 +455,7 @@ const sendLogToTelegram = (logname) => {
 
 exports.assembleArrayObjects = assembleArrayObjects;
 exports.configureLogService = configureLogService;
+exports.configureLogWithTelegram = configureLogWithTelegram;
 exports.asyncForEach = asyncForEach;
 exports.makeChunk = makeChunk;
 exports.returnAfdDate = returnAfdDate;
@@ -457,6 +470,7 @@ exports.returnHourMinute = returnHourMinute;
 exports.exitProcess = exitProcess;
 exports.currentDateHour = currentDateHour;
 exports.formatDate = formatDate;
+exports.formatHour = formatHour;
 exports.currentDate = currentDate;
 exports.listTxtFiles = listTxtFiles;
 exports.clearScreen = clearScreen;
