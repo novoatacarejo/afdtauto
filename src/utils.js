@@ -115,14 +115,25 @@ const isDeviceOnline = async (host) => {
     exec(`ping -n 10 ${host}`, (error, stdout, stderr) => {
       if (error) {
         reject(error);
-        return `[NETWORK-CHECK] Station ${host} error:\n${error}`;
+        logger.error(`[NETWORK-CHECK] Station ${host} error:\n${error}`);
+        return false;
       }
       if (stderr) {
         reject(stderr);
-        return `[NETWORK-CHECK] Station ${host} is not accessible:\n${stderr}`;
+        logger.error(`[NETWORK-CHECK] Station ${host} is not accessible:\n${stderr}`);
+        return false;
       }
-      logger.info(`[CONNECTING] Working on station: ${host}`);
-      resolve(!stderr); // Device is online if there's no error
+
+      const test = stdout.includes(`Host de destino inacess`);
+
+      if (test === true) {
+        logger.error(`[CONNECTING FAILED] -- result test: ${test} -- host unreachable: ${host}`, stdout);
+        return false;
+      } else {
+        logger.info(`[CONNECTING SUCCESSFUL] -- result test: ${test} -- working on station: ${host}`, stdout);
+        resolve(!stderr); // Device is online if there's no error
+        return true;
+      }
     });
   });
 };

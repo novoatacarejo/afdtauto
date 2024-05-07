@@ -180,7 +180,7 @@ class ConsincoService {
 
       const response = await client.execute(sql);
 
-      logger.info(`oracle[DELETING DUPLICATES ROWS from WFM_DEV.DEV_RM_AFD]`);
+      logger.info(`[oracle][DELETING DUPLICATES ROWS from WFM_DEV.DEV_RM_AFD]`);
 
       await OracleService.close(client);
 
@@ -220,7 +220,7 @@ class ConsincoService {
 
       const response = await client.executeMany(sql, content, options);
 
-      logger.info(`oracle[INSERTING MANY ROWS] - Rows qtd: ${data.length}`);
+      logger.info(`[oracle][INSERTING MANY ROWS] - Rows qtd: ${data.length}`);
 
       await OracleService.close(client);
 
