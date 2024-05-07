@@ -124,14 +124,15 @@ const isDeviceOnline = async (host) => {
         return false;
       }
 
+      resolve(!stderr); // Device is online if there's no error
+
       const test = stdout.includes(`Host de destino inacess`);
 
       if (test === true) {
-        logger.error(`[CONNECTING FAILED] -- result test: ${test} -- host unreachable: ${host}`, stdout);
+        logger.error(`[CONNECTING FAILED] -- host unreachable: ${host}`);
         return false;
       } else {
-        logger.info(`[CONNECTING SUCCESSFUL] -- result test: ${test} -- working on station: ${host}`, stdout);
-        resolve(!stderr); // Device is online if there's no error
+        logger.info(`[CONNECTING SUCCESSFUL] -- working on station: ${host}`);
         return true;
       }
     });

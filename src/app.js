@@ -50,7 +50,7 @@ const gettingAfd = async () => {
 
         const netCheck = await isDeviceOnline(clock.ip);
 
-        if (!netCheck) {
+        if (netCheck === false) {
           logger.error(`Station ip: ${clock.ip} not respond`);
         } else {
           let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
