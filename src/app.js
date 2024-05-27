@@ -88,11 +88,11 @@ const importEachAfdLine = async () => {
           (new String(p.id) !== '0' || p.id !== null || p.id !== undefined) &&
           (p.lnLength === 50 || p.lnLength === 38)
         ) {
-          const hour = formatHour(p.hour);
+          const hour = await formatHour(p.hour);
           const date = p.date;
-          const punch = formatDate(p.punchUserTimestamp);
-          let today = currentDate();
-          let previousHour = subtractHours(new Date(), 1);
+          const punch = await formatDate(p.punchUserTimestamp);
+          let today = await currentDate();
+          let previousHour = await subtractHours(new Date(), 1);
 
           if (hour > previousHour === true && (date == today) === true) {
             obj.push({

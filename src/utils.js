@@ -355,34 +355,34 @@ const exitProcess = async (pid) => {
 };
 
 const formatDate = (dateStr) => {
-  // Split the date string into date and time parts
   const [datePart, timePart] = dateStr.split(' ');
 
-  // Check if the time part contains a colon (:) indicating it's a time
   if (timePart.includes(':')) {
-    // Split the time part into hours and minutes
     const [hours, minutes] = timePart.split(':');
 
-    // Pad the minutes with a leading zero if it's a single-digit number
-    const paddedMinutes = minutes.padStart(2, '0');
+    //const paddedMinutes = minutes.padStart(2, '0');
+    const paddedMinutes =
+      minutes.length == 1 || minutes.length == 0 || minutes.length === null || minutes === null
+        ? minutes.padStart(2, '0')
+        : minutes;
 
-    // Reconstruct the time part with padded minutes
     const paddedTimePart = `${hours}:${paddedMinutes}`;
 
-    // Reconstruct the date string with the updated time part
     const paddedDateString = `${datePart} ${paddedTimePart}`;
 
-    return paddedDateString; // Output: 2024-03-12 22:06
+    return paddedDateString;
   } else {
-    // If it's a complete date, no modification is needed
-    return dateString;
+    return dateStr;
   }
 };
 
 const formatHour = (hour) => {
   const [hours, minutes] = hour.split(':');
 
-  const paddedMinutes = minutes.padStart(2, '0');
+  const paddedMinutes =
+    minutes.length == 1 || minutes.length == 0 || minutes.length === null || minutes === null
+      ? minutes.padStart(2, '0')
+      : minutes;
 
   const paddedTimePart = `${hours}:${paddedMinutes}`;
 
