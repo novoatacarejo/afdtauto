@@ -161,10 +161,10 @@ const returnJsonLine = (ln) => {
           .slice(14, 18)
           .concat('-', ln.slice(12, 14))
           .concat('-', ln.slice(10, 12))
-          .concat(' ', new String(ln.slice(18, 20)).concat(':', new String(ln.slice(21, 22))))
+          .concat(' ', new String(ln.slice(18, 20)).concat(':', new String(ln.slice(20, 22))))
       : '01/01/1900 00:00';
 
-  let hour = lnLength === 50 ? ln.slice(21, 26) : lnLength === 38 ? ln.slice(18, 20).concat(':', ln.slice(21, 22)) : 0;
+  let hour = lnLength === 50 ? ln.slice(21, 26) : lnLength === 38 ? ln.slice(18, 20).concat(':', ln.slice(20, 22)) : 0;
 
   const punchSystemTimestamp = punchUserTimestamp;
   const punchType = parseInt(1);
@@ -360,13 +360,10 @@ const formatDate = (dateStr) => {
   if (timePart.includes(':')) {
     const [hours, minutes] = timePart.split(':');
 
-    //const paddedMinutes = minutes.padStart(2, '0');
-    const paddedMinutes =
-      minutes.length == 1 || minutes.length == 0 || minutes.length === null || minutes === null
-        ? minutes.padStart(2, '0')
-        : minutes;
+    const paddedHours = hours.length === 1 ? hours.padStart(2, '0') : hours;
+    const paddedMinutes = minutes.length === 1 ? minutes.padStart(2, '0') : minutes;
 
-    const paddedTimePart = `${hours}:${paddedMinutes}`;
+    const paddedTimePart = `${paddedHours}:${paddedMinutes}`;
 
     const paddedDateString = `${datePart} ${paddedTimePart}`;
 
@@ -379,12 +376,10 @@ const formatDate = (dateStr) => {
 const formatHour = (hour) => {
   const [hours, minutes] = hour.split(':');
 
-  const paddedMinutes =
-    minutes.length == 1 || minutes.length == 0 || minutes.length === null || minutes === null
-      ? minutes.padStart(2, '0')
-      : minutes;
+  const paddedHours = hours.length === 1 ? hours.padStart(2, '0') : hours;
+  const paddedMinutes = minutes.length === 1 ? minutes.padStart(2, '0') : minutes;
 
-  const paddedTimePart = `${hours}:${paddedMinutes}`;
+  const paddedTimePart = `${paddedHours}:${paddedMinutes}`;
 
   return paddedTimePart;
 };
