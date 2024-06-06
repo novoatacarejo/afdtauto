@@ -25,8 +25,6 @@ let cron = require('node-cron');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-const dirPath = 'C:/node/afdtauto/afd';
-
 const gettingAfd = async () => {
   try {
     clearScreen();
@@ -75,6 +73,8 @@ const importEachAfdLine = async () => {
     dataHorAtual = dataHoraAtual();
 
     console.log(`Inserção em Tabela Oracle iniciada em ${dataHorAtual}`);
+
+    const dirPath = 'C:/node/afdtauto/afd';
 
     const files = await listTxtFiles(dirPath);
 
