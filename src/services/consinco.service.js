@@ -38,7 +38,7 @@ class ConsincoService {
        FROM
        WFM_DEV.DEV_VW_RM_DEVICES
        WHERE 1 = 1
-       AND CODFILIAL NOT IN (1)`;
+       AND CODFILIAL NOT IN (1, 8, 18)`;
 
       const response = await client.execute(sql);
 
