@@ -7,6 +7,8 @@ let cron = require('node-cron');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+//AppService.startApplication();
+
 cron.schedule('0 * * * *', async () => {
   await AppService.startApplication();
 });

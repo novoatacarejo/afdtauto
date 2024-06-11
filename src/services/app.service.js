@@ -25,7 +25,7 @@ let logger = getLogger('LOG');
 const SERVICE_NAME = 'AppService';
 
 class AppService {
-  static gettingAfd = async () => {
+  static async gettingAfd() {
     try {
       clearScreen();
       logger.info(`[gettingAfd][AFD] - Coleta de arquivos AFD iniciada em ${dataHoraAtual()}`);
@@ -34,7 +34,7 @@ class AppService {
       const afdDate = returnAfdDate(0);
 
       if (stations.length === 0) {
-        logger.info('[gettingAfd] - No Stations finded. Please, check the database connection');
+        logger.info(SERVICE_NAME, '[gettingAfd] - No Stations finded. Please, check the database connection');
         return;
       }
 
@@ -61,21 +61,23 @@ class AppService {
     } catch (error) {
       logger.error(SERVICE_NAME, '[gettingAfd][ERROR] - ', error);
     }
-  };
+  }
 
-  static importEachAfdLine = async () => {
+  static async importEachAfdLine() {
     try {
       clearScreen();
       logger.info(`[importEachAfdLine][INSERT] - Inserção em Tabela Oracle iniciada em ${dataHoraAtual()}`);
 
       const dirPath = 'C:/node/afdtauto/afd';
       const files = await listTxtFiles(dirPath);
-
       const obj = [];
 
-      files.map(async (file) => {
+      /*
+          files.map(async (file) => {
         const punches = await readEachLine(file);
 
+
+        
         await punches.map(async (p) => {
           if (
             (new String(p.id) !== '0' || p.id !== null || p.id !== undefined) &&
@@ -96,13 +98,37 @@ class AppService {
             }
           }
         });
-      });
+      })
+      */
+
+      await Promise.all(
+        files.map(async (file) => {
+          const punches = await readEachLine(file);
+          punches.forEach(async (p) => {
+            if (String(p.id) !== '0' && p.id !== null && p.id !== undefined && [50, 38].includes(p.lnLength)) {
+              const hour = await formatHour(p.hour);
+              const date = p.date;
+              const punch = await formatDate(p.punchUserTimestamp);
+              const today = await currentDate();
+              const previousHour = await subtractHours(new Date(), 1);
+
+              if (hour > previousHour && date === today) {
+                obj.push({
+                  idNumber: p.id,
+                  idLength: p.lnLength,
+                  punch
+                });
+              }
+            }
+          });
+        })
+      );
 
       await ConsincoService.insertMany(obj);
     } catch (error) {
       logger.error(SERVICE_NAME, '[importEachAfdLine][ERROR] - ', error);
     }
-  };
+  }
 
   static sendingWfmApi = async () => {
     try {
@@ -110,7 +136,7 @@ class AppService {
       let round = 0;
       let total = 0;
 
-      console.log(
+      logger.info(
         `[${SERVICE_NAME}][sendingWfmApi][SEND] - Envio automático de batidas H-1 para API Tlantic iniciado em ${dataHoraAtual()}`
       );
 
@@ -121,6 +147,7 @@ class AppService {
         return;
       }
 
+      /*
       const punchesFormated = punches.map((p) => {
         const cardId = new String(p.codPessoa);
         const punchFormat = formatDate(p.punchTime);
@@ -147,6 +174,26 @@ class AppService {
         total += chunk.length;
         logger.info(`[[${SERVICE_NAME}][sendingWfmApi][SENDING] - Round ${round} - punches sent: ${total}`);
       }
+      */
+
+      const punchesFormatted = punches.map((p) => ({
+        punch: {
+          cardId: String(p.codPessoa),
+          punchSystemTimestamp: formatDate(p.punchTime),
+          punchUserTimestamp: formatDate(p.punchTime),
+          punchType: '1'
+        }
+      }));
+
+      const chunks = makeChunk(punchesFormatted, 100);
+
+      await Promise.all(
+        chunks.map(async (chunk, index) => {
+          await TlanticService.postPunch(chunk);
+          total += chunk.length;
+          logger.info(`[sendingWfmApi][SENDING] - Round ${index + 1} - punches sent: ${total}`);
+        })
+      );
     } catch (error) {
       logger.error(SERVICE_NAME, '[sendingWfmApi][ERROR] - ', error);
     }
@@ -154,8 +201,7 @@ class AppService {
 
   static startApplication = async () => {
     try {
-      let processPid = process.pid;
-      logger.info(`[startApplication][STARTING] Iniciando JOB pid: ${processPid} em ${dataHoraAtual()}`);
+      logger.info(`[startApplication][STARTING] Iniciando JOB pid: ${process.pid} em ${dataHoraAtual()}`);
 
       await configureLogService();
       await this.gettingAfd();
