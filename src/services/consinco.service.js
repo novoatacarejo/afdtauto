@@ -25,20 +25,7 @@ class ConsincoService {
     try {
       const client = await OracleService.connect();
 
-      const sql = `SELECT CODFILIAL,
-       EMPRESA,
-       EMPRESADIR,
-       PISO,
-       TO_NUMBER(ITEM) AS ITEM,
-       IP,
-       TO_NUMBER(IPFINAL) AS IPFINAL,
-       USERNAME,
-       USERPASS,
-       TO_NUMBER(PORTARIA) AS PORTARIA
-       FROM
-       WFM_DEV.DEV_VW_RM_DEVICES
-       WHERE 1 = 1
-       AND CODFILIAL NOT IN (1, 8, 18)`;
+      const sql = `SELECT CODFILIAL, EMPRESA, EMPRESADIR, PISO, TO_NUMBER(ITEM) AS ITEM, IP, TO_NUMBER(IPFINAL) AS IPFINAL, USERNAME, USERPASS, TO_NUMBER(PORTARIA) AS PORTARIA FROM WFM_DEV.DEV_VW_RM_DEVICES WHERE 1 = 1 AND CODFILIAL NOT IN (1, 8, 18, 38)`;
 
       const response = await client.execute(sql);
 
@@ -181,6 +168,8 @@ class ConsincoService {
       logger.info(`[oracle][DELETING DUPLICATES ROWS from WFM_DEV.DEV_RM_AFD]`);
 
       await OracleService.close(client);
+
+      logger.info(`[oracle][DELETE] - Finished!\n\n\n\n`);
 
       return response;
     } catch (error) {
