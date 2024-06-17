@@ -111,29 +111,19 @@ const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
 };
 
 const isDeviceOnline = async (host) => {
-  return new Promise((resolve, reject) => {
-    exec(`ping -n 10 ${host}`, (error, stdout, stderr) => {
+  return new Promise((resolve) => {
+    exec(`ping -n 3 ${host}`, (error, stdout) => {
       if (error) {
-        reject(error);
-        logger.error(`[NETWORK-CHECK] Station ${host} error:\n${error}`);
-        return false;
-      }
-      if (stderr) {
-        reject(stderr);
-        logger.error(`[NETWORK-CHECK] Station ${host} is not accessible:\n${stderr}`);
-        return false;
+        logger.error(`[isDeviceOnline][network-check][failed] - station ${host} error:\n${error}`);
+        return resolve(false);
       }
 
-      resolve(!stderr); // Device is online if there's no error
-
-      const test = stdout.includes(`Host de destino inacess`);
-
-      if (test === true) {
-        logger.error(`[CONNECTING FAILED] -- host unreachable: ${host}`);
-        return false;
+      if (stdout.includes('Host de destino inacess')) {
+        logger.error(`[isDeviceOnline][network-check][failed] - host unreachable: ${host}`);
+        return resolve(false);
       } else {
-        logger.info(`[CONNECTING SUCCESSFUL] -- working on station: ${host}`);
-        return true;
+        logger.info(`[isDeviceOnline][network-check][sucessful] - working on station: ${host}`);
+        return resolve(true);
       }
     });
   });
@@ -345,13 +335,13 @@ const currentDate = () => {
 
 const exitProcess = async (pid) => {
   let dataHorAtual = await dataHoraAtual('hhmm');
-  logger.info(`[ENDING] Finalizando JOB pid: ${pid} em ${dataHorAtual}`);
+  logger.info(`[exitProcess][ENDING] - Finalizando JOB pid: ${pid} em ${dataHorAtual}`);
 
   setTimeout((pid) => {
     process.kill(pid, 2);
   }, 180000);
 
-  logger.info(`[ENDING] Finalizado!`);
+  logger.info(`[exitProcess][ENDING] - Finalizado!`);
 };
 
 const formatDate = (dateStr) => {

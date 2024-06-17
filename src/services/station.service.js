@@ -37,19 +37,21 @@ class StationService {
 
       if (!response.data) {
         throw new Error(
-          `getToken - error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
+          `[${SERVICE_NAME}][getToken][error] - error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
         );
       }
 
       let token = response.data.session;
 
       !token
-        ? logger.error(`Not Connected on Station IP: ${ip} or the Station not respond`)
-        : logger.info(`[LOGIN] Connected on Station IP: ${ip} with the token ${token}`);
+        ? logger.error(
+            `[${SERVICE_NAME}][getToken][error] - Not Connected on Station IP: ${ip} or the Station not respond`
+          )
+        : logger.info(`[${SERVICE_NAME}][getToken][login] - Connected on Station IP: ${ip} with the token ${token}`);
 
       return token;
     } catch (error) {
-      logger.error(SERVICE_NAME, 'getToken', error);
+      logger.error(`[${SERVICE_NAME}][getToken][error]`, error);
       return false;
     }
   };
@@ -70,7 +72,7 @@ class StationService {
 
       if (!token) {
         throw new Error(
-          `getAfd - error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
+          `[${SERVICE_NAME}][getAfd][error] - error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
         );
       }
 
@@ -85,23 +87,24 @@ class StationService {
       const response = await instance.request(options);
 
       if (!response) {
-        throw new Error('error when trying to post data: \n' + response);
+        throw new Error(`[${SERVICE_NAME}][getToken][error] - error when trying to post data: \n ${response}`);
       }
 
       let answer = response.data;
 
       return answer;
     } catch (error) {
-      logger.error(SERVICE_NAME, 'getAfd', error);
+      logger.error(`[${SERVICE_NAME}][getToken][error]`, error);
     }
   };
 
   static getStationsInfo = async () => {
     try {
+      logger.info(`[${SERVICE_NAME}][getStationsInfo][getting] - getting stations info`);
       const result = await ConsincoService.getStationsInfo();
       return result;
     } catch (err) {
-      logger.error(SERVICE_NAME, 'getStationsInfo', err);
+      logger.error(`[${SERVICE_NAME}][getStationsInfo][error]`, err);
     }
   };
 
@@ -113,7 +116,7 @@ class StationService {
     const file = path.join(dir, filename);
 
     if (!file) {
-      logger.error(`${file} not found`);
+      logger.error(`[${SERVICE_NAME}][getStationsInfo][error] - ${file} not found`);
     }
 
     try {
@@ -165,7 +168,7 @@ class StationService {
 
       return;
     } catch (err) {
-      logger.error(SERVICE_NAME, 'startSendLines', err);
+      logger.error(`[${SERVICE_NAME}][startSendLines][error]`, err);
       throw false;
     }
   };
@@ -183,7 +186,7 @@ class StationService {
       const response = await instance.request(options);
 
       if (!response) {
-        throw new Error('error when trying to logout:\n' + response);
+        throw new Error(`[${SERVICE_NAME}][logoutStation][error] - error when trying to logout:\n ${response}`);
       }
       let answer = {
         station: response.request.host,
@@ -191,35 +194,13 @@ class StationService {
         message: response.statusText
       };
 
-      logger.info(`[LOGOUT] ip:${answer.station} | status:${answer.status} | message:${answer.message}`);
+      logger.info(
+        `[${SERVICE_NAME}][logoutStation][logout] ip:${answer.station} | status:${answer.status} | message:${answer.message}`
+      );
 
       return answer;
     } catch (error) {
-      logger.error(SERVICE_NAME, 'logoutStation', error);
-    }
-  };
-
-  static sendWfmOrcl = async (data) => {
-    try {
-      const url = `http://localhost:8086/wfm/afd`;
-
-      const options = {
-        method: 'POST',
-        url,
-        insecureHTTPParser: false,
-        headers: { 'Content-Type': 'application/json', 'User-Agent': 'node-js' },
-        data
-      };
-
-      const response = await axios.request(options);
-
-      if (!response) {
-        throw new Error('error when trying to logout:\n' + response);
-      }
-
-      return response.data.data;
-    } catch (error) {
-      logger.error(SERVICE_NAME, 'sendWfmOrcl', error);
+      logger.error(`[${SERVICE_NAME}][logoutStation][error]`, error);
     }
   };
 }

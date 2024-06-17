@@ -3,26 +3,24 @@ const { OracleService } = require('./oracle.service');
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
 
-const columnsName = [
-  { name: 'codFilial' },
-  { name: 'empresa' },
-  { name: 'empresaDir' },
-  { name: 'piso' },
-  { name: 'item' },
-  { name: 'ip' },
-  { name: 'ipFinal' },
-  { name: 'userName' },
-  { name: 'userPass' },
-  { name: 'portaria' }
-];
-
-const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
-
-const CONSINCO_SERVICE_NAME = 'ConsincoService';
+const SERVICE_NAME = 'ConsincoService';
 
 class ConsincoService {
-  static getStationsInfo = async () => {
+  static async getStationsInfo() {
     try {
+      const columnsName = [
+        { name: 'codFilial' },
+        { name: 'empresa' },
+        { name: 'empresaDir' },
+        { name: 'piso' },
+        { name: 'item' },
+        { name: 'ip' },
+        { name: 'ipFinal' },
+        { name: 'userName' },
+        { name: 'userPass' },
+        { name: 'portaria' }
+      ];
+
       const client = await OracleService.connect();
 
       const sql = `SELECT CODFILIAL, EMPRESA, EMPRESADIR, PISO, TO_NUMBER(ITEM) AS ITEM, IP, TO_NUMBER(IPFINAL) AS IPFINAL, USERNAME, USERPASS, TO_NUMBER(PORTARIA) AS PORTARIA FROM WFM_DEV.DEV_VW_RM_DEVICES WHERE 1 = 1 AND CODFILIAL NOT IN (1, 8, 18, 38)`;
@@ -35,12 +33,14 @@ class ConsincoService {
 
       return products;
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, 'getStationsInfo', error);
+      logger.error(`[${SERVICE_NAME}][getStationsInfo][error] - `, error);
     }
-  };
+  }
 
-  static getPunchesByHour = async () => {
+  static async getPunchesByHour() {
     try {
+      const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
+
       const client = await OracleService.connect();
 
       const sql = `SELECT CODPESSOA, PUNCHTIME FROM WFM_DEV.DEV_VW_DATE_TEST`;
@@ -53,11 +53,11 @@ class ConsincoService {
 
       return punches;
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, 'getPunchesByHour', error);
+      logger.error(`[${SERVICE_NAME}][getPunchesByHour][error] - `, error);
     }
-  };
+  }
 
-  static getCodPessoa = async (idt, lng) => {
+  static async getCodPessoa(idt, lng) {
     try {
       const client = await OracleService.connect();
 
@@ -74,15 +74,15 @@ class ConsincoService {
 
       return employeeId;
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, 'getCodPessoa', error);
+      logger.error(`[${SERVICE_NAME}][insertAfd][error] - `, error);
     }
-  };
+  }
 
-  static insertAfd = async (data) => {
+  static async insertAfd(data) {
     try {
       const client = await OracleService.connect();
       if (!data.codpessoa) {
-        logger.info(`[WARNING - Usuario sem codpessoa]: ${data}`);
+        logger.info(`[${SERVICE_NAME}][insertAfd][no data] - Usuario sem codpessoa]: ${data}`);
       } else {
         const sql = `INSERT INTO WFM_DEV.DEV_AFD (DTAGERACAO, CODPESSOA, PUNCH) VALUES ( SYSDATE, :a, TO_DATE( :b, 'YYYY-MM-DD HH24:MI:SS') )`;
 
@@ -92,23 +92,25 @@ class ConsincoService {
 
         const response = await client.execute(sql, bind, options);
 
-        logger.info(`[INSERTING] ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`);
+        logger.info(
+          `[${SERVICE_NAME}][insertAfd][inserting] - ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`
+        );
 
         await OracleService.close(client);
       }
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, 'insertAfd', error);
+      logger.error(`[${SERVICE_NAME}][insertAfd][error] -`, error);
     }
-  };
+  }
 
-  static insertOne = async (data) => {
+  static async insertOne(data) {
     try {
       const client = await OracleService.connect();
 
       client.callTimeout = 10 * 1000;
 
       if (!data.idNumber) {
-        logger.info(`[WARNING - Usuario sem codpessoa]: ${data}`);
+        logger.info(`[${SERVICE_NAME}][insertOne][no data] - Usuario sem codpessoa]: ${data}`);
       } else {
         const sql = `INSERT INTO WFM_DEV.DEV_RM_AFD (DTAGERACAO, IDNUMBER, IDLENGTH, PUNCH) VALUES ( SYSDATE, :a, :b, TO_DATE( :c, 'YYYY-MM-DD HH24:MI:SS') )`;
 
@@ -130,16 +132,18 @@ class ConsincoService {
 
         const response = await client.execute(sql, bind, options);
 
-        logger.info(`[INSERTING] ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`);
+        logger.info(
+          `[${SERVICE_NAME}][insertDevRmAfd][inserting] - ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`
+        );
 
         await OracleService.close(client);
       }
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, 'insertDevRmAfd', error);
+      logger.error(`[${SERVICE_NAME}][insertDevRmAfd][error] -`, error);
     }
-  };
+  }
 
-  static deleteDuplicates = async () => {
+  static async deleteDuplicates() {
     try {
       const client = await OracleService.connect();
 
@@ -165,19 +169,19 @@ class ConsincoService {
 
       const response = await client.execute(sql);
 
-      logger.info(`[oracle][DELETING DUPLICATES ROWS from WFM_DEV.DEV_RM_AFD]`);
+      logger.info(`[${SERVICE_NAME}][deleteDuplicates][deleting] - eliminate duplicate rows from WFM_DEV.DEV_RM_AFD]`);
 
       await OracleService.close(client);
 
-      logger.info(`[oracle][DELETE] - Finished!\n\n\n\n`);
+      logger.info(`[${SERVICE_NAME}][deleteDuplicates][end] - Finished!\n\n\n\n`);
 
       return response;
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, 'deleteDuplicates', error);
+      logger.error(`[${SERVICE_NAME}]['deleteDuplicates'][error] -`, error);
     }
-  };
+  }
 
-  static insertMany = async (data) => {
+  static async insertMany(data) {
     try {
       var content = [];
 
@@ -207,15 +211,15 @@ class ConsincoService {
 
       const response = await client.executeMany(sql, content, options);
 
-      logger.info(`[oracle][INSERTING MANY ROWS] - Rows qtd: ${data.length}`);
+      logger.info(`[${SERVICE_NAME}][insertMany][inserting] - Rows qtd: ${data.length}`);
 
       await OracleService.close(client);
 
       return response;
     } catch (error) {
-      logger.error(CONSINCO_SERVICE_NAME, 'insertMany', error);
+      logger.error(`[${SERVICE_NAME}][insertMany][error] -`, error);
     }
-  };
+  }
 }
 
 exports.ConsincoService = ConsincoService;
