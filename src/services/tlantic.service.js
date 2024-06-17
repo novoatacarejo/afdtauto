@@ -8,7 +8,7 @@ const instance = axios.create({
 });
 
 class TlanticService {
-  static getToken = async () => {
+  static async getToken() {
     try {
       const headers = {
         domain: process.env.DOMAIN,
@@ -36,12 +36,12 @@ class TlanticService {
       logger.error(`[${SERVICE_NAME}][getToken][error]`, error);
       return false;
     }
-  };
+  }
 
-  static postPunch = async (chunkWithSize100) => {
+  static async postPunch(chunkWithSize100) {
     try {
-      const token = await TlanticService.getToken();
-      logger.info(`[${SERVICE_NAME}][postPunch][starting] - getting token from api tlantic`);
+      const token = await this.getToken();
+      logger.info(`[${SERVICE_NAME}][sendingWfmApi][get] - getting token from api tlantic`);
 
       if (!token) {
         throw new Error(`[${SERVICE_NAME}][postPunch][error] - error when trying to fetch the token`);
@@ -74,7 +74,7 @@ class TlanticService {
       logger.error(`[${SERVICE_NAME}][postPunch][error]`, error);
       return false;
     }
-  };
+  }
 }
 
 exports.TlanticService = TlanticService;

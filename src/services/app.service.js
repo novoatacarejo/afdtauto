@@ -106,10 +106,9 @@ class AppService {
     }
   }
 
-  static sendingWfmApi = async () => {
+  static async sendingWfmApi() {
     try {
       clearScreen();
-      let round = 0;
       let total = 0;
 
       logger.info(
@@ -144,9 +143,9 @@ class AppService {
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][sendingWfmApi][error] - `, error);
     }
-  };
+  }
 
-  static startApplication = async () => {
+  static async startApplication() {
     try {
       logger.info(
         `[${SERVICE_NAME}][startApplication][starting] Iniciando JOB pid: ${process.pid} em ${dataHoraAtual()}`
@@ -163,7 +162,7 @@ class AppService {
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][startApplication][error] - `, error);
     }
-  };
+  }
 }
 
 exports.AppService = AppService;
