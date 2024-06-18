@@ -427,7 +427,7 @@ const readEachLine = async (file) => {
     }
     return arrayData;
   } catch (err) {
-    logger.error(err);
+    logger.error(`[readEachLine][error]\n`, err);
     throw false;
   }
 };

@@ -1,6 +1,6 @@
 require('dotenv').config('../.env');
-const { StationService } = require('./services/station.service');
-const { TlanticService } = require('./services/tlantic.service');
+const { StationService } = require('../services/station.service');
+const { TlanticService } = require('../services/tlantic.service');
 const { getLogger } = require('log4js');
 const {
   configureLogService,
@@ -12,7 +12,7 @@ const {
   dataHoraAtual,
   formatDate,
   clearScreen
-} = require('./utils');
+} = require('../utils');
 
 let logger = getLogger('LOG');
 let cron = require('node-cron');

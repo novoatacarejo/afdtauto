@@ -33,16 +33,13 @@ class TlanticService {
 
       return token;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getToken][error]`, error);
+      logger.error(`[${SERVICE_NAME}][getToken][error]\n`, error);
       return false;
     }
   }
 
-  static async postPunch(chunkWithSize100) {
+  static async postPunch(token, chunkWithSize100) {
     try {
-      const token = await this.getToken();
-      logger.info(`[${SERVICE_NAME}][sendingWfmApi][get] - getting token from api tlantic`);
-
       if (!token) {
         throw new Error(`[${SERVICE_NAME}][postPunch][error] - error when trying to fetch the token`);
       }
@@ -71,7 +68,7 @@ class TlanticService {
 
       return true;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][postPunch][error]`, error);
+      logger.error(`[${SERVICE_NAME}][postPunch][error]\n`, error);
       return false;
     }
   }

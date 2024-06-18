@@ -51,7 +51,7 @@ class StationService {
 
       return token;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getToken][error]`, error);
+      logger.error(`[${SERVICE_NAME}][getToken][error]\n`, error);
       return false;
     }
   };
@@ -94,7 +94,7 @@ class StationService {
 
       return answer;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getToken][error]`, error);
+      logger.error(`[${SERVICE_NAME}][getToken][error]\n`, error);
     }
   };
 
@@ -104,7 +104,7 @@ class StationService {
       const result = await ConsincoService.getStationsInfo();
       return result;
     } catch (err) {
-      logger.error(`[${SERVICE_NAME}][getStationsInfo][error]`, err);
+      logger.error(`[${SERVICE_NAME}][getStationsInfo][error]\n`, err);
     }
   };
 
@@ -128,7 +128,6 @@ class StationService {
         return returnJsonLine(item);
       });
 
-      //let i = 0;
       const arr = [];
       for (const data of arrayData) {
         if (!data.id) {
@@ -148,8 +147,6 @@ class StationService {
           const cod = await ConsincoService.getCodPessoa(data.id, data.lnLength);
 
           data.cardId = cod;
-          //delete data.lnLength;
-          //delete data.id;
           delete data.hour;
 
           const punch = {
@@ -168,7 +165,7 @@ class StationService {
 
       return;
     } catch (err) {
-      logger.error(`[${SERVICE_NAME}][startSendLines][error]`, err);
+      logger.error(`[${SERVICE_NAME}][startSendLines][error]\n`, err);
       throw false;
     }
   };
@@ -200,7 +197,7 @@ class StationService {
 
       return answer;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][logoutStation][error]`, error);
+      logger.error(`[${SERVICE_NAME}][logoutStation][error]\n`, error);
     }
   };
 }

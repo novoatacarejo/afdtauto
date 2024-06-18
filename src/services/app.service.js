@@ -62,7 +62,7 @@ class AppService {
         })
       );
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][gettingAfd][error] - `, error);
+      logger.error(`[${SERVICE_NAME}][gettingAfd][error]\n`, error);
     }
   }
 
@@ -102,7 +102,7 @@ class AppService {
 
       await ConsincoService.insertMany(obj);
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][importEachAfdLine][error] - `, error);
+      logger.error(`[${SERVICE_NAME}][importEachAfdLine][error]\n`, error);
     }
   }
 
@@ -110,6 +110,14 @@ class AppService {
     try {
       clearScreen();
       let total = 0;
+
+      const token = await TlanticService.getToken();
+      logger.info(`[${SERVICE_NAME}][sendingWfmApi][getting] - getting token from api tlantic`);
+      logger.info(`[${SERVICE_NAME}][sendingWfmApi][token]: ${token}`);
+
+      if (!token) {
+        throw new Error(`[${SERVICE_NAME}][sendingWfmApi][error] - error when trying to fetch the token from api`);
+      }
 
       logger.info(
         `[${SERVICE_NAME}][sendingWfmApi][send] - Envio automático de batidas H-1 para API Tlantic iniciado em ${dataHoraAtual()}`
@@ -135,20 +143,22 @@ class AppService {
 
       await Promise.all(
         chunks.map(async (chunk, index) => {
-          await TlanticService.postPunch(chunk);
+          await TlanticService.postPunch(token, chunk);
           total += chunk.length;
           logger.info(`[${SERVICE_NAME}][sendingWfmApi][sending] - Round ${index + 1} - punches sent: ${total}`);
         })
       );
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][sendingWfmApi][error] - `, error);
+      logger.error(`[${SERVICE_NAME}][sendingWfmApi][error]\n`, error);
     }
   }
 
   static async startApplication() {
     try {
       logger.info(
-        `[${SERVICE_NAME}][startApplication][starting] Iniciando JOB pid: ${process.pid} em ${dataHoraAtual()}`
+        `[${SERVICE_NAME}][startApplication][starting] starting integration on JOB pid: ${
+          process.pid
+        } em ${dataHoraAtual()}`
       );
 
       await configureLogService();
@@ -160,7 +170,7 @@ class AppService {
         await this.sendingWfmApi();
       }, 180000);
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][startApplication][error] - `, error);
+      logger.error(`[${SERVICE_NAME}][startApplication][error]\n`, error);
     }
   }
 }

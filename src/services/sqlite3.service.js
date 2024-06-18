@@ -6,7 +6,7 @@ const ENV_VARS = {
   sqlite3dir: process.env.SQLITE3_DIR
 };
 
-const SQLITE3_SERVICE_NAME = 'SqlLite3Service';
+const SERVICE_NAME = 'SqlLite3Service';
 
 class SqlLite3Service {
   static connectDB = async (newDb, sqlTxt) => {
@@ -15,11 +15,11 @@ class SqlLite3Service {
 
       await db.run(sqlTxt);
 
-      console.log(SQLITE3_SERVICE_NAME, `New Database created: ${newDb} at ${ENV_VARS.sqlite3db}/${newDb}.db!`);
+      console.log(SERVICE_NAME, `New Database created: ${newDb} at ${ENV_VARS.sqlite3db}/${newDb}.db!`);
 
       db.close();
     } catch (error) {
-      console.log(SQLITE3_SERVICE_NAME, error);
+      console.log(SERVICE_NAME, error);
     }
   };
 
@@ -29,11 +29,11 @@ class SqlLite3Service {
 
       await db.run(sqlTxt);
 
-      console.log(SQLITE3_SERVICE_NAME, `New Database created: ${newDb} at ${ENV_VARS.sqlite3db}/${newDb}.db!`);
+      console.log(SERVICE_NAME, `New Database created: ${newDb} at ${ENV_VARS.sqlite3db}/${newDb}.db!`);
 
       db.close();
     } catch (error) {
-      console.log(SQLITE3_SERVICE_NAME, error);
+      console.log(SERVICE_NAME, error);
     }
   };
 
@@ -43,16 +43,16 @@ class SqlLite3Service {
 
       await db.run(sqlTxt, [], (err) => {
         if (err) {
-          return console.log(SQLITE3_SERVICE_NAME, err.message);
+          return console.log(SERVICE_NAME, err.message);
         }
         console.log(`Row ready ${this.lastID}`);
       });
 
-      console.log(SQLITE3_SERVICE_NAME, `Inserting into ${newDb} at ${ENV_VARS.sqlite3db}/${newDb}.db!`);
+      console.log(SERVICE_NAME, `Inserting into ${newDb} at ${ENV_VARS.sqlite3db}/${newDb}.db!`);
 
       db.close();
     } catch (error) {
-      console.log(SQLITE3_SERVICE_NAME, error);
+      console.log(SERVICE_NAME, error);
     }
   };
 }

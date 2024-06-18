@@ -33,7 +33,7 @@ class ConsincoService {
 
       return products;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getStationsInfo][error] - `, error);
+      logger.error(`[${SERVICE_NAME}][getStationsInfo][error]\n`, error);
     }
   }
 
@@ -53,7 +53,7 @@ class ConsincoService {
 
       return punches;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getPunchesByHour][error] - `, error);
+      logger.error(`[${SERVICE_NAME}][getPunchesByHour][error]\n`, error);
     }
   }
 
@@ -74,7 +74,7 @@ class ConsincoService {
 
       return employeeId;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][insertAfd][error] - `, error);
+      logger.error(`[${SERVICE_NAME}][getCodPessoa][error]\n`, error);
     }
   }
 
@@ -99,7 +99,7 @@ class ConsincoService {
         await OracleService.close(client);
       }
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][insertAfd][error] -`, error);
+      logger.error(`[${SERVICE_NAME}][insertAfd][error]\n`, error);
     }
   }
 
@@ -133,13 +133,13 @@ class ConsincoService {
         const response = await client.execute(sql, bind, options);
 
         logger.info(
-          `[${SERVICE_NAME}][insertDevRmAfd][inserting] - ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`
+          `[${SERVICE_NAME}][insertOne][inserting] - ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`
         );
 
         await OracleService.close(client);
       }
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][insertDevRmAfd][error] -`, error);
+      logger.error(`[${SERVICE_NAME}][insertOne][error]\n`, error);
     }
   }
 
@@ -173,11 +173,11 @@ class ConsincoService {
 
       await OracleService.close(client);
 
-      logger.info(`[${SERVICE_NAME}][deleteDuplicates][end] - Finished!\n\n\n\n`);
+      logger.info(`[${SERVICE_NAME}][deleteDuplicates][end] - Finished!`);
 
       return response;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}]['deleteDuplicates'][error] -`, error);
+      logger.error(`[${SERVICE_NAME}]['deleteDuplicates'][error]\n`, error);
     }
   }
 
@@ -217,7 +217,7 @@ class ConsincoService {
 
       return response;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][insertMany][error] -`, error);
+      logger.error(`[${SERVICE_NAME}][insertMany][error]\n`, error);
     }
   }
 }

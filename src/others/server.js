@@ -1,9 +1,9 @@
 require('dotenv').config({ path: '../.env' });
-const { ConsincoService } = require('./services/consinco.service');
+const { ConsincoService } = require('../services/consinco.service');
 const express = require('express');
 const app = express();
 const port = 8086;
-const { currentDateHour } = require('./utils');
+const { currentDateHour } = require('../utils');
 const bodyParser = require('body-parser');
 
 const SERVICE_NAME = 'ExpressHttpService';

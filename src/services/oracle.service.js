@@ -2,6 +2,8 @@ require('dotenv').config({ path: '../../.env' });
 const oracledb = require('oracledb');
 const log4js = require('log4js');
 
+const SERVICE_NAME = 'OracleService';
+
 log4js.configure({
   appenders: { console: { type: 'console' } },
   categories: { default: { appenders: ['console'], level: 'info' } }
@@ -20,7 +22,7 @@ class OracleService {
     try {
       await oracledb.initOracleClient({ libDir: ENV_VARS.ORACLE_LIB_DIR });
     } catch (error) {
-      logger.error('OracleService', 'initOracleClient', error);
+      logger.error(`[${SERVICE_NAME}][initOracleClient][error]\n`, error);
       throw error;
     }
   }
@@ -36,7 +38,7 @@ class OracleService {
 
       return await oracledb.getConnection(propsConnect);
     } catch (error) {
-      logger.error('OracleService', 'connect', error);
+      logger.error(`[${SERVICE_NAME}][connect][error]\n`, error);
       throw error;
     }
   }
@@ -46,7 +48,7 @@ class OracleService {
       try {
         await connection.close();
       } catch (err) {
-        logger.error('OracleService', 'close', err);
+        logger.error(`[${SERVICE_NAME}][close][error]\n`, err);
         throw err;
       }
     }
