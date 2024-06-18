@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "send": "SET UV_THREADPOOL_SIZE=10 && node C:\\node\\afdtauto\\src\\app.js"
+    "send": "node src/app.js"
   },
   "keywords": [],
   "author": "",
