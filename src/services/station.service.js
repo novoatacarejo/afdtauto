@@ -20,7 +20,16 @@ const instance = axios.create({
 });
 
 class StationService {
-  static getToken = async (ip, login, pass) => {
+  static async isServerReachable(ip, login, pass) {
+    try {
+      await axios.get(`https://${ip}/login.fcgi?login=${login}&password=${pass}`, { timeout: 5000 });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static async getToken(ip, login, pass) {
     try {
       const url = `https://${ip}/login.fcgi?login=${login}&password=${pass}`;
 
@@ -54,7 +63,7 @@ class StationService {
       logger.error(`[${SERVICE_NAME}][getToken][error]\n`, error);
       return false;
     }
-  };
+  }
 
   static getAfd = async (ip, token, portaria, afdDateInfo) => {
     try {

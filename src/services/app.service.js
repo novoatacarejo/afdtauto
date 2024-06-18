@@ -52,11 +52,18 @@ class AppService {
           } else {
             try {
               let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
-              let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
-              await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, afd);
-              await StationService.logoutStation(clock.ip, token);
+
+              if (!token) {
+                logger.error(
+                  `[${SERVICE_NAME}][gettingAfd][token] - Not Connected on Station IP: ${clock.ip} - getting no token`
+                );
+              } else {
+                let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
+                await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, afd);
+                await StationService.logoutStation(clock.ip, token);
+              }
             } catch (error) {
-              logger.error(`[${SERVICE_NAME}][gettingAfd][error] - error processing station ip: ${clock.ip}`, error);
+              logger.error(`[${SERVICE_NAME}][gettingAfd][error] error processing station ip: ${clock.ip}\n`, error);
             }
           }
         })
@@ -164,7 +171,7 @@ class AppService {
       await configureLogService();
       await this.gettingAfd();
       await this.importEachAfdLine();
-      await ConsincoService.deleteDuplicates();
+      await ConsincoService.deleteDuplicatesRows();
 
       setTimeout(async () => {
         await this.sendingWfmApi();

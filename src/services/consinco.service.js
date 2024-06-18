@@ -181,6 +181,56 @@ class ConsincoService {
     }
   }
 
+  static async deleteDuplicatesRows() {
+    try {
+      const client = await OracleService.connect();
+
+      client.callTimeout = 10 * 1000;
+
+      const sql = `
+      DECLARE
+          rows_deleted NUMBER;
+      BEGIN
+          DELETE FROM DEV_RM_AFD A
+          WHERE 1 = 1
+          AND NOT EXISTS (
+                SELECT 1
+                FROM (SELECT IDNUMBER,
+                              TRUNC(PUNCH) AS DTABATIDA,
+                              HHMM,
+                              COUNT(*) AS QTD_ROWS,
+                              MIN(T.ROWID) AS MINROWID
+                        FROM DEV_RM_AFD T
+                        GROUP BY IDNUMBER, TRUNC(PUNCH), HHMM) B
+                WHERE 1 = 1
+                AND B.MINROWID = A.ROWID);
+                
+          rows_deleted := SQL%ROWCOUNT;
+
+          COMMIT;
+          :rows_deleted := rows_deleted;
+      END;`;
+
+      const binds = {
+        rows_deleted: { dir: OracleService.BIND_OUT, type: OracleService.NUMBER }
+      };
+
+      const response = await client.execute(sql, binds);
+
+      logger.info(
+        `[${SERVICE_NAME}][deleteDuplicatesRows][deleting] - eliminated ${response.outBinds.rows_deleted} duplicate rows from DEV_RM_AFD]`
+      );
+
+      await OracleService.close(client);
+
+      logger.info(`[${SERVICE_NAME}][deleteDuplicatesRows][end] - Finished!`);
+
+      return response.outBinds.rows_deleted;
+    } catch (error) {
+      logger.error(`[${SERVICE_NAME}]['deleteDuplicatesRows'][error]\n`, error);
+    }
+  }
+
   static async insertMany(data) {
     try {
       var content = [];

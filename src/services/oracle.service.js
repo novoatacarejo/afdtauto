@@ -55,4 +55,7 @@ class OracleService {
   }
 }
 
+OracleService.BIND_OUT = oracledb.BIND_OUT;
+OracleService.NUMBER = oracledb.NUMBER;
+
 exports.OracleService = OracleService;
