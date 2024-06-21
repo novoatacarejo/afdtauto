@@ -124,39 +124,92 @@ class AppService {
 
       if (!token) {
         throw new Error(`[${SERVICE_NAME}][sendingWfmApi][error] - error when trying to fetch the token from api`);
-      }
-
-      logger.info(
-        `[${SERVICE_NAME}][sendingWfmApi][send] - Envio automático de batidas H-1 para API Tlantic iniciado em ${dataHoraAtual()}`
-      );
-
-      const punches = await ConsincoService.getPunchesByHour();
-
-      if (punches.length === 0) {
-        logger.info(`[${SERVICE_NAME}][sendingWfmApi][no data] - No punches to send`);
         return;
-      }
+      } else {
+        logger.info(
+          `[${SERVICE_NAME}][sendingWfmApi][send] - Envio automático de batidas H-1 para API Tlantic iniciado em ${dataHoraAtual()}`
+        );
 
-      const punchesFormatted = punches.map((p) => ({
-        punch: {
-          cardId: String(p.codPessoa),
-          punchSystemTimestamp: formatDate(p.punchTime),
-          punchUserTimestamp: formatDate(p.punchTime),
-          punchType: '1'
+        const punches = await ConsincoService.getPunchesByHour();
+
+        if (punches.length === 0) {
+          logger.info(`[${SERVICE_NAME}][sendingWfmApi][no data] - No punches to send`);
+          return;
         }
-      }));
 
-      const chunks = makeChunk(punchesFormatted, 100);
+        const punchesFormatted = punches.map((p) => ({
+          punch: {
+            cardId: String(p.codPessoa),
+            punchSystemTimestamp: formatDate(p.punchTime),
+            punchUserTimestamp: formatDate(p.punchTime),
+            punchType: '1'
+          }
+        }));
 
-      await Promise.all(
-        chunks.map(async (chunk, index) => {
-          await TlanticService.postPunch(token, chunk);
-          total += chunk.length;
-          logger.info(`[${SERVICE_NAME}][sendingWfmApi][sending] - Round ${index + 1} - punches sent: ${total}`);
-        })
-      );
+        const chunks = makeChunk(punchesFormatted, 100);
+
+        await Promise.all(
+          chunks.map(async (chunk, index) => {
+            await TlanticService.postPunch(token, chunk);
+            total += chunk.length;
+            logger.info(`[${SERVICE_NAME}][sendingWfmApi][sending] - Round ${index + 1} - punches sent: ${total}`);
+          })
+        );
+      }
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][sendingWfmApi][error]\n`, error);
+    }
+  }
+
+  static async sendingWfmApiDate(date) {
+    try {
+      clearScreen();
+      let total = 0;
+
+      const token = await TlanticService.getToken();
+      logger.info(`[${SERVICE_NAME}][sendingWfmApi][getting][date][${date}] - getting token from api tlantic`);
+      logger.info(`[${SERVICE_NAME}][sendingWfmApi][token][date][${date}]: ${token}`);
+
+      if (!token) {
+        throw new Error(
+          `[${SERVICE_NAME}][sendingWfmApi][error][date][${date}] - error when trying to fetch the token from api`
+        );
+        return;
+      } else {
+        logger.info(
+          `[${SERVICE_NAME}][sendingWfmApi][send][date][${date}] - Envio automático de batidas por Data para API Tlantic iniciado em ${dataHoraAtual()}`
+        );
+
+        const punches = await ConsincoService.getPunchesByDate(date);
+
+        if (punches.length === 0) {
+          logger.info(`[${SERVICE_NAME}][sendingWfmApi][no data][date][${date}] - No punches to send`);
+          return;
+        }
+
+        const punchesFormatted = punches.map((p) => ({
+          punch: {
+            cardId: String(p.codPessoa),
+            punchSystemTimestamp: formatDate(p.punchTime),
+            punchUserTimestamp: formatDate(p.punchTime),
+            punchType: '1'
+          }
+        }));
+
+        const chunks = makeChunk(punchesFormatted, 100);
+
+        await Promise.all(
+          chunks.map(async (chunk, index) => {
+            await TlanticService.postPunch(token, chunk);
+            total += chunk.length;
+            logger.info(
+              `[${SERVICE_NAME}][sendingWfmApi][sending][date][${date}] - Round ${index + 1} - punches sent: ${total}`
+            );
+          })
+        );
+      }
+    } catch (error) {
+      logger.error(`[${SERVICE_NAME}][sendingWfmApi][error][date][${date}]\n`, error);
     }
   }
 

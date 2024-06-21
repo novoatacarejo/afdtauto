@@ -57,6 +57,42 @@ class ConsincoService {
     }
   }
 
+  static async getPunchesByDate(date) {
+    try {
+      const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
+
+      const client = await OracleService.connect();
+
+      const sql = `SELECT DISTINCT D.CODPESSOA, D.PUNCHTIME
+FROM (SELECT C.CODPESSOA,
+             C.PUNCHTIME,
+             (24 * (C.DATE_NOW - C.PUNCH)) AS DIFFTIME_HOUR
+      FROM (SELECT B.CODPESSOA,
+                   A.HHMM,
+                   TO_CHAR(A.PUNCH, 'YYYY-MM-DD HH24:MI') AS PUNCHTIME,
+                   TO_DATE(TO_CHAR(TRUNC(SYSDATE, 'HH'), 'DD/MM/YYYY HH24:MI'),
+                           'DD/MM/YYYY HH24:MI') AS DATE_NOW,
+                   A.PUNCH
+            FROM WFM_DEV.DEV_RM_AFD A, WFM_DEV.DEV_RM_CODPESSOA B
+            WHERE 1 = 1
+            AND A.IDNUMBER = DECODE(A.IDLENGTH, 38, B.PIS, 50, B.CPF, 0)
+            AND TO_DATE(A.DTABATIDA, 'DD/MM/YYYY') = :a) C) D
+ORDER BY CODPESSOA, PUNCHTIME`;
+
+      const bind = [date];
+
+      const response = await client.execute(sql, bind);
+
+      const punches = assembleArrayObjects(punchName, response.rows);
+
+      await OracleService.close(client);
+
+      return punches;
+    } catch (error) {
+      logger.error(`[${SERVICE_NAME}][getPunchesByDate][error]\n`, error);
+    }
+  }
+
   static async getCodPessoa(idt, lng) {
     try {
       const client = await OracleService.connect();
