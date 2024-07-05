@@ -97,16 +97,23 @@ const configureLogService = async () => {
 };
 
 const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
-  return new Promise((res) => {
-    const dir = `./afd/${dirName}/`;
-    const filename = `afd_${dirName}_rlg${dirItem}_ip${dirIpFinal}.txt`;
-    const outputFilePath = path.join(dir, filename);
+  return new Promise((res, rej) => {
+    try {
+      const dir = `./afd/${dirName}/`;
+      const filename = `afd_${dirName}_rlg${dirItem}_ip${dirIpFinal}.txt`;
+      const outputFilePath = path.join(dir, filename);
 
-    fs.mkdirSync(path.dirname(outputFilePath), { recursive: true });
+      fs.mkdirSync(path.dirname(outputFilePath), { recursive: true });
 
-    fs.writeFileSync(outputFilePath, arrayData);
+      if (typeof arrayData !== 'string' && !Buffer.isBuffer(arrayData)) {
+        throw new TypeError('[writeAfdTxt] - The "data" argument must be of type string or an instance of Buffer.');
+      }
 
-    res(true);
+      fs.writeFileSync(outputFilePath, arrayData);
+      res(true);
+    } catch (error) {
+      rej(error);
+    }
   });
 };
 

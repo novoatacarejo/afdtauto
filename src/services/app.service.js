@@ -58,9 +58,13 @@ class AppService {
                   `[${SERVICE_NAME}][gettingAfd][token] - Not Connected on Station IP: ${clock.ip} - getting no token`
                 );
               } else {
-                let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
-                await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, afd);
-                await StationService.logoutStation(clock.ip, token);
+                try {
+                  let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
+                  await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, afd);
+                  await StationService.logoutStation(clock.ip, token);
+                } catch (error) {
+                  logger.error(`[AppService][gettingAfd][error] - Error writing to file: ${error.message}`);
+                }
               }
             } catch (error) {
               logger.error(`[${SERVICE_NAME}][gettingAfd][error] error processing station ip: ${clock.ip}\n`, error);
@@ -183,7 +187,7 @@ class AppService {
         const punches = await ConsincoService.getPunchesByDate(date);
 
         if (punches.length === 0) {
-          logger.info(`[${SERVICE_NAME}][sendingWfmApi][no data][date][${date}] - No punches to send`);
+          logger.info(`[${SERVICE_NAME}][sendingWfmApi][no data][date][${date}] - no punches to send`);
           return;
         }
 
@@ -224,7 +228,7 @@ class AppService {
       await configureLogService();
       await this.gettingAfd();
       await this.importEachAfdLine();
-      await ConsincoService.deleteDuplicatesRows();
+      await ConsincoService.deleteDuplicates();
 
       setTimeout(async () => {
         await this.sendingWfmApi();

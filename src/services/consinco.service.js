@@ -183,7 +183,7 @@ ORDER BY CODPESSOA, PUNCHTIME`;
     try {
       const client = await OracleService.connect();
 
-      client.callTimeout = 10 * 1000;
+      client.callTimeout = 60 * 1000;
 
       const sql = `
       BEGIN \
@@ -273,7 +273,7 @@ ORDER BY CODPESSOA, PUNCHTIME`;
 
       const client = await OracleService.connect();
 
-      client.callTimeout = 10 * 1000;
+      client.callTimeout = 60 * 1000;
 
       const sql = `INSERT INTO WFM_DEV.DEV_RM_AFD (DTAGERACAO, IDNUMBER, IDLENGTH, PUNCH) VALUES ( SYSDATE, :a, :b, TO_DATE( :c, 'YYYY-MM-DD HH24:MI:SS') )`;
 

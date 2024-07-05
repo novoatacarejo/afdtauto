@@ -15,6 +15,7 @@ axios.defaults.timeout = 30000;
 
 const instance = axios.create({
   baseURL: process.env.API_BASE_URL,
+  localAddress: process.env.API_LOCAL_ADDRESS,
   timeout: 60000,
   httpAgent: new https.Agent({ keepAlive: true })
 });
@@ -29,43 +30,69 @@ class StationService {
     }
   }
 
-  static async getToken(ip, login, pass) {
-    try {
-      const url = `https://${ip}/login.fcgi?login=${login}&password=${pass}`;
+  static async getToken(ip, login, pass, retries = 3, delay = 1000) {
+    const url = `https://${ip}/login.fcgi?login=${login}&password=${pass}`;
+    const headers = {
+      'Content-Length': '0'
+    };
 
-      const headers = {
-        'Content-Length': '0'
-      };
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const response = await instance.request({
+          method: 'POST',
+          url,
+          headers,
+          insecureHTTPParser: true
+        });
 
-      const response = await instance.request({
-        method: 'POST',
-        url,
-        headers,
-        insecureHTTPParser: true
-      });
+        if (!response.data) {
+          const error = {
+            code: `error when trying to fetch the token on ip: ${ip} with login: ${login}`
+          };
+          const name = `getToken`;
+          const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, attempt);
+          throw new Error(errorMessage);
+        }
 
-      if (!response.data) {
-        throw new Error(
-          `[${SERVICE_NAME}][getToken][error] - error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
-        );
+        const token = response.data.session;
+        if (!token) {
+          const error = {
+            code: `not connected on Station IP: ${ip}. No token.`
+          };
+          const name = `getToken`;
+          const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, attempt);
+          throw new Error(errorMessage);
+        } else {
+          logger.info(
+            `[${SERVICE_NAME}][getToken][login] - connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`
+          );
+        }
+
+        return token;
+      } catch (error) {
+        this.errorMessage(error, `${SERVICE_NAME}`, `getToken`, `${ip}`, `${attempt}`);
+
+        if (attempt < retries) {
+          const waitTime = delay * Math.pow(2, attempt);
+          logger.info(`[${SERVICE_NAME}][getToken][retry] - retrying in ${waitTime} ms...`);
+          await new Promise((resolve) => setTimeout(resolve, waitTime));
+        } else {
+          this.errorMessage(error, `${SERVICE_NAME}`, `getToken`, `${ip}`, `${attempt}`);
+          return false;
+        }
       }
-
-      let token = response.data.session;
-
-      !token
-        ? logger.error(
-            `[${SERVICE_NAME}][getToken][error] - Not Connected on Station IP: ${ip} or the Station not respond`
-          )
-        : logger.info(`[${SERVICE_NAME}][getToken][login] - Connected on Station IP: ${ip} with the token ${token}`);
-
-      return token;
-    } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getToken][error]\n`, error);
-      return false;
     }
   }
 
   static getAfd = async (ip, token, portaria, afdDateInfo) => {
+    if (!token) {
+      const error = {
+        code: `error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
+      };
+      const name = `getAfd`;
+      const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, 1);
+      throw new Error(errorMessage);
+    }
     try {
       const previousDate = {
         day: parseInt(afdDateInfo.day),
@@ -79,12 +106,6 @@ class StationService {
         'Content-Type': 'application/json'
       };
 
-      if (!token) {
-        throw new Error(
-          `[${SERVICE_NAME}][getAfd][error] - error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
-        );
-      }
-
       const options = {
         method: 'POST',
         url,
@@ -96,14 +117,17 @@ class StationService {
       const response = await instance.request(options);
 
       if (!response) {
-        throw new Error(`[${SERVICE_NAME}][getToken][error] - error when trying to post data: \n ${response}`);
+        const error = { code: `error when trying to post data: ${response.config.data}` };
+        const name = `getAfd`;
+        const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, 1);
+        throw new Error(errorMessage);
       }
 
       let answer = response.data;
 
       return answer;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getToken][error]\n`, error);
+      this.errorMessage = (error, `${SERVICE_NAME}`, `getAfd`, ip, 1);
     }
   };
 
@@ -112,20 +136,24 @@ class StationService {
       logger.info(`[${SERVICE_NAME}][getStationsInfo][getting] - getting stations info`);
       const result = await ConsincoService.getStationsInfo();
       return result;
-    } catch (err) {
-      logger.error(`[${SERVICE_NAME}][getStationsInfo][error]\n`, err);
+    } catch (error) {
+      this.errorMessage = (error, `${SERVICE_NAME}`, `getStationsInfo`, ip, 1);
     }
   };
 
   static startSendLines = async (emp, it, ip) => {
     const readFileAsync = promisify(fs.readFile);
-
     const dir = `./afd/${emp}/`;
     const filename = `afd_${emp}_rlg${it}_ip${ip}.txt`;
     const file = path.join(dir, filename);
 
     if (!file) {
-      logger.error(`[${SERVICE_NAME}][getStationsInfo][error] - ${file} not found`);
+      const error = {
+        code: `${file} not found`
+      };
+      const name = `startSendLines`;
+      const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, 1);
+      throw new Error(errorMessage);
     }
 
     try {
@@ -171,42 +199,67 @@ class StationService {
         }
       }
       return arr;
-
-      return;
-    } catch (err) {
-      logger.error(`[${SERVICE_NAME}][startSendLines][error]\n`, err);
+    } catch (error) {
+      this.errorMessage = (error, `${SERVICE_NAME}`, `startSendLines`, ip, 1);
       throw false;
     }
   };
 
-  static logoutStation = async (ip, token) => {
-    try {
-      const url = `https://${ip}/logout.fcgi?session=${token}`;
+  static logoutStation = async (ip, token, retries = 3, delay = 1000) => {
+    const url = `https://${ip}/logout.fcgi?session=${token}`;
 
-      const options = {
-        method: 'POST',
-        url,
-        insecureHTTPParser: true
-      };
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const options = {
+          method: 'POST',
+          url,
+          insecureHTTPParser: true
+        };
+        const response = await instance.request(options);
 
-      const response = await instance.request(options);
+        if (!response) {
+          const error = {
+            code: `error when trying to logout on station ${ip} with token ${token}`
+          };
+          const name = 'logoutStation';
+          const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, attempt);
+          throw new Error(errorMessage);
+        } else {
+          logger.info(
+            `[${SERVICE_NAME}][logoutStation][logout] ip:${response.request.host} | status:${response.status} | message:${response.statusText}`
+          );
+        }
+        return true;
+      } catch (error) {
+        this.errorMessage(error, `${SERVICE_NAME}`, `logoutStation`, `${ip}`, `${attempt}`);
 
-      if (!response) {
-        throw new Error(`[${SERVICE_NAME}][logoutStation][error] - error when trying to logout:\n ${response}`);
+        if (attempt < retries) {
+          const waitTime = delay * Math.pow(2, attempt);
+          logger.info(`[${SERVICE_NAME}][logoutStation][retry] - retrying in ${waitTime} ms...`);
+          await new Promise((resolve) => setTimeout(resolve, waitTime));
+        } else {
+          this.errorMessage(error, `${SERVICE_NAME}`, `logoutStation`, `${ip}`, `${attempt}`);
+          return false;
+        }
       }
-      let answer = {
-        station: response.request.host,
-        status: response.status,
-        message: response.statusText
-      };
+    }
+  };
 
-      logger.info(
-        `[${SERVICE_NAME}][logoutStation][logout] ip:${answer.station} | status:${answer.status} | message:${answer.message}`
+  static errorMessage = (error, service, name, ip, attempt) => {
+    const ipAddress = !ip ? `localhost` : ip;
+
+    if (error.code === 'ETIMEDOUT') {
+      logger.error(
+        `[${service}][${name}][${error.code}] - connection to ${ipAddress} timed out on attempt ${attempt}.`
       );
-
-      return answer;
-    } catch (error) {
-      logger.error(`[${SERVICE_NAME}][logoutStation][error]\n`, error);
+    } else if (error.code === 'ECONNRESET') {
+      logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} reset on attempt ${attempt}.`);
+    } else if (error.code === 'ERR_BAD_RESPONSE') {
+      logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} reset on attempt ${attempt}.`);
+    } else if (error.code === 'ECONNABORTED') {
+      logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} abort on attempt ${attempt}.`);
+    } else {
+      logger.error(`[${service}][${name}][error][${error.code}] - station: ${ipAddress} after 3 attempts - ${error}`);
     }
   };
 }
