@@ -8,6 +8,22 @@ const instance = axios.create({
   localAddress: process.env.API_LOCAL_ADDRESS
 });
 
+const errorMessage = (error, service, name, ip, attempt) => {
+  const ipAddress = !ip ? `localhost` : ip;
+
+  if (error.code === 'ETIMEDOUT') {
+    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} timed out on attempt ${attempt}.`);
+  } else if (error.code === 'ECONNRESET') {
+    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} reset on attempt ${attempt}.`);
+  } else if (error.code === 'ERR_BAD_RESPONSE') {
+    logger.error(`[${service}][${name}][${error.code}] - bad response from ${ipAddress} on attempt ${attempt}.`);
+  } else if (error.code === 'ECONNABORTED') {
+    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} aborted on attempt ${attempt}.`);
+  } else {
+    logger.error(`[${service}][${name}][error][${error.code}] - station: ${ipAddress} after 3 attempts - ${error}`);
+  }
+};
+
 class TlanticService {
   static async getToken() {
     try {
@@ -70,33 +86,19 @@ class TlanticService {
 
         return true;
       } catch (error) {
-        this.errorMessage(error, `${SERVICE_NAME}`, `postPunch`, `${ip}`, `${attempt}`);
+        errorMessage(error, `${SERVICE_NAME}`, `postPunch`, `localhost`, `${attempt}`);
 
         if (attempt < retries) {
           const waitTime = delay * Math.pow(2, attempt);
           logger.info(`[${SERVICE_NAME}][postPunch][retry] - retrying in ${waitTime} ms...`);
           await new Promise((resolve) => setTimeout(resolve, waitTime));
         } else {
-          this.errorMessage(error, `${SERVICE_NAME}`, `postPunch`, `${ip}`, `${attempt}`);
+          errorMessage(error, `${SERVICE_NAME}`, `postPunch`, `${ip}`, `${attempt}`);
           return false;
         }
       }
     }
   }
-
-  static errorMessage = (error, service, name, ip, attempt) => {
-    if (error.code === 'ETIMEDOUT') {
-      logger.error(`[${service}][${name}][${error.code}] - connection to ${ip} timed out on attempt ${attempt}.`);
-    } else if (error.code === 'ECONNRESET') {
-      logger.error(`[${service}][${name}][${error.code}] - connection to ${ip} reset on attempt ${attempt}.`);
-    } else if (error.code === 'ERR_BAD_RESPONSE') {
-      logger.error(`[${service}][${name}][${error.code}] - connection to ${ip} reset on attempt ${attempt}.`);
-    } else if (error.code === 'ECONNABORTED') {
-      logger.error(`[${service}][${name}][${error.code}] - connection to ${ip} abort on attempt ${attempt}.`);
-    } else {
-      logger.error(`[${service}][${name}][error][${error.code}] - station IP: ${ip} after 3 attempts - ${error}`);
-    }
-  };
 }
 
 exports.TlanticService = TlanticService;

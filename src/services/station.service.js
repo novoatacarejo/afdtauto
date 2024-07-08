@@ -20,6 +20,22 @@ const instance = axios.create({
   httpAgent: new https.Agent({ keepAlive: true })
 });
 
+const errorMessage = (error, service, name, ip, attempt) => {
+  const ipAddress = !ip ? `localhost` : ip;
+
+  if (error.code === 'ETIMEDOUT') {
+    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} timed out on attempt ${attempt}.`);
+  } else if (error.code === 'ECONNRESET') {
+    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} reset on attempt ${attempt}.`);
+  } else if (error.code === 'ERR_BAD_RESPONSE') {
+    logger.error(`[${service}][${name}][${error.code}] - bad response from ${ipAddress} on attempt ${attempt}.`);
+  } else if (error.code === 'ECONNABORTED') {
+    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} aborted on attempt ${attempt}.`);
+  } else {
+    logger.error(`[${service}][${name}][error][${error.code}] - station: ${ipAddress} after 3 attempts - ${error}`);
+  }
+};
+
 class StationService {
   static async isServerReachable(ip, login, pass) {
     try {
@@ -50,7 +66,7 @@ class StationService {
             code: `error when trying to fetch the token on ip: ${ip} with login: ${login}`
           };
           const name = `getToken`;
-          const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, attempt);
+          const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
           throw new Error(errorMessage);
         }
 
@@ -60,7 +76,7 @@ class StationService {
             code: `not connected on Station IP: ${ip}. No token.`
           };
           const name = `getToken`;
-          const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, attempt);
+          const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
           throw new Error(errorMessage);
         } else {
           logger.info(
@@ -70,14 +86,14 @@ class StationService {
 
         return token;
       } catch (error) {
-        this.errorMessage(error, `${SERVICE_NAME}`, `getToken`, `${ip}`, `${attempt}`);
+        errorMessage(error, `${SERVICE_NAME}`, `getToken`, `${ip}`, `${attempt}`);
 
         if (attempt < retries) {
           const waitTime = delay * Math.pow(2, attempt);
           logger.info(`[${SERVICE_NAME}][getToken][retry] - retrying in ${waitTime} ms...`);
           await new Promise((resolve) => setTimeout(resolve, waitTime));
         } else {
-          this.errorMessage(error, `${SERVICE_NAME}`, `getToken`, `${ip}`, `${attempt}`);
+          errorMessage(error, `${SERVICE_NAME}`, `getToken`, `${ip}`, `${attempt}`);
           return false;
         }
       }
@@ -90,7 +106,7 @@ class StationService {
         code: `error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
       };
       const name = `getAfd`;
-      const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, 1);
+      const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, 1);
       throw new Error(errorMessage);
     }
     try {
@@ -119,7 +135,7 @@ class StationService {
       if (!response) {
         const error = { code: `error when trying to post data: ${response.config.data}` };
         const name = `getAfd`;
-        const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, 1);
+        const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, 1);
         throw new Error(errorMessage);
       }
 
@@ -127,7 +143,7 @@ class StationService {
 
       return answer;
     } catch (error) {
-      this.errorMessage = (error, `${SERVICE_NAME}`, `getAfd`, ip, 1);
+      errorMessage = (error, `${SERVICE_NAME}`, `getAfd`, ip, 1);
     }
   };
 
@@ -137,7 +153,7 @@ class StationService {
       const result = await ConsincoService.getStationsInfo();
       return result;
     } catch (error) {
-      this.errorMessage = (error, `${SERVICE_NAME}`, `getStationsInfo`, ip, 1);
+      errorMessage = (error, `${SERVICE_NAME}`, `getStationsInfo`, ip, 1);
     }
   };
 
@@ -152,7 +168,7 @@ class StationService {
         code: `${file} not found`
       };
       const name = `startSendLines`;
-      const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, 1);
+      const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, 1);
       throw new Error(errorMessage);
     }
 
@@ -200,7 +216,7 @@ class StationService {
       }
       return arr;
     } catch (error) {
-      this.errorMessage = (error, `${SERVICE_NAME}`, `startSendLines`, ip, 1);
+      errorMessage = (error, `${SERVICE_NAME}`, `startSendLines`, ip, 1);
       throw false;
     }
   };
@@ -222,7 +238,7 @@ class StationService {
             code: `error when trying to logout on station ${ip} with token ${token}`
           };
           const name = 'logoutStation';
-          const errorMessage = this.errorMessage(error, SERVICE_NAME, name, ip, attempt);
+          const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
           throw new Error(errorMessage);
         } else {
           logger.info(
@@ -231,35 +247,17 @@ class StationService {
         }
         return true;
       } catch (error) {
-        this.errorMessage(error, `${SERVICE_NAME}`, `logoutStation`, `${ip}`, `${attempt}`);
+        errorMessage(error, `${SERVICE_NAME}`, `logoutStation`, `${ip}`, `${attempt}`);
 
         if (attempt < retries) {
           const waitTime = delay * Math.pow(2, attempt);
           logger.info(`[${SERVICE_NAME}][logoutStation][retry] - retrying in ${waitTime} ms...`);
           await new Promise((resolve) => setTimeout(resolve, waitTime));
         } else {
-          this.errorMessage(error, `${SERVICE_NAME}`, `logoutStation`, `${ip}`, `${attempt}`);
+          errorMessage(error, `${SERVICE_NAME}`, `logoutStation`, `${ip}`, `${attempt}`);
           return false;
         }
       }
-    }
-  };
-
-  static errorMessage = (error, service, name, ip, attempt) => {
-    const ipAddress = !ip ? `localhost` : ip;
-
-    if (error.code === 'ETIMEDOUT') {
-      logger.error(
-        `[${service}][${name}][${error.code}] - connection to ${ipAddress} timed out on attempt ${attempt}.`
-      );
-    } else if (error.code === 'ECONNRESET') {
-      logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} reset on attempt ${attempt}.`);
-    } else if (error.code === 'ERR_BAD_RESPONSE') {
-      logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} reset on attempt ${attempt}.`);
-    } else if (error.code === 'ECONNABORTED') {
-      logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} abort on attempt ${attempt}.`);
-    } else {
-      logger.error(`[${service}][${name}][error][${error.code}] - station: ${ipAddress} after 3 attempts - ${error}`);
     }
   };
 }

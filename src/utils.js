@@ -96,6 +96,31 @@ const configureLogService = async () => {
   });
 };
 
+const configureDirLog = async (dirname) => {
+  const dir = !dirname ? 'sendApi' : dirname;
+  return new Promise((res) => {
+    configure({
+      appenders: {
+        logger: {
+          type: 'file',
+          filename: `./logs/${dir}_${returnCurrentDateAndTime()}.log`
+        },
+        console: {
+          type: 'console'
+        }
+      },
+      categories: {
+        default: {
+          appenders: ['logger', 'console'],
+          level: 'info'
+        }
+      }
+    });
+
+    res(true);
+  });
+};
+
 const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
   return new Promise((res, rej) => {
     try {
@@ -330,6 +355,23 @@ const currentDateHour = () => {
   return dataHoraBrasil;
 };
 
+const currentLogTimeDate = () => {
+  const options = { timeZone: 'America/Recife', hour12: false };
+  const date = new Date();
+
+  const year = date.toLocaleString('en-CA', { ...options, year: 'numeric' });
+  const month = date.toLocaleString('en-CA', { ...options, month: '2-digit' });
+  const day = date.toLocaleString('en-CA', { ...options, day: '2-digit' });
+  const hours = date.toLocaleString('en-CA', { ...options, hour: '2-digit' });
+  let minutes = date.toLocaleString('en-CA', { ...options, minute: '2-digit' });
+  const seconds = date.toLocaleString('en-CA', { ...options, second: '2-digit' });
+
+  minutes = minutes.length === 1 ? new String(`0${minutes}`) : minutes;
+
+  const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  return formattedDate;
+};
+
 const currentDate = () => {
   const options = { timeZone: 'America/Recife' };
   let dataAtual = new Date();
@@ -460,8 +502,49 @@ const sendLogToTelegram = (logname) => {
   logger.info(`[TELEGRAM] send log to Telegram Group`);
 };
 
+const readJsonClocks = (success) => {
+  const jsonPath = path.join('C:/node/afdtauto/json', 'clocks.json');
+  if (!fs.existsSync(jsonPath)) {
+    fs.writeFileSync(jsonPath, JSON.stringify([]));
+  }
+  try {
+    const data = fs.readFileSync(jsonPath, 'utf8');
+    const parsedData = JSON.parse(data).data;
+
+    // Filter the records with status = 'success'
+    const successRecords = parsedData.filter((record) => record.status === `${success}`);
+
+    return successRecords;
+  } catch (err) {
+    logger.error('[readJson][error] - error reading json clocks file:', err);
+    return [];
+  }
+};
+
+/*
+
+const errorMessage = (error, service, name, ip, attempt) => {
+
+  const errorCode = !error.code ? `ERRMYCODE` : errorCode;
+  const ipAddress = !ip ? `localhost` : ip;
+
+  if (error.code === 'ETIMEDOUT') {
+    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} timed out on attempt ${attempt}.`);
+  } else if (error.code === 'ECONNRESET') {
+    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} reset on attempt ${attempt}.`);
+  } else if (error.code === 'ERR_BAD_RESPONSE') {
+    logger.error(`[${service}][${name}][${error.code}] - bad response from ${ipAddress} on attempt ${attempt}.`);
+  } else if (error.code === 'ECONNABORTED') {
+    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} aborted on attempt ${attempt}.`);
+  } else {
+    logger.error(`[${service}][${name}][error][${error.code}] - station: ${ipAddress} after 3 attempts - ${error}`);
+  }
+};
+*/
+
 exports.assembleArrayObjects = assembleArrayObjects;
 exports.configureLogService = configureLogService;
+exports.configureDirLog = configureDirLog;
 exports.configureLogWithTelegram = configureLogWithTelegram;
 exports.asyncForEach = asyncForEach;
 exports.makeChunk = makeChunk;
@@ -474,8 +557,10 @@ exports.subtractHours = subtractHours;
 exports.dataHoraAtual = dataHoraAtual;
 exports.dataHoraAtual2 = dataHoraAtual2;
 exports.returnHourMinute = returnHourMinute;
+exports.readJsonClocks = readJsonClocks;
 exports.exitProcess = exitProcess;
 exports.currentDateHour = currentDateHour;
+exports.currentLogTimeDate = currentLogTimeDate;
 exports.formatDate = formatDate;
 exports.formatHour = formatHour;
 exports.currentDate = currentDate;

@@ -4,7 +4,7 @@ const { TlanticService } = require('./tlantic.service');
 const { ConsincoService } = require('./consinco.service');
 const { getLogger } = require('log4js');
 const {
-  configureLogService,
+  configureDirLog,
   returnAfdDate,
   returnObjCorrectType,
   isDeviceOnline,
@@ -17,7 +17,8 @@ const {
   dataHoraAtual,
   formatDate,
   formatHour,
-  clearScreen
+  clearScreen,
+  readJsonClocks
 } = require('../utils');
 
 let logger = getLogger('LOG');
@@ -30,13 +31,13 @@ class AppService {
       clearScreen();
       logger.info(`[${SERVICE_NAME}][gettingAfd][afd] - Coleta de arquivos AFD iniciada em ${dataHoraAtual()}`);
 
-      const stations = await StationService.getStationsInfo();
+      const stations = await readJsonClocks('success');
       const afdDate = returnAfdDate(0);
 
       if (stations.length === 0) {
         logger.info(
           SERVICE_NAME,
-          `[${SERVICE_NAME}][gettingAfd][afd] - No Stations finded. Please, check the database connection`
+          `[${SERVICE_NAME}][gettingAfd][afd] - No stations finded. Please, check the database connection`
         );
         return;
       }
@@ -44,31 +45,25 @@ class AppService {
       await Promise.all(
         stations.map(async (station) => {
           const clock = returnObjCorrectType(station);
-          const netCheck = await isDeviceOnline(clock.ip);
 
-          if (!netCheck) {
-            logger.error(`[${SERVICE_NAME}][gettingAfd][netCheck] - Station ip: ${clock.ip} not respond`);
-            return;
-          } else {
-            try {
-              let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
+          try {
+            let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
 
-              if (!token) {
-                logger.error(
-                  `[${SERVICE_NAME}][gettingAfd][token] - Not Connected on Station IP: ${clock.ip} - getting no token`
-                );
-              } else {
-                try {
-                  let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
-                  await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, afd);
-                  await StationService.logoutStation(clock.ip, token);
-                } catch (error) {
-                  logger.error(`[AppService][gettingAfd][error] - Error writing to file: ${error.message}`);
-                }
+            if (!token) {
+              logger.error(
+                `[${SERVICE_NAME}][gettingAfd][token] - Not Connected on Station IP: ${clock.ip} - getting no token`
+              );
+            } else {
+              try {
+                let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
+                await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, afd);
+                await StationService.logoutStation(clock.ip, token);
+              } catch (error) {
+                logger.error(`[AppService][gettingAfd][error] - Error writing to file: ${error.message}`);
               }
-            } catch (error) {
-              logger.error(`[${SERVICE_NAME}][gettingAfd][error] error processing station ip: ${clock.ip}\n`, error);
             }
+          } catch (error) {
+            logger.error(`[${SERVICE_NAME}][gettingAfd][error] error processing station ip: ${clock.ip}\n`, error);
           }
         })
       );
@@ -225,7 +220,7 @@ class AppService {
         } em ${dataHoraAtual()}`
       );
 
-      await configureLogService();
+      await configureDirLog('api');
       await this.gettingAfd();
       await this.importEachAfdLine();
       await ConsincoService.deleteDuplicates();
