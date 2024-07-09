@@ -142,25 +142,6 @@ const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
   });
 };
 
-const isDeviceOnline = async (host) => {
-  return new Promise((resolve) => {
-    exec(`ping -n 3 ${host}`, (error, stdout) => {
-      if (error) {
-        logger.error(`[isDeviceOnline][network-check][failed] - station ${host} error:\n${error}`);
-        return resolve(false);
-      }
-
-      if (stdout.includes('Host de destino inacess')) {
-        logger.error(`[isDeviceOnline][network-check][failed] - host unreachable: ${host}`);
-        return resolve(false);
-      } else {
-        logger.info(`[isDeviceOnline][network-check][sucessful] - working on station: ${host}`);
-        return resolve(true);
-      }
-    });
-  });
-};
-
 const returnJsonLine = (ln) => {
   const lnLength = ln.length;
 
@@ -364,9 +345,10 @@ const currentLogTimeDate = () => {
   const day = date.toLocaleString('en-CA', { ...options, day: '2-digit' });
   const hours = date.toLocaleString('en-CA', { ...options, hour: '2-digit' });
   let minutes = date.toLocaleString('en-CA', { ...options, minute: '2-digit' });
-  const seconds = date.toLocaleString('en-CA', { ...options, second: '2-digit' });
+  let seconds = date.toLocaleString('en-CA', { ...options, second: '2-digit' });
 
   minutes = minutes.length === 1 ? new String(`0${minutes}`) : minutes;
+  seconds = seconds.length === 1 ? new String(`0${seconds}`) : seconds;
 
   const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
   return formattedDate;
@@ -511,7 +493,6 @@ const readJsonClocks = (success) => {
     const data = fs.readFileSync(jsonPath, 'utf8');
     const parsedData = JSON.parse(data).data;
 
-    // Filter the records with status = 'success'
     const successRecords = parsedData.filter((record) => record.status === `${success}`);
 
     return successRecords;
@@ -551,7 +532,6 @@ exports.makeChunk = makeChunk;
 exports.returnAfdDate = returnAfdDate;
 exports.writeAfdTxt = writeAfdTxt;
 exports.returnObjCorrectType = returnObjCorrectType;
-exports.isDeviceOnline = isDeviceOnline;
 exports.returnJsonLine = returnJsonLine;
 exports.subtractHours = subtractHours;
 exports.dataHoraAtual = dataHoraAtual;

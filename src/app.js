@@ -1,6 +1,6 @@
 require('dotenv').config('../.env');
 const { AppService } = require('./services/app.service');
-const { checkAllDevices } = require('./checkAllDevices');
+const { testConn } = require('./others/testConn');
 const { getLogger } = require('log4js');
 
 let logger = getLogger('LOG');
@@ -10,7 +10,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.UV_THREADPOOL_SIZE = 10;
 
 //AppService.startApplication();
-//checkAllDevices();
+//testConn();
 /*
  # ┌────────────── second (optional)
  # │ ┌──────────── minute
@@ -27,6 +27,6 @@ cron.schedule('0 * * * *', async () => {
   await AppService.startApplication();
 });
 
-cron.schedule('10 * * * *', async () => {
-  await checkAllDevices();
+cron.schedule('0 */6 * * * *', async () => {
+  await testConn();
 });

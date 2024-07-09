@@ -7,7 +7,6 @@ const {
   configureDirLog,
   returnAfdDate,
   returnObjCorrectType,
-  isDeviceOnline,
   writeAfdTxt,
   listTxtFiles,
   makeChunk,
