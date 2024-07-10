@@ -97,13 +97,13 @@ const configureLogService = async () => {
 };
 
 const configureDirLog = async (dirname) => {
-  const dir = !dirname ? 'sendApi' : dirname;
+  const dir = !dirname ? 'no_name' : dirname;
   return new Promise((res) => {
     configure({
       appenders: {
         logger: {
           type: 'file',
-          filename: `./logs/${dir}_${returnCurrentDateAndTime()}.log`
+          filename: `./logs/${dir}.log`
         },
         console: {
           type: 'console'
@@ -343,10 +343,12 @@ const currentLogTimeDate = () => {
   const year = date.toLocaleString('en-CA', { ...options, year: 'numeric' });
   const month = date.toLocaleString('en-CA', { ...options, month: '2-digit' });
   const day = date.toLocaleString('en-CA', { ...options, day: '2-digit' });
-  const hours = date.toLocaleString('en-CA', { ...options, hour: '2-digit' });
+  let hours = date.toLocaleString('en-CA', { ...options, hour: '2-digit' });
   let minutes = date.toLocaleString('en-CA', { ...options, minute: '2-digit' });
   let seconds = date.toLocaleString('en-CA', { ...options, second: '2-digit' });
 
+  hours = hours.length === 1 ? new String(`0${hours}`) : hours;
+  hours = new String(hours) === '24' ? new String(`00`) : hours;
   minutes = minutes.length === 1 ? new String(`0${minutes}`) : minutes;
   seconds = seconds.length === 1 ? new String(`0${seconds}`) : seconds;
 

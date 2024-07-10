@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
-const { configureDirLog, currentLogTimeDate, currentDateHour } = require('../utils');
+const { configureDirLog, currentLogTimeDate } = require('../utils');
 
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
@@ -92,7 +92,7 @@ const isDeviceOnline = async (host) => {
         updateDevices(host, false);
         return resolve(false);
       } else {
-        logger.info(`[isDeviceOnline][network-check][successful] - working on station: ${host}`);
+        // logger.info(`[isDeviceOnline][network-check][successful] - working on station: ${host}`);
         updateDevices(host, true);
         return resolve(true);
       }
@@ -101,9 +101,9 @@ const isDeviceOnline = async (host) => {
 };
 
 const testConn = async () => {
-  const dirName = 'conn';
-  await configureDirLog(`${dirName}`);
   const allDevices = readJson();
+  const dirName = 'application';
+  await configureDirLog(`${dirName}`);
 
   if (!Array.isArray(allDevices)) {
     logger.error(`[testConn][error] - allDevices is not an array`);
@@ -113,7 +113,7 @@ const testConn = async () => {
   const promises = allDevices.map((device) => isDeviceOnline(device.ip));
   await Promise.all(promises);
 
-  logger.info(`[testConn] - All devices have been checked at ${currentDateHour()}`);
+  // logger.info(`[testConn] - All devices have been checked at ${currentDateHour()}`);
 };
 
 exports.testConn = testConn;

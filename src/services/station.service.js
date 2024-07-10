@@ -79,9 +79,9 @@ class StationService {
           const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
           throw new Error(errorMessage);
         } else {
-          logger.info(
-            `[${SERVICE_NAME}][getToken][login] - connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`
-          );
+          //logger.info(
+          // `[${SERVICE_NAME}][getToken][login] - connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`
+          // );
         }
 
         return token;
@@ -149,7 +149,7 @@ class StationService {
 
   static getStationsInfo = async () => {
     try {
-      logger.info(`[${SERVICE_NAME}][getStationsInfo][getting] - getting stations info`);
+      //logger.info(`[${SERVICE_NAME}][getStationsInfo][getting] - getting stations info`);
       const result = await ConsincoService.getStationsInfo();
       return result;
     } catch (error) {
@@ -241,9 +241,9 @@ class StationService {
           const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
           throw new Error(errorMessage);
         } else {
-          logger.info(
-            `[${SERVICE_NAME}][logoutStation][logout] ip:${response.request.host} | status:${response.status} | message:${response.statusText}`
-          );
+          // logger.info(
+          //   `[${SERVICE_NAME}][logoutStation][logout] ip:${response.request.host} | status:${response.status} | message:${response.statusText}`
+          // );
         }
         return true;
       } catch (error) {
