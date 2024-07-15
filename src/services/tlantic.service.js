@@ -9,6 +9,8 @@ const instance = axios.create({
 });
 
 const errorMessage = (error, service, name, ip, attempt) => {
+  //const dirName = 'application';
+  //await configureDirLog(`${dirName}`);
   const ipAddress = !ip ? `localhost` : ip;
 
   if (error.code === 'ETIMEDOUT') {

@@ -26,6 +26,7 @@ const SERVICE_NAME = 'AppService';
 
 class AppService {
   static async gettingAfd() {
+    await configureDirLog('application');
     try {
       clearScreen();
       //logger.info(`[${SERVICE_NAME}][gettingAfd][afd] - Coleta de arquivos AFD iniciada em ${dataHoraAtual()}`);
@@ -72,6 +73,7 @@ class AppService {
   }
 
   static async importEachAfdLine() {
+    await configureDirLog('database');
     try {
       clearScreen();
       //logger.info(
@@ -112,6 +114,7 @@ class AppService {
   }
 
   static async sendingWfmApi() {
+    await configureDirLog('tlantic');
     try {
       clearScreen();
       let total = 0;
@@ -160,6 +163,7 @@ class AppService {
   }
 
   static async sendingWfmApiDate(date) {
+    await configureDirLog('tlantic');
     try {
       clearScreen();
       let total = 0;

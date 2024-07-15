@@ -16,12 +16,10 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.static('public'));
 
 const startWebServer = async () => {
+  await configureDirLog('application');
   try {
     const jsonPath = path.join('C:/node/afdtauto/json', 'fails.json');
     const clocksPath = path.join('C:/node/afdtauto/json', 'clocks.json');
-
-    const dirName = 'application';
-    await configureDirLog(`${dirName}`);
 
     app.get('/logs', (req, res) => {
       try {

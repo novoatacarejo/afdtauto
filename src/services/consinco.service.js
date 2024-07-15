@@ -205,11 +205,11 @@ ORDER BY CODPESSOA, PUNCHTIME`;
 
       const response = await client.execute(sql);
 
-      logger.info(`[${SERVICE_NAME}][deleteDuplicates][deleting] - eliminate duplicate rows from WFM_DEV.DEV_RM_AFD]`);
+      //logger.info(`[${SERVICE_NAME}][deleteDuplicates][deleting] - eliminate duplicate rows from WFM_DEV.DEV_RM_AFD]`);
 
       await OracleService.close(client);
 
-      logger.info(`[${SERVICE_NAME}][deleteDuplicates][end] - Finished!`);
+      //logger.info(`[${SERVICE_NAME}][deleteDuplicates][end] - Finished!`);
 
       return response;
     } catch (error) {
@@ -253,13 +253,13 @@ ORDER BY CODPESSOA, PUNCHTIME`;
 
       const response = await client.execute(sql, binds);
 
-      logger.info(
-        `[${SERVICE_NAME}][deleteDuplicatesRows][deleting] - eliminated ${response.outBinds.rows_deleted} duplicate rows from DEV_RM_AFD]`
-      );
+      //logger.info(
+      //  `[${SERVICE_NAME}][deleteDuplicatesRows][deleting] - eliminated ${response.outBinds.rows_deleted} duplicate rows from DEV_RM_AFD]`
+      // );
 
       await OracleService.close(client);
 
-      logger.info(`[${SERVICE_NAME}][deleteDuplicatesRows][end] - Finished!`);
+      //logger.info(`[${SERVICE_NAME}][deleteDuplicatesRows][end] - Finished!`);
 
       return response.outBinds.rows_deleted;
     } catch (error) {
@@ -297,7 +297,7 @@ ORDER BY CODPESSOA, PUNCHTIME`;
 
       const response = await client.executeMany(sql, content, options);
 
-      logger.info(`[${SERVICE_NAME}][insertMany][inserting] - Rows qtd: ${data.length}`);
+      //logger.info(`[${SERVICE_NAME}][insertMany][inserting] - Rows qtd: ${data.length}`);
 
       await OracleService.close(client);
 

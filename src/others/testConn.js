@@ -22,7 +22,7 @@ const readJson = () => {
 };
 
 const readFailedPings = () => {
-  const failPath = path.join('C:/node/afdtauto/json', 'fails.json');
+  const failPath = path.join('C:/node/afdtauto/json', 'network.json');
   try {
     if (!fs.existsSync(failPath)) {
       fs.writeFileSync(failPath, JSON.stringify({ data: [] }));
@@ -37,7 +37,7 @@ const readFailedPings = () => {
 };
 
 const writeFailedPings = (failedPings) => {
-  const failPath = path.join('C:/node/afdtauto/json', 'fails.json');
+  const failPath = path.join('C:/node/afdtauto/json', 'network.json');
   try {
     fs.writeFileSync(failPath, JSON.stringify({ data: failedPings }, null, 2));
   } catch (err) {
@@ -56,6 +56,8 @@ const writeStatus = (clock) => {
 const updateDevices = async (host, success) => {
   let clock = await readJson();
   const currentTime = currentLogTimeDate();
+  const errorCode = new String('ETIMEDOUT');
+  const errorMessage = new String('Host de destino inacessivel');
 
   if (!Array.isArray(clock)) {
     logger.error('[updateDevices][error] - clock is not an array');
@@ -67,20 +69,29 @@ const updateDevices = async (host, success) => {
   if (existingDeviceIndex !== -1) {
     clock[existingDeviceIndex].status = success ? 'success' : 'failed';
     clock[existingDeviceIndex].lastSyncDate = currentTime;
+    clock[existingDeviceIndex].errorCode = errorCode;
+    clock[existingDeviceIndex].errorMessage = errorMessage;
   }
 
   writeStatus(clock);
 
   if (!success) {
     const failedPings = await readFailedPings();
-    failedPings.push({ ip: host, status: 'failed', lastSyncTime: currentTime });
+    failedPings.push({
+      ip: host,
+      status: 'failed',
+      lastSyncTime: currentTime,
+      errorCode,
+      errorMessage
+    });
     writeFailedPings(failedPings);
   }
 };
 
 const isDeviceOnline = async (host) => {
+  await configureDirLog('network');
   return new Promise((resolve) => {
-    exec(`ping -n 3 ${host}`, (error, stdout) => {
+    exec(`ping -n 5 ${host}`, (error, stdout) => {
       if (error) {
         logger.error(`[isDeviceOnline][network-check][failed] - station ${host} error:\n${error}`);
         updateDevices(host, false);
@@ -102,7 +113,7 @@ const isDeviceOnline = async (host) => {
 
 const testConn = async () => {
   const allDevices = readJson();
-  const dirName = 'application';
+  const dirName = 'network';
   await configureDirLog(`${dirName}`);
 
   if (!Array.isArray(allDevices)) {
