@@ -5,6 +5,7 @@ const { ConsincoService } = require('./consinco.service');
 const { getLogger } = require('log4js');
 const {
   configureDirLog,
+  returnAfdDay,
   returnAfdDate,
   returnObjCorrectType,
   writeAfdTxt,
@@ -35,7 +36,7 @@ class AppService {
         : null;
 
       const stations = await readJsonClocks('success');
-      const afdDate = await returnAfdDate(0);
+      const afdDate = await returnAfdDay(0);
 
       if (stations.length === 0) {
         logger.error(
@@ -58,14 +59,9 @@ class AppService {
               );
             } else {
               try {
-                const dirName = clock.empresaDir;
-                const item = clock.item;
-                const ipFinal = clock.ipFinal;
-                const ip = clock.ip;
-                const portaria = clock.portaria;
-                const afd = await StationService.getAfd(ip, token, portaria, afdDate);
-                await writeAfdTxt(dirName, item, ipFinal, afd);
-                await StationService.logoutStation(clock.ip, token);
+                let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
+                await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFinal, afd);
+                await StationService.logoutStation(1, clock.ip, token);
               } catch (error) {
                 logger.error(`[AppService][gettingAfd][error] - Error writing to file: ${error.message}`);
               }
@@ -77,6 +73,104 @@ class AppService {
       );
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][gettingAfd][error]\n`, error);
+    }
+  }
+
+  static async gettingAfdDate(enableLog, dirLog, date) {
+    const log = parseInt(enableLog);
+    await configureDirLog(`${dirLog}`);
+    try {
+      clearScreen();
+      log === 1
+        ? logger.info(
+            `[${SERVICE_NAME}][gettingAfdDate][afd][${date}] - Coleta de arquivos AFD iniciada em ${dataHoraAtual()}`
+          )
+        : null;
+
+      const stations = await readJsonClocks('success');
+
+      if (stations.length === 0) {
+        logger.error(
+          SERVICE_NAME,
+          `[${SERVICE_NAME}][gettingAfdDate][afd][${date}]  - No stations finded. Please, check the database connection`
+        );
+        return;
+      }
+
+      await Promise.all(
+        stations.map(async (station) => {
+          const clock = returnObjCorrectType(station);
+
+          try {
+            let token = await StationService.getToken(1, clock.ip, clock.user, clock.pass);
+
+            if (!token) {
+              logger.error(
+                `[${SERVICE_NAME}][gettingAfdDate][token][${date}]  - not connected on station ip ${clock.ip} - getting no token`
+              );
+            } else {
+              try {
+                const afdDate = await returnAfdDate(date);
+                const afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
+                await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFinal, afd);
+                await StationService.logoutStation(clock.ip, token);
+              } catch (error) {
+                logger.error(`[AppService][gettingAfdDate][error][${date}]  - error writing to file: ${error.message}`);
+              }
+            }
+          } catch (error) {
+            logger.error(`[${SERVICE_NAME}][gettingAfd][error] error processing station ip: ${clock.ip}\n`, error);
+          }
+        })
+      );
+    } catch (error) {
+      logger.error(`[${SERVICE_NAME}][gettingAfdDate][error]\n`, error);
+    }
+  }
+
+  static async importEachAfdLine(enableLog, dirLog) {
+    const log = parseInt(enableLog);
+    await configureDirLog(`${dirLog}`);
+    try {
+      clearScreen();
+
+      log === 1
+        ? logger.info(
+            `[${SERVICE_NAME}][importEachAfdLine][insert] - Inserção em Tabela Oracle iniciada em ${dataHoraAtual()}`
+          )
+        : null;
+
+      const dirPath = 'C:/node/afdtauto/afd';
+      const files = await listTxtFiles(dirPath);
+      const obj = [];
+
+      await Promise.all(
+        files.map(async (file) => {
+          const punches = await readEachLine(file);
+          punches.forEach(async (p) => {
+            if (String(p.id) !== '0' && p.id !== null && p.id !== undefined && [50, 38].includes(p.lnLength)) {
+              const hour = await formatHour(p.hour);
+              const date = p.date;
+              const punch = await formatDate(p.punchUserTimestamp);
+              const today = await currentDate();
+              const previousHour = await subtractHours(new Date(), 1);
+
+              if (hour > previousHour && date === today) {
+                obj.push({
+                  idNumber: p.id,
+                  idLength: p.lnLength,
+                  punch
+                });
+              }
+            }
+          });
+        })
+      );
+
+      await ConsincoService.insertMany(1, obj);
+      log === 1 ? await logger.info(`[${SERVICE_NAME}][importEachAfdLine][total] - ${obj.count}`) : null;
+    } catch (error) {
+      logger.error(`[${SERVICE_NAME}][importEachAfdLine][error]\n`, error);
     }
   }
 
@@ -185,6 +279,7 @@ class AppService {
 
   static async sendingWfmApiDate(enableLog, dirLog, date) {
     const log = parseInt(enableLog);
+
     await configureDirLog(`${dirLog}`);
     try {
       clearScreen();

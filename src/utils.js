@@ -314,12 +314,22 @@ const returnHourMinute = (type) => {
   }
 };
 
-const returnAfdDate = (days) => {
+const returnAfdDay = (days) => {
   const date = new Date();
   const previousDate = new Date(date.setDate(date.getDate() + days));
   const year = previousDate.getFullYear();
   let month = previousDate.getMonth() + 1;
   let day = previousDate.getDate();
+
+  return {
+    year: `${year}`,
+    month: `${month}`,
+    day: `${day}`
+  };
+};
+
+const returnAfdDate = (date) => {
+  const [day, month, year] = date.split('/').map(Number);
 
   return {
     year: `${year}`,
@@ -531,6 +541,7 @@ exports.configureDirLog = configureDirLog;
 exports.configureLogWithTelegram = configureLogWithTelegram;
 exports.asyncForEach = asyncForEach;
 exports.makeChunk = makeChunk;
+exports.returnAfdDay = returnAfdDay;
 exports.returnAfdDate = returnAfdDate;
 exports.writeAfdTxt = writeAfdTxt;
 exports.returnObjCorrectType = returnObjCorrectType;

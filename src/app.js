@@ -10,7 +10,7 @@ let cron = require('node-cron');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.UV_THREADPOOL_SIZE = 10;
 
-//AppService.startApplication(1);
+//AppService.startApplication(0);
 //testConn();
 
 startWebServer();

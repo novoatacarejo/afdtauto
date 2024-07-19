@@ -1,5 +1,6 @@
 require('dotenv').config('../.env');
 const { AppService } = require('./services/app.service');
+const { ConsincoService } = require('./services/consinco.service');
 const { getLogger } = require('log4js');
 const yargs = require('yargs');
 
@@ -25,7 +26,10 @@ const argv = yargs
   .alias('help', 'h').argv;
 
 const appDay = async (date) => {
-  await AppService.sendingWfmApiDate(1, 'tlantic', date);
+  await AppService.gettingAfdDate(1, 'applicationByDay', date);
+  await AppService.importEachAfdLine(1, 'databaseByDay');
+  await ConsincoService.deleteDuplicates(1);
+  await AppService.sendingWfmApiDate(1, 'tlanticByDay', date);
 };
 
 switch (argv._[0]) {

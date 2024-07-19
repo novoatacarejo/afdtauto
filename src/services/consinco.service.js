@@ -79,7 +79,7 @@ class ConsincoService {
               AND B.FILIALRM = C.FILIALRM
               AND B.CODDEPTRM = C.CODDEPTRM
               AND C.INTEGRA_WFM = 1
-              AND TO_DATE(A.DTABATIDA, 'DD/MM/YYYY') = :a`;
+              AND TO_DATE(A.DTABATIDA,'DD/MM/YYYY') = :a`;
 
       const bind = [date];
 
@@ -89,7 +89,9 @@ class ConsincoService {
 
       await OracleService.close(client);
 
-      log === 1 ? await logger.info(`[${SERVICE_NAME}][getPunchesByDate][getting][total] - ${punches.count}`) : null;
+      if (log === 1) {
+        await logger.info(`[${SERVICE_NAME}][getPunchesByDate][getting][total] - ${punches.count}`);
+      }
 
       return punches;
     } catch (error) {

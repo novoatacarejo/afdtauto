@@ -225,8 +225,9 @@ class StationService {
     }
   };
 
-  static logoutStation = async (ip, token, retries = 3, delay = 1000) => {
+  static logoutStation = async (enableLog, ip, token, retries = 3, delay = 1000) => {
     const url = `https://${ip}/logout.fcgi?session=${token}`;
+    const log = parseInt(enableLog);
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
@@ -245,9 +246,11 @@ class StationService {
           const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
           throw new Error(errorMessage);
         } else {
-          // logger.info(
-          //   `[${SERVICE_NAME}][logoutStation][logout] ip:${response.request.host} | status:${response.status} | message:${response.statusText}`
-          // );
+          log === 1
+            ? logger.info(
+                `[${SERVICE_NAME}][logoutStation][logout] ip:${response.request.host} | status:${response.status} | message:${response.statusText}`
+              )
+            : null;
         }
         return true;
       } catch (error) {
