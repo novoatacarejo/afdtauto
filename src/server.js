@@ -18,10 +18,10 @@ app.use(express.static('public'));
 const startWebServer = async () => {
   await configureDirLog('application');
   try {
-    const jsonPath = path.join('C:/node/afdtauto/json', 'fails.json');
+    const jsonPath = path.join('C:/node/afdtauto/json', 'network.json');
     const clocksPath = path.join('C:/node/afdtauto/json', 'clocks.json');
 
-    app.get('/logs', (req, res) => {
+    app.get('/fails', (req, res) => {
       try {
         const data = fs.readFileSync(jsonPath, 'utf8');
         const logs = JSON.parse(data).data;

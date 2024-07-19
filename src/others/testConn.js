@@ -69,8 +69,8 @@ const updateDevices = async (host, success) => {
   if (existingDeviceIndex !== -1) {
     clock[existingDeviceIndex].status = success ? 'success' : 'failed';
     clock[existingDeviceIndex].lastSyncDate = currentTime;
-    clock[existingDeviceIndex].errorCode = errorCode;
-    clock[existingDeviceIndex].errorMessage = errorMessage;
+    clock[existingDeviceIndex].errorCode = clock[existingDeviceIndex].status == success ? 'no Error' : errorCode;
+    clock[existingDeviceIndex].errorMessage = clock[existingDeviceIndex].status == success ? 'no Error' : errorMessage;
   }
 
   writeStatus(clock);

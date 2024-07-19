@@ -4,7 +4,7 @@ const path = require('path');
 const { ConsincoService } = require('./consinco.service');
 const axios = require('axios');
 const https = require('https');
-const { returnJsonLine, subtractHours, currentDate } = require('../utils');
+const { returnJsonLine, subtractHours, currentDate, configureDirLog } = require('../utils');
 const { promisify } = require('util');
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
@@ -20,8 +20,9 @@ const instance = axios.create({
   httpAgent: new https.Agent({ keepAlive: true })
 });
 
-const errorMessage = (error, service, name, ip, attempt) => {
+const errorMessage = async (error, service, name, ip, attempt) => {
   const ipAddress = !ip ? `localhost` : ip;
+  await configureDirLog('network');
 
   if (error.code === 'ETIMEDOUT') {
     logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} timed out on attempt ${attempt}.`);
@@ -46,7 +47,8 @@ class StationService {
     }
   }
 
-  static async getToken(ip, login, pass, retries = 3, delay = 1000) {
+  static async getToken(enableLog, ip, login, pass, retries = 3, delay = 1000) {
+    const log = parseInt(enableLog);
     const url = `https://${ip}/login.fcgi?login=${login}&password=${pass}`;
     const headers = {
       'Content-Length': '0'
@@ -79,9 +81,11 @@ class StationService {
           const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
           throw new Error(errorMessage);
         } else {
-          //logger.info(
-          // `[${SERVICE_NAME}][getToken][login] - connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`
-          // );
+          log === 1
+            ? logger.info(
+                `[${SERVICE_NAME}][getToken][login] - connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`
+              )
+            : null;
         }
 
         return token;

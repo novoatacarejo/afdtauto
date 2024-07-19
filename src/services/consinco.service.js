@@ -37,7 +37,8 @@ class ConsincoService {
     }
   }
 
-  static async getPunchesByHour() {
+  static async getPunchesByHour(enableLog) {
+    const log = parseInt(enableLog);
     try {
       const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
 
@@ -51,33 +52,34 @@ class ConsincoService {
 
       await OracleService.close(client);
 
+      log === 1 ? logger.info(`[${SERVICE_NAME}][getPunchesByHour][getting][total] - ${punches.count}`) : null;
+
       return punches;
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][getPunchesByHour][error]\n`, error);
     }
   }
 
-  static async getPunchesByDate(date) {
+  static async getPunchesByDate(enableLog, date) {
+    const log = parseInt(enableLog);
     try {
       const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
 
       const client = await OracleService.connect();
 
-      const sql = `SELECT DISTINCT D.CODPESSOA, D.PUNCHTIME
-FROM (SELECT C.CODPESSOA,
-             C.PUNCHTIME,
-             (24 * (C.DATE_NOW - C.PUNCH)) AS DIFFTIME_HOUR
-      FROM (SELECT B.CODPESSOA,
-                   A.HHMM,
-                   TO_CHAR(A.PUNCH, 'YYYY-MM-DD HH24:MI') AS PUNCHTIME,
-                   TO_DATE(TO_CHAR(TRUNC(SYSDATE, 'HH'), 'DD/MM/YYYY HH24:MI'),
-                           'DD/MM/YYYY HH24:MI') AS DATE_NOW,
-                   A.PUNCH
-            FROM WFM_DEV.DEV_RM_AFD A, WFM_DEV.DEV_RM_CODPESSOA B
-            WHERE 1 = 1
-            AND A.IDNUMBER = DECODE(A.IDLENGTH, 38, B.PIS, 50, B.CPF, 0)
-            AND TO_DATE(A.DTABATIDA, 'DD/MM/YYYY') = :a) C) D
-ORDER BY CODPESSOA, PUNCHTIME`;
+      const sql = `SELECT
+                    A.CODPESSOA,
+                    TO_CHAR(A.PUNCH, 'YYYY-MM-DD HH24:MI') AS PUNCHTIME
+              FROM
+                  WFM_DEV.DEV_RM_AFD         A,
+                  WFM_DEV.DEV_RM_CODPESSOA    B,
+                  WFM_DEV.DEV_RM_DEPARTAMENTO C
+              WHERE 1 = 1
+              AND A.CODPESSOA = B.CODPESSOA
+              AND B.FILIALRM = C.FILIALRM
+              AND B.CODDEPTRM = C.CODDEPTRM
+              AND C.INTEGRA_WFM = 1
+              AND TO_DATE(A.DTABATIDA, 'DD/MM/YYYY') = :a`;
 
       const bind = [date];
 
@@ -87,20 +89,21 @@ ORDER BY CODPESSOA, PUNCHTIME`;
 
       await OracleService.close(client);
 
+      log === 1 ? await logger.info(`[${SERVICE_NAME}][getPunchesByDate][getting][total] - ${punches.count}`) : null;
+
       return punches;
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][getPunchesByDate][error]\n`, error);
     }
   }
 
-  static async getCodPessoa(idt, lng) {
+  static async getCodPessoa(idt) {
     try {
       const client = await OracleService.connect();
 
-      const tp = lng === 50 ? `CPF` : lng === 38 ? `PIS` : ``;
       const newId = new String(idt);
 
-      const sql = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_CODPESSOA H WHERE 1 = 1 AND ${tp} = '${newId}'`;
+      const sql = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_CODPESSOA H WHERE 1 = 1 AND CODPESSOA = '${newId}'`;
 
       const response1 = await client.execute(sql);
 
@@ -179,7 +182,8 @@ ORDER BY CODPESSOA, PUNCHTIME`;
     }
   }
 
-  static async deleteDuplicates() {
+  static async deleteDuplicates(enableLog) {
+    const log = parseInt(enableLog);
     try {
       const client = await OracleService.connect();
 
@@ -187,29 +191,37 @@ ORDER BY CODPESSOA, PUNCHTIME`;
 
       const sql = `
       BEGIN \
-          DELETE FROM DEV_RM_AFD A \
-          WHERE 1 = 1 \
-          AND NOT EXISTS ( \
-                SELECT 1 \
-                FROM (SELECT IDNUMBER, \
-                              TRUNC(PUNCH) AS DTABATIDA, \
-                              HHMM, \
-                              COUNT(*) AS QTD_ROWS, \
-                              MIN(T.ROWID) AS MINROWID \
+            DELETE \
+            FROM DEV_RM_AFD A \
+            WHERE 1 = 1  \
+            AND A.DTABATIDA = TRUNC(SYSDATE) \
+            AND NOT EXISTS \
+            (SELECT 1 \
+                  FROM (SELECT IDNUMBER, DTABATIDA, HHMM, MIN(T.ROWID) AS MINROWID \
                         FROM DEV_RM_AFD T \
-                        GROUP BY IDNUMBER, TRUNC(PUNCH), HHMM) B \
-                WHERE 1 = 1 \
-                AND B.MINROWID = A.ROWID); \
+                        WHERE 1 = 1 \
+                        AND T.DTABATIDA = A.DTABATIDA \
+                        AND T.IDNUMBER = A.IDNUMBER \
+                        AND T.HHMM = A.HHMM \
+                        AND T.DTABATIDA = TRUNC(SYSDATE) \
+                        GROUP BY IDNUMBER, DTABATIDA, HHMM) B \
+                  WHERE 1 = 1 \
+                  AND B.MINROWID = A.ROWID) \
+            OR A.CODPESSOA IS NULL; \
           COMMIT; \
       END;`;
 
       const response = await client.execute(sql);
 
-      //logger.info(`[${SERVICE_NAME}][deleteDuplicates][deleting] - eliminate duplicate rows from WFM_DEV.DEV_RM_AFD]`);
+      log === 1
+        ? logger.info(
+            `[${SERVICE_NAME}][deleteDuplicates][deleting] - eliminate duplicate rows from WFM_DEV.DEV_RM_AFD]`
+          )
+        : null;
 
       await OracleService.close(client);
 
-      //logger.info(`[${SERVICE_NAME}][deleteDuplicates][end] - Finished!`);
+      log === 1 ? logger.info(`[${SERVICE_NAME}][deleteDuplicates][end] - Finished!`) : null;
 
       return response;
     } catch (error) {
@@ -267,7 +279,8 @@ ORDER BY CODPESSOA, PUNCHTIME`;
     }
   }
 
-  static async insertMany(data) {
+  static async insertMany(enableLog, data) {
+    const log = parseInt(enableLog);
     try {
       var content = [];
 
@@ -297,7 +310,7 @@ ORDER BY CODPESSOA, PUNCHTIME`;
 
       const response = await client.executeMany(sql, content, options);
 
-      //logger.info(`[${SERVICE_NAME}][insertMany][inserting] - Rows qtd: ${data.length}`);
+      log === 1 ? logger.info(`[${SERVICE_NAME}][insertMany][inserting] - Rows qtd: ${data.length}`) : null;
 
       await OracleService.close(client);
 

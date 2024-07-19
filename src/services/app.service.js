@@ -25,14 +25,17 @@ let logger = getLogger('LOG');
 const SERVICE_NAME = 'AppService';
 
 class AppService {
-  static async gettingAfd() {
-    await configureDirLog('application');
+  static async gettingAfd(enableLog, dirLog) {
+    const log = parseInt(enableLog);
+    await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
-      //logger.info(`[${SERVICE_NAME}][gettingAfd][afd] - Coleta de arquivos AFD iniciada em ${dataHoraAtual()}`);
+      log === 1
+        ? logger.info(`[${SERVICE_NAME}][gettingAfd][afd] - Coleta de arquivos AFD iniciada em ${dataHoraAtual()}`)
+        : null;
 
       const stations = await readJsonClocks('success');
-      const afdDate = returnAfdDate(0);
+      const afdDate = await returnAfdDate(0);
 
       if (stations.length === 0) {
         logger.error(
@@ -47,7 +50,7 @@ class AppService {
           const clock = returnObjCorrectType(station);
 
           try {
-            let token = await StationService.getToken(clock.ip, clock.user, clock.pass);
+            let token = await StationService.getToken(1, clock.ip, clock.user, clock.pass);
 
             if (!token) {
               logger.error(
@@ -55,8 +58,13 @@ class AppService {
               );
             } else {
               try {
-                let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
-                await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFInal, afd);
+                const dirName = clock.empresaDir;
+                const item = clock.item;
+                const ipFinal = clock.ipFinal;
+                const ip = clock.ip;
+                const portaria = clock.portaria;
+                const afd = await StationService.getAfd(ip, token, portaria, afdDate);
+                await writeAfdTxt(dirName, item, ipFinal, afd);
                 await StationService.logoutStation(clock.ip, token);
               } catch (error) {
                 logger.error(`[AppService][gettingAfd][error] - Error writing to file: ${error.message}`);
@@ -72,13 +80,17 @@ class AppService {
     }
   }
 
-  static async importEachAfdLine() {
-    await configureDirLog('database');
+  static async importEachAfdLine(enableLog, dirLog) {
+    const log = parseInt(enableLog);
+    await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
-      //logger.info(
-      //  `[${SERVICE_NAME}][importEachAfdLine][insert] - Inserção em Tabela Oracle iniciada em ${dataHoraAtual()}`
-      //);
+
+      log === 1
+        ? logger.info(
+            `[${SERVICE_NAME}][importEachAfdLine][insert] - Inserção em Tabela Oracle iniciada em ${dataHoraAtual()}`
+          )
+        : null;
 
       const dirPath = 'C:/node/afdtauto/afd';
       const files = await listTxtFiles(dirPath);
@@ -107,31 +119,38 @@ class AppService {
         })
       );
 
-      await ConsincoService.insertMany(obj);
+      await ConsincoService.insertMany(1, obj);
+      log === 1 ? await logger.info(`[${SERVICE_NAME}][importEachAfdLine][total] - ${obj.count}`) : null;
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][importEachAfdLine][error]\n`, error);
     }
   }
 
-  static async sendingWfmApi() {
-    await configureDirLog('tlantic');
+  static async sendingWfmApi(enableLog, dirLog) {
+    const log = parseInt(enableLog);
+    await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
       let total = 0;
 
       const token = await TlanticService.getToken();
-      //logger.info(`[${SERVICE_NAME}][sendingWfmApi][getting] - getting token from api tlantic`);
-      //logger.info(`[${SERVICE_NAME}][sendingWfmApi][token]: ${token}`);
+
+      if (log === 1) {
+        logger.info(`[${SERVICE_NAME}][sendingWfmApi][getting] - getting token from api tlantic`);
+        logger.info(`[${SERVICE_NAME}][sendingWfmApi][token]: ${token}`);
+      }
 
       if (!token) {
         throw new Error(`[${SERVICE_NAME}][sendingWfmApi][error] - error when trying to fetch the token from api`);
         return;
       } else {
-        // logger.info(
-        //   `[${SERVICE_NAME}][sendingWfmApi][send] - Envio automático de batidas H-1 para API Tlantic iniciado em ${dataHoraAtual()}`
-        // );
+        log === 1
+          ? logger.info(
+              `[${SERVICE_NAME}][sendingWfmApi][send] - Envio automático de batidas H-1 para API Tlantic iniciado em ${dataHoraAtual()}`
+            )
+          : null;
 
-        const punches = await ConsincoService.getPunchesByHour();
+        const punches = await ConsincoService.getPunchesByHour(1);
 
         if (punches.length === 0) {
           logger.error(`[${SERVICE_NAME}][sendingWfmApi][no data] - No punches to send`);
@@ -153,7 +172,9 @@ class AppService {
           chunks.map(async (chunk, index) => {
             await TlanticService.postPunch(token, chunk);
             total += chunk.length;
-            logger.info(`[${SERVICE_NAME}][sendingWfmApi][sending] - Round ${index + 1} - punches sent: ${total}`);
+            log === 1
+              ? logger.info(`[${SERVICE_NAME}][sendingWfmApi][sending] - Round ${index + 1} - punches sent: ${total}`)
+              : null;
           })
         );
       }
@@ -162,15 +183,19 @@ class AppService {
     }
   }
 
-  static async sendingWfmApiDate(date) {
-    await configureDirLog('tlantic');
+  static async sendingWfmApiDate(enableLog, dirLog, date) {
+    const log = parseInt(enableLog);
+    await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
       let total = 0;
 
       const token = await TlanticService.getToken();
-      //logger.info(`[${SERVICE_NAME}][sendingWfmApi][getting][date][${date}] - getting token from api tlantic`);
-      //logger.info(`[${SERVICE_NAME}][sendingWfmApi][token][date][${date}]: ${token}`);
+
+      if (log === 1) {
+        logger.info(`[${SERVICE_NAME}][sendingWfmApi][getting][date][${date}] - getting token from api tlantic`);
+        logger.info(`[${SERVICE_NAME}][sendingWfmApi][token][date][${date}]: ${token}`);
+      }
 
       if (!token) {
         //throw new Error(
@@ -179,11 +204,13 @@ class AppService {
         );
         return;
       } else {
-        // logger.info(
-        //   `[${SERVICE_NAME}][sendingWfmApi][send][date][${date}] - Envio automático de batidas por Data para API Tlantic iniciado em ${dataHoraAtual()}`
-        //  );
+        log === 1
+          ? logger.info(
+              `[${SERVICE_NAME}][sendingWfmApi][send][date][${date}] - Envio automático de batidas por Data para API Tlantic iniciado em ${dataHoraAtual()}`
+            )
+          : null;
 
-        const punches = await ConsincoService.getPunchesByDate(date);
+        const punches = await ConsincoService.getPunchesByDate(log, date);
 
         if (punches.length === 0) {
           logger.error(`[${SERVICE_NAME}][sendingWfmApi][no data][date][${date}] - no punches to send`);
@@ -205,9 +232,13 @@ class AppService {
           chunks.map(async (chunk, index) => {
             await TlanticService.postPunch(token, chunk);
             total += chunk.length;
-            logger.info(
-              `[${SERVICE_NAME}][sendingWfmApi][sending][date][${date}] - Round ${index + 1} - punches sent: ${total}`
-            );
+            log === 1
+              ? logger.info(
+                  `[${SERVICE_NAME}][sendingWfmApi][sending][date][${date}] - Round ${
+                    index + 1
+                  } - punches sent: ${total}`
+                )
+              : null;
           })
         );
       }
@@ -216,20 +247,23 @@ class AppService {
     }
   }
 
-  static async startApplication() {
+  static async startApplication(enableLog) {
+    const log = parseInt(enableLog);
     try {
       await configureDirLog('application');
-      logger.info(
-        `[${SERVICE_NAME}][startApplication][starting] starting integration on JOB pid: ${
-          process.pid
-        } em ${dataHoraAtual()}`
-      );
-      await this.gettingAfd();
-      await this.importEachAfdLine();
-      await ConsincoService.deleteDuplicates();
+      log === 1
+        ? logger.info(
+            `[${SERVICE_NAME}][startApplication][starting] starting integration on JOB pid: ${
+              process.pid
+            } em ${dataHoraAtual()}`
+          )
+        : null;
+      await this.gettingAfd(log, 'application');
+      await this.importEachAfdLine(log, 'database');
+      await ConsincoService.deleteDuplicates(1);
 
       setTimeout(async () => {
-        await this.sendingWfmApi();
+        await this.sendingWfmApi(log, 'tlantic');
       }, 180000);
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][startApplication][error]\n`, error);

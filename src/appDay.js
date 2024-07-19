@@ -25,7 +25,7 @@ const argv = yargs
   .alias('help', 'h').argv;
 
 const appDay = async (date) => {
-  await AppService.sendingWfmApiDate(date);
+  await AppService.sendingWfmApiDate(1, 'tlantic', date);
 };
 
 switch (argv._[0]) {

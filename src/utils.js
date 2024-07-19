@@ -36,7 +36,7 @@ const returnObjCorrectType = (arrayObj) => {
     empresa: new String(arrayObj.empresa),
     empresaDir: new String(arrayObj.empresaDir),
     item: parseInt(arrayObj.item),
-    ipFInal: parseInt(arrayObj.ipFinal)
+    ipFinal: parseInt(arrayObj.ipFinal)
   };
 
   return data;
@@ -124,7 +124,7 @@ const configureDirLog = async (dirname) => {
 const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
   return new Promise((res, rej) => {
     try {
-      const dir = `./afd/${dirName}/`;
+      const dir = `C:/node/afdtauto/afd/${dirName}`;
       const filename = `afd_${dirName}_rlg${dirItem}_ip${dirIpFinal}.txt`;
       const outputFilePath = path.join(dir, filename);
 
@@ -486,8 +486,8 @@ const sendLogToTelegram = (logname) => {
   logger.info(`[TELEGRAM] send log to Telegram Group`);
 };
 
-const readJsonClocks = (success) => {
-  const jsonPath = path.join('C:/node/afdtauto/json', 'clocks.json');
+const readJsonClocks = async (success) => {
+  const jsonPath = await path.join('C:/node/afdtauto/json', 'clocks.json');
   if (!fs.existsSync(jsonPath)) {
     fs.writeFileSync(jsonPath, JSON.stringify([]));
   }
