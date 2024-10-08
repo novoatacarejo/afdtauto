@@ -38,7 +38,18 @@ class ConsincoService {
   }
 
   static async getPunchesByHour(enableLog) {
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][getPunchesByHour][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
     try {
       const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
 
@@ -61,7 +72,18 @@ class ConsincoService {
   }
 
   static async getPunchesByDate(enableLog, date) {
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][getPunchesByDate][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
     try {
       const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
 
@@ -185,7 +207,18 @@ class ConsincoService {
   }
 
   static async deleteDuplicates(enableLog) {
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][deleteDuplicates][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
     try {
       const client = await OracleService.connect();
 
@@ -231,7 +264,19 @@ class ConsincoService {
     }
   }
 
-  static async deleteDuplicatesRows() {
+  static async deleteDuplicatesRows(enableLog) {
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][deleteDuplicatesRows][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
     try {
       const client = await OracleService.connect();
 
@@ -267,9 +312,11 @@ class ConsincoService {
 
       const response = await client.execute(sql, binds);
 
-      //logger.info(
-      //  `[${SERVICE_NAME}][deleteDuplicatesRows][deleting] - eliminated ${response.outBinds.rows_deleted} duplicate rows from DEV_RM_AFD]`
-      // );
+      log === 1
+        ? logger.info(
+            `[${SERVICE_NAME}][deleteDuplicatesRows][deleting] - eliminated ${response.outBinds.rows_deleted} duplicate rows from DEV_RM_AFD]`
+          )
+        : null;
 
       await OracleService.close(client);
 
@@ -282,7 +329,18 @@ class ConsincoService {
   }
 
   static async insertMany(enableLog, data) {
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][insertMany][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
     try {
       var content = [];
 

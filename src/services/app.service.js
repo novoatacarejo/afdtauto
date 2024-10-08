@@ -27,7 +27,19 @@ const SERVICE_NAME = 'AppService';
 
 class AppService {
   static async gettingAfd(enableLog, dirLog) {
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][gettingAfd][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
+
     await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
@@ -51,7 +63,7 @@ class AppService {
           const clock = returnObjCorrectType(station);
 
           try {
-            let token = await StationService.getToken(1, clock.ip, clock.user, clock.pass);
+            let token = await StationService.getToken(enableLog, clock.ip, clock.user, clock.pass);
 
             if (!token) {
               logger.error(
@@ -61,7 +73,7 @@ class AppService {
               try {
                 let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
                 await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFinal, afd);
-                await StationService.logoutStation(1, clock.ip, token);
+                await StationService.logoutStation(enableLog, clock.ip, token);
               } catch (error) {
                 logger.error(`[AppService][gettingAfd][error] - Error writing to file: ${error.message}`);
               }
@@ -77,7 +89,14 @@ class AppService {
   }
 
   static async gettingAfdDate(enableLog, dirLog, date) {
-    const log = parseInt(enableLog);
+    const log = enableLog === 's' || enableLog === 'S' ? 1 : enableLog === 'n' || enableLog === 'N' ? 0 : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][gettingAfdDate][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
+
     await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
@@ -102,7 +121,7 @@ class AppService {
           const clock = returnObjCorrectType(station);
 
           try {
-            let token = await StationService.getToken(1, clock.ip, clock.user, clock.pass);
+            let token = await StationService.getToken(enableLog, clock.ip, clock.user, clock.pass);
 
             if (!token) {
               logger.error(
@@ -113,7 +132,7 @@ class AppService {
                 const afdDate = await returnAfdDate(date);
                 const afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
                 await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFinal, afd);
-                await StationService.logoutStation(clock.ip, token);
+                await StationService.logoutStation(enableLog, clock.ip, token);
               } catch (error) {
                 logger.error(`[AppService][gettingAfdDate][error][${date}]  - error writing to file: ${error.message}`);
               }
@@ -129,7 +148,13 @@ class AppService {
   }
 
   static async importEachAfdLine(enableLog, dirLog) {
-    const log = parseInt(enableLog);
+    const log = enableLog === 's' || enableLog === 'S' ? 1 : enableLog === 'n' || enableLog === 'N' ? 0 : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][importEachAfdLine][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
     await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
@@ -175,7 +200,18 @@ class AppService {
   }
 
   static async importEachAfdLine(enableLog, dirLog) {
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][importEachAfdLine][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
     await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
@@ -213,7 +249,7 @@ class AppService {
         })
       );
 
-      await ConsincoService.insertMany(1, obj);
+      await ConsincoService.insertMany(enableLog, obj);
       log === 1 ? await logger.info(`[${SERVICE_NAME}][importEachAfdLine][total] - ${obj.count}`) : null;
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][importEachAfdLine][error]\n`, error);
@@ -221,7 +257,18 @@ class AppService {
   }
 
   static async sendingWfmApi(enableLog, dirLog) {
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][sendingWfmApi][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
     await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
@@ -244,7 +291,7 @@ class AppService {
             )
           : null;
 
-        const punches = await ConsincoService.getPunchesByHour(1);
+        const punches = await ConsincoService.getPunchesByHour(enableLog);
 
         if (punches.length === 0) {
           logger.error(`[${SERVICE_NAME}][sendingWfmApi][no data] - No punches to send`);
@@ -278,7 +325,18 @@ class AppService {
   }
 
   static async sendingWfmApiDate(enableLog, dirLog, date) {
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][sendingWfmApi][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
 
     await configureDirLog(`${dirLog}`);
     try {
@@ -305,7 +363,7 @@ class AppService {
             )
           : null;
 
-        const punches = await ConsincoService.getPunchesByDate(log, date);
+        const punches = await ConsincoService.getPunchesByDate(enableLog, date);
 
         if (punches.length === 0) {
           logger.error(`[${SERVICE_NAME}][sendingWfmApi][no data][date][${date}] - no punches to send`);
@@ -327,7 +385,7 @@ class AppService {
           chunks.map(async (chunk, index) => {
             await TlanticService.postPunch(token, chunk);
             total += chunk.length;
-            log === 1
+            log == 1
               ? logger.info(
                   `[${SERVICE_NAME}][sendingWfmApi][sending][date][${date}] - Round ${
                     index + 1
@@ -343,7 +401,19 @@ class AppService {
   }
 
   static async startApplication(enableLog) {
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][startApplication][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
+
     try {
       await configureDirLog('application');
       log === 1
@@ -353,12 +423,12 @@ class AppService {
             } em ${dataHoraAtual()}`
           )
         : null;
-      await this.gettingAfd(log, 'application');
-      await this.importEachAfdLine(log, 'database');
-      await ConsincoService.deleteDuplicates(1);
+      await this.gettingAfd(enableLog, 'application');
+      await this.importEachAfdLine(enableLog, 'database');
+      await ConsincoService.deleteDuplicates(enableLog);
 
       setTimeout(async () => {
-        await this.sendingWfmApi(log, 'tlantic');
+        await this.sendingWfmApi(enableLog, 'tlantic');
       }, 180000);
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][startApplication][error]\n`, error);

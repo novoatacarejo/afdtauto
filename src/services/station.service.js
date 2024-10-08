@@ -48,11 +48,23 @@ class StationService {
   }
 
   static async getToken(enableLog, ip, login, pass, retries = 3, delay = 1000) {
-    const log = parseInt(enableLog);
     const url = `https://${ip}/login.fcgi?login=${login}&password=${pass}`;
     const headers = {
       'Content-Length': '0'
     };
+
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][getToken][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
@@ -81,7 +93,7 @@ class StationService {
           const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
           throw new Error(errorMessage);
         } else {
-          log === 1
+          log == 1
             ? logger.info(
                 `[${SERVICE_NAME}][getToken][login] - connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`
               )
@@ -227,7 +239,18 @@ class StationService {
 
   static logoutStation = async (enableLog, ip, token, retries = 3, delay = 1000) => {
     const url = `https://${ip}/logout.fcgi?session=${token}`;
-    const log = parseInt(enableLog);
+    const log =
+      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
+        ? 1
+        : enableLog === 'n' || enableLog === 'N'
+        ? 0
+        : null;
+
+    if (log === null) {
+      logger.error(
+        `[${SERVICE_NAME}][logoutStation][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+      );
+    }
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
@@ -246,7 +269,7 @@ class StationService {
           const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
           throw new Error(errorMessage);
         } else {
-          log === 1
+          log == 1
             ? logger.info(
                 `[${SERVICE_NAME}][logoutStation][logout] ip:${response.request.host} | status:${response.status} | message:${response.statusText}`
               )
