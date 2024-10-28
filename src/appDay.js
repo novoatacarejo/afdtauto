@@ -26,10 +26,10 @@ const argv = yargs
   .alias('help', 'h').argv;
 
 const appDay = async (date) => {
-  await AppService.gettingAfdDate(1, 'applicationByDay', date);
-  await AppService.importEachAfdLine(1, 'databaseByDay');
-  await ConsincoService.deleteDuplicates(1);
-  await AppService.sendingWfmApiDate(1, 'tlanticByDay', date);
+  //await AppService.gettingAfdDate('s', 'applicationByDay', date);
+  //await AppService.importEachAfdLineDay('s', 'databaseByDay');
+  //await ConsincoService.deleteDuplicates('s');
+  await AppService.sendingWfmApiDate('s', 'tlanticByDay', date);
 };
 
 switch (argv._[0]) {

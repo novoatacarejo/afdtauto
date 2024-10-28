@@ -9,6 +9,7 @@ const {
   returnAfdDate,
   returnObjCorrectType,
   writeAfdTxt,
+  writeAfdTxtDay,
   listTxtFiles,
   makeChunk,
   readEachLine,
@@ -131,7 +132,7 @@ class AppService {
               try {
                 const afdDate = await returnAfdDate(date);
                 const afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
-                await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFinal, afd);
+                await writeAfdTxtDay(clock.empresaDir, clock.item, clock.ipFinal, afd);
                 await StationService.logoutStation(enableLog, clock.ip, token);
               } catch (error) {
                 logger.error(`[AppService][gettingAfdDate][error][${date}]  - error writing to file: ${error.message}`);
@@ -192,14 +193,14 @@ class AppService {
         })
       );
 
-      await ConsincoService.insertMany(1, obj);
+      await ConsincoService.insertMany(enableLog, obj);
       log === 1 ? await logger.info(`[${SERVICE_NAME}][importEachAfdLine][total] - ${obj.count}`) : null;
     } catch (error) {
       logger.error(`[${SERVICE_NAME}][importEachAfdLine][error]\n`, error);
     }
   }
 
-  static async importEachAfdLine(enableLog, dirLog) {
+  static async importEachAfdLineDay(enableLog, dirLog) {
     const log =
       enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
         ? 1
@@ -209,7 +210,7 @@ class AppService {
 
     if (log === null) {
       logger.error(
-        `[${SERVICE_NAME}][importEachAfdLine][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
+        `[${SERVICE_NAME}][importEachAfdLineDay][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
       );
     }
     await configureDirLog(`${dirLog}`);
@@ -218,11 +219,11 @@ class AppService {
 
       log === 1
         ? logger.info(
-            `[${SERVICE_NAME}][importEachAfdLine][insert] - Inserção em Tabela Oracle iniciada em ${dataHoraAtual()}`
+            `[${SERVICE_NAME}][importEachAfdLineDay][insert] - Inserção em Tabela Oracle iniciada em ${dataHoraAtual()}`
           )
         : null;
 
-      const dirPath = 'C:/node/afdtauto/afd';
+      const dirPath = 'C:/node/afdtauto/afdDay';
       const files = await listTxtFiles(dirPath);
       const obj = [];
 
@@ -234,25 +235,29 @@ class AppService {
               const hour = await formatHour(p.hour);
               const date = p.date;
               const punch = await formatDate(p.punchUserTimestamp);
-              const today = await currentDate();
-              const previousHour = await subtractHours(new Date(), 1);
+              //const today = await currentDate();
+              //const previousHour = await subtractHours(new Date(), 1);
 
-              if (hour > previousHour && date === today) {
-                obj.push({
-                  idNumber: p.id,
-                  idLength: p.lnLength,
-                  punch
-                });
-              }
+              //
+              //if (hour > previousHour && date === today) {
+
+              obj.push({
+                idNumber: p.id,
+                idLength: p.lnLength,
+                punch
+              });
+
+              //}
             }
           });
         })
       );
 
+      //console.log(obj);
       await ConsincoService.insertMany(enableLog, obj);
-      log === 1 ? await logger.info(`[${SERVICE_NAME}][importEachAfdLine][total] - ${obj.count}`) : null;
+      log === 1 ? await logger.info(`[${SERVICE_NAME}][importEachAfdLineDay][total] - ${obj.count}`) : null;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][importEachAfdLine][error]\n`, error);
+      logger.error(`[${SERVICE_NAME}][importEachAfdLineDay][error]\n`, error);
     }
   }
 

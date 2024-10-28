@@ -100,7 +100,7 @@ class ConsincoService {
               AND A.CODPESSOA = B.CODPESSOA
               AND B.FILIALRM = C.FILIALRM
               AND B.CODDEPTRM = C.CODDEPTRM
-              AND C.INTEGRA_WFM = 1
+              --AND C.INTEGRA_WFM = 1
               AND TO_DATE(A.DTABATIDA,'DD/MM/YYYY') = :a`;
 
       const bind = [date];

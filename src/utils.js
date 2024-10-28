@@ -142,6 +142,27 @@ const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
   });
 };
 
+const writeAfdTxtDay = async (dirName, dirItem, dirIpFinal, arrayData) => {
+  return new Promise((res, rej) => {
+    try {
+      const dir = `C:/node/afdtauto/afdDay/${dirName}`;
+      const filename = `afd_${dirName}_rlg${dirItem}_ip${dirIpFinal}.txt`;
+      const outputFilePath = path.join(dir, filename);
+
+      fs.mkdirSync(path.dirname(outputFilePath), { recursive: true });
+
+      if (typeof arrayData !== 'string' && !Buffer.isBuffer(arrayData)) {
+        throw new TypeError('[writeAfdTxt] - The "data" argument must be of type string or an instance of Buffer.');
+      }
+
+      fs.writeFileSync(outputFilePath, arrayData);
+      res(true);
+    } catch (error) {
+      rej(error);
+    }
+  });
+};
+
 const returnJsonLine = (ln) => {
   const lnLength = ln.length;
 
@@ -544,6 +565,7 @@ exports.makeChunk = makeChunk;
 exports.returnAfdDay = returnAfdDay;
 exports.returnAfdDate = returnAfdDate;
 exports.writeAfdTxt = writeAfdTxt;
+exports.writeAfdTxtDay = writeAfdTxtDay;
 exports.returnObjCorrectType = returnObjCorrectType;
 exports.returnJsonLine = returnJsonLine;
 exports.subtractHours = subtractHours;
