@@ -9,6 +9,8 @@ const { Telegraf } = require('telegraf');
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
 
+const { CLOCKS_FILE, LOG_DIR, AFD_DIR, AFDDAY_DIR, BOT_TOKEN, CHAT_ID } = process.env;
+
 const assembleArrayObjects = (columnsName, lines) => {
   const qtColumns = columnsName.length;
   const qtLines = lines.length;
@@ -43,7 +45,7 @@ const returnObjCorrectType = (arrayObj) => {
 };
 
 const configureLogWithTelegram = async () => {
-  const logname = `./logs/${returnCurrentDateAndTime()}.log`;
+  const logname = path.join(LOG_DIR, `${returnCurrentDateAndTime()}.log`);
 
   setTimeout(() => {
     sendLogToTelegram(`${logname}`);
@@ -78,7 +80,7 @@ const configureLogService = async () => {
       appenders: {
         logger: {
           type: 'file',
-          filename: `./logs/${returnCurrentDateAndTime()}.log`
+          filename: path.join(LOG_DIR, `${returnCurrentDateAndTime()}.log`)
         },
         console: {
           type: 'console'
@@ -103,7 +105,7 @@ const configureDirLog = async (dirname) => {
       appenders: {
         logger: {
           type: 'file',
-          filename: `./logs/${dir}.log`
+          filename: path.join(LOG_DIR, `${dir}.log`)
         },
         console: {
           type: 'console'
@@ -124,7 +126,11 @@ const configureDirLog = async (dirname) => {
 const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
   return new Promise((res, rej) => {
     try {
-      const dir = `C:/node/afdtauto/afd/${dirName}`;
+      /*       const { AFD_DIR } = process.env;
+      if (!AFD_DIR) {
+        throw new Error('AFD_DIR is not defined in the environment variables');
+      } */
+      const dir = path.join(AFD_DIR, `${dirName}`);
       const filename = `afd_${dirName}_rlg${dirItem}_ip${dirIpFinal}.txt`;
       const outputFilePath = path.join(dir, filename);
 
@@ -145,7 +151,7 @@ const writeAfdTxt = async (dirName, dirItem, dirIpFinal, arrayData) => {
 const writeAfdTxtDay = async (dirName, dirItem, dirIpFinal, arrayData) => {
   return new Promise((res, rej) => {
     try {
-      const dir = `C:/node/afdtauto/afdDay/${dirName}`;
+      const dir = path.join(AFDDAY_DIR, `${dirName}`);
       const filename = `afd_${dirName}_rlg${dirItem}_ip${dirIpFinal}.txt`;
       const outputFilePath = path.join(dir, filename);
 
@@ -498,8 +504,8 @@ const readEachLine = async (file) => {
 
 const sendLogToTelegram = (logname) => {
   const telegram = {
-    token: process.env.BOT_TOKEN,
-    chatId: process.env.CHAT_ID
+    token: BOT_TOKEN,
+    chatId: CHAT_ID
   };
 
   const bot = new Telegraf(telegram.token);
@@ -518,12 +524,13 @@ const sendLogToTelegram = (logname) => {
 };
 
 const readJsonClocks = async (success) => {
-  const jsonPath = await path.join('C:/node/afdtauto/json', 'clocks.json');
-  if (!fs.existsSync(jsonPath)) {
-    fs.writeFileSync(jsonPath, JSON.stringify([]));
+  //const CLOCKS_FILE = await path.join('C:/node/afdtauto/json', 'clocks.json');
+
+  if (!fs.existsSync(CLOCKS_FILE)) {
+    fs.writeFileSync(CLOCKS_FILE, JSON.stringify([]));
   }
   try {
-    const data = fs.readFileSync(jsonPath, 'utf8');
+    const data = fs.readFileSync(CLOCKS_FILE, 'utf8');
     const parsedData = JSON.parse(data).data;
 
     const successRecords = parsedData.filter((record) => record.status === `${success}`);

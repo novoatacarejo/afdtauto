@@ -16,7 +16,7 @@ process.env.UV_THREADPOOL_SIZE = 10;
 startWebServer();
 
 cron.schedule('0 * * * *', async () => {
-  await AppService.startApplication('n');
+  await AppService.startApplication('s');
 });
 
 cron.schedule('0 */6 * * * *', async () => {

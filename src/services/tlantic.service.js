@@ -95,7 +95,7 @@ class TlanticService {
           logger.info(`[${SERVICE_NAME}][postPunch][retry] - retrying in ${waitTime} ms...`);
           await new Promise((resolve) => setTimeout(resolve, waitTime));
         } else {
-          errorMessage(error, `${SERVICE_NAME}`, `postPunch`, `${ip}`, `${attempt}`);
+          errorMessage(error, `${SERVICE_NAME}`, `postPunch`, `${attempt}`);
           return false;
         }
       }

@@ -25,11 +25,24 @@ const argv = yargs
   .help()
   .alias('help', 'h').argv;
 
-const appDay = async (date) => {
-  //await AppService.gettingAfdDate('s', 'applicationByDay', date);
-  //await AppService.importEachAfdLineDay('s', 'databaseByDay');
-  //await ConsincoService.deleteDuplicates('s');
-  await AppService.sendingWfmApiDate('s', 'tlanticByDay', date);
+const appDay = async (date, getAfd, ckLen) => {
+  const data = {
+    date,
+    getAfd: ['s', 'y', 1, '01', '1'].includes(getAfd) ? 1 : 0,
+    chunckLength: parseInt(ckLen) || 100
+  };
+
+  try {
+    if (data.getAfd === 1) {
+      await AppService.gettingAfdDate('s', 'applicationByDay', data.date);
+      await AppService.importEachAfdLineDay('s', 'databaseByDay');
+      await ConsincoService.deleteDuplicates('s');
+    }
+
+    await AppService.sendingWfmApiDate('s', 'tlanticByDay', data.date);
+  } catch (error) {
+    logger.error(`[sendingWfmApiDate][error]\n`, error);
+  }
 };
 
 switch (argv._[0]) {

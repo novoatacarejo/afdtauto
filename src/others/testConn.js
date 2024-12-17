@@ -1,3 +1,4 @@
+require('dotenv').config('../../.env');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
@@ -6,7 +7,9 @@ const { configureDirLog, currentLogTimeDate } = require('../utils');
 const { getLogger } = require('log4js');
 let logger = getLogger('LOG');
 
-const jsonPath = path.join('C:/node/afdtauto/json', 'clocks.json');
+const { CLOCKS_FILE, NETWORK_FILE } = process.env;
+
+const jsonPath = CLOCKS_FILE;
 
 const readJson = () => {
   try {
@@ -22,7 +25,7 @@ const readJson = () => {
 };
 
 const readFailedPings = () => {
-  const failPath = path.join('C:/node/afdtauto/json', 'network.json');
+  const failPath = NETWORK_FILE;
   try {
     if (!fs.existsSync(failPath)) {
       fs.writeFileSync(failPath, JSON.stringify({ data: [] }));
@@ -37,7 +40,7 @@ const readFailedPings = () => {
 };
 
 const writeFailedPings = (failedPings) => {
-  const failPath = path.join('C:/node/afdtauto/json', 'network.json');
+  const failPath = NETWORK_FILE;
   try {
     fs.writeFileSync(failPath, JSON.stringify({ data: failedPings }, null, 2));
   } catch (err) {

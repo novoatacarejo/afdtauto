@@ -26,6 +26,7 @@ let logger = getLogger('LOG');
 
 const SERVICE_NAME = 'AppService';
 
+const { CLOCKS_FILE, LOG_DIR, AFD_DIR, AFDDAY_DIR, BOT_TOKEN, CHAT_ID } = process.env;
 class AppService {
   static async gettingAfd(enableLog, dirLog) {
     const log =
@@ -166,8 +167,8 @@ class AppService {
           )
         : null;
 
-      const dirPath = 'C:/node/afdtauto/afd';
-      const files = await listTxtFiles(dirPath);
+      //const dirPath = AFD_DIR;
+      const files = await listTxtFiles(AFD_DIR);
       const obj = [];
 
       await Promise.all(
@@ -223,8 +224,8 @@ class AppService {
           )
         : null;
 
-      const dirPath = 'C:/node/afdtauto/afdDay';
-      const files = await listTxtFiles(dirPath);
+      c; //onst dirPath = 'C:/node/afdtauto/afdDay';
+      const files = await listTxtFiles(AFDDAY_DIR);
       const obj = [];
 
       await Promise.all(
@@ -319,7 +320,11 @@ class AppService {
             await TlanticService.postPunch(token, chunk);
             total += chunk.length;
             log === 1
-              ? logger.info(`[${SERVICE_NAME}][sendingWfmApi][sending] - Round ${index + 1} - punches sent: ${total}`)
+              ? logger.info(
+                  `[${SERVICE_NAME}][sendingWfmApi][sending] - Round ${
+                    index + 1
+                  } - punches sent: ${total} - ${currentDate()}`
+                )
               : null;
           })
         );
@@ -329,7 +334,7 @@ class AppService {
     }
   }
 
-  static async sendingWfmApiDate(enableLog, dirLog, date) {
+  static async sendingWfmApiDate(enableLog, dirLog, date, ckLen) {
     const log =
       enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
         ? 1
@@ -384,11 +389,19 @@ class AppService {
           }
         }));
 
-        const chunks = makeChunk(punchesFormatted, 100);
+        const chunckLength = ckLen || 100;
+        logger.info(`[${SERVICE_NAME}][sendingWfmApi][send][date][${date}] - Chunck length: ${chunckLength}`);
+        const chunks = makeChunk(punchesFormatted, chunckLength);
 
         await Promise.all(
           chunks.map(async (chunk, index) => {
             await TlanticService.postPunch(token, chunk);
+
+            /*      setInterval(async () => {
+              await new Promise((resolve) => setTimeout(resolve, 5000));
+              await TlanticService.postPunch(token, chunk);
+            }, 5000);
+ */
             total += chunk.length;
             log == 1
               ? logger.info(

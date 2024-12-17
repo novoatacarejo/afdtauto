@@ -1,3 +1,4 @@
+require('dotenv').config('../.env');
 const express = require('express');
 const { configureDirLog } = require('./utils');
 const fs = require('fs');
@@ -9,6 +10,8 @@ let logger = getLogger('LOG');
 const app = express();
 const port = 3500;
 
+const { CLOCKS_FILE, NETWORK_FILE } = process.env;
+
 app.use(express.static(path.join('C:/node/afdtauto', 'public')));
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
@@ -18,12 +21,12 @@ app.use(express.static('public'));
 const startWebServer = async () => {
   await configureDirLog('application');
   try {
-    const jsonPath = path.join('C:/node/afdtauto/json', 'network.json');
-    const clocksPath = path.join('C:/node/afdtauto/json', 'clocks.json');
+    //const networkJsonFile = path.join('C:/node/afdtauto/json', 'network.json');
+    //const clocksJsonFile = path.join('C:/node/afdtauto/json', 'clocks.json');
 
     app.get('/fails', (req, res) => {
       try {
-        const data = fs.readFileSync(jsonPath, 'utf8');
+        const data = fs.readFileSync(NETWORK_FILE, 'utf8');
         const logs = JSON.parse(data).data;
         res.json(logs);
       } catch (err) {
@@ -34,7 +37,7 @@ const startWebServer = async () => {
 
     app.get('/clocks', (req, res) => {
       try {
-        const data = fs.readFileSync(clocksPath, 'utf8');
+        const data = fs.readFileSync(CLOCKS_FILE, 'utf8');
         const clocks = JSON.parse(data).data;
 
         res.json(clocks);
