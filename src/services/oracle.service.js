@@ -6,7 +6,7 @@ const SERVICE_NAME = 'OracleService';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
-logger.configureDirLogService('service');
+logger.configureDirLogService('application');
 
 const { ORACLE_LIB_DIR, ORACLE_CONNECTION_STRING, ORACLE_USER, ORACLE_PASSWORD } = process.env;
 

@@ -6,7 +6,7 @@ const Logger = require('./middleware/Logger.middleware.js');
 const yargs = require('yargs');
 
 let logger = new Logger();
-logger.configureDirLogService('applicationByDay');
+logger.configureDirLogService('applicationDay');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.UV_THREADPOOL_SIZE = 10;

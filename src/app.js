@@ -9,7 +9,7 @@ const SERVICE_NAME = 'app';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
-logger.configureDirLogService('app-start');
+logger.configureDirLogService('application');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.UV_THREADPOOL_SIZE = 10;
@@ -35,9 +35,9 @@ cron.schedule('0 */6 * * * *', async () => {
   }
 });
 
-App.startapp('s');
+//App.startapp('s');
 
-NetworkService.testConn();
+//NetworkService.testConn();
 
 /*
  # ┌────────────── second (optional)

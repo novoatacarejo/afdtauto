@@ -7,7 +7,7 @@ const SERVICE_NAME = 'WebService';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
-logger.configureDirLogService('service');
+logger.configureDirLogService('application');
 
 const { CLOCKS_FILE, NETWORK_FILE, API_WEB_DIR } = process.env;
 

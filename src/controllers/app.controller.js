@@ -22,7 +22,7 @@ const SERVICE_NAME = 'AppController';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
-logger.configureDirLogService('controller');
+logger.configureDirLogService('application');
 
 const { AFD_DIR } = process.env;
 
@@ -162,7 +162,7 @@ class App {
             total += chunk.length;
             const percentage = ((total / totalChunks) * 100).toFixed(2).replace('.', ',');
             log === 1
-              ? logger.info(name, `round ${index + 1} - punches sent: ${total} | ${percentage}% | ${dataHoraAtual()}`)
+              ? logger.info(name, `[round] ${index + 1} | punches sent: ${total} | ${percentage}% | ${dataHoraAtual()}`)
               : null;
           })
         );

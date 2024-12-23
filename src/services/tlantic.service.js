@@ -6,7 +6,7 @@ const SERVICE_NAME = 'TlanticService';
 
 let logger = new Logger(SERVICE_NAME);
 logger.service = SERVICE_NAME;
-logger.configureDirLogService('service');
+logger.configureDirLogService('application');
 
 const {
   API_BASE_URL,

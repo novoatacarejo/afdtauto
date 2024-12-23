@@ -12,7 +12,7 @@ const SERVICE_NAME = 'StationService';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
-logger.configureDirLogService('service');
+logger.configureDirLogService('application');
 
 const { AFD_DIR, API_BASE_URL, API_LOCAL_ADDRESS } = process.env;
 

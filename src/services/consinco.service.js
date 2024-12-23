@@ -6,8 +6,7 @@ const SERVICE_NAME = 'ConsincoService';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
-logger.configureDirLogService('service');
-
+logger.configureDirLogService('application');
 class ConsincoService {
   static async getStationsInfo() {
     const name = this.getStationsInfo.name;
