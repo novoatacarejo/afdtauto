@@ -7,7 +7,7 @@
       "nroEmpresa": 1,
       "ip": "192.168.1.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:31",
       "userName": "admin",
       "nomeEmpresa": "CARPINA",
       "empresaDir": "2-CARPINA",
@@ -15,8 +15,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -25,7 +25,7 @@
       "nroEmpresa": 1,
       "ip": "192.168.1.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:31",
       "userName": "admin",
       "nomeEmpresa": "CARPINA",
       "empresaDir": "2-CARPINA",
@@ -33,8 +33,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -43,7 +43,7 @@
       "nroEmpresa": 2,
       "ip": "192.168.2.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:31",
       "userName": "admin",
       "nomeEmpresa": "VIT.SA",
       "empresaDir": "3-VITORIA",
@@ -51,8 +51,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -61,7 +61,7 @@
       "nroEmpresa": 2,
       "ip": "192.168.2.82",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:31",
       "userName": "admin",
       "nomeEmpresa": "VIT.SA",
       "empresaDir": "3-VITORIA",
@@ -69,8 +69,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -79,7 +79,7 @@
       "nroEmpresa": 3,
       "ip": "192.168.3.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:31",
       "userName": "admin",
       "nomeEmpresa": "ARCOVERD",
       "empresaDir": "4-ARCOVERDE",
@@ -87,8 +87,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -97,7 +97,7 @@
       "nroEmpresa": 3,
       "ip": "192.168.3.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:31",
       "userName": "admin",
       "nomeEmpresa": "ARCOVERD",
       "empresaDir": "4-ARCOVERDE",
@@ -105,8 +105,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -115,7 +115,7 @@
       "nroEmpresa": 4,
       "ip": "192.168.4.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:39",
       "userName": "admin",
       "nomeEmpresa": "STACRUZ",
       "empresaDir": "5-SANTACRUZ",
@@ -123,8 +123,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -133,7 +133,7 @@
       "nroEmpresa": 4,
       "ip": "192.168.4.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:16",
+      "lastSyncDate": "2024-12-23T20:30:43",
       "userName": "admin",
       "nomeEmpresa": "STACRUZ",
       "empresaDir": "5-SANTACRUZ",
@@ -151,7 +151,7 @@
       "nroEmpresa": 5,
       "ip": "192.168.5.79",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:31",
       "userName": "admin",
       "nomeEmpresa": "BONGI",
       "empresaDir": "6-BONGI",
@@ -159,8 +159,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -169,7 +169,7 @@
       "nroEmpresa": 5,
       "ip": "192.168.5.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:31",
       "userName": "admin",
       "nomeEmpresa": "BONGI",
       "empresaDir": "6-BONGI",
@@ -177,8 +177,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -187,14 +187,14 @@
       "nroEmpresa": 6,
       "ip": "192.168.6.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:43",
       "userName": "admin",
       "nomeEmpresa": "PAULISTA",
       "empresaDir": "9-PAULISTA",
       "codFilial": 9,
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
-      "status": "success",
+      "status": "failed",
       "errorCode": "ETIMEDOUT",
       "errorMessage": "Host de destino inacessivel"
     },
@@ -205,7 +205,7 @@
       "nroEmpresa": 6,
       "ip": "192.168.6.82",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "PAULISTA",
       "empresaDir": "9-PAULISTA",
@@ -213,8 +213,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -223,7 +223,7 @@
       "nroEmpresa": 7,
       "ip": "192.168.7.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "GOIANA",
       "empresaDir": "10-GOIANA",
@@ -231,8 +231,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -241,7 +241,7 @@
       "nroEmpresa": 7,
       "ip": "192.168.7.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "GOIANA",
       "empresaDir": "10-GOIANA",
@@ -249,8 +249,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -259,7 +259,7 @@
       "nroEmpresa": 8,
       "ip": "192.168.8.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "2 IRMAOS",
       "empresaDir": "14-DOISIRMAOS",
@@ -267,8 +267,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -277,7 +277,7 @@
       "nroEmpresa": 8,
       "ip": "192.168.8.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "2 IRMAOS",
       "empresaDir": "14-DOISIRMAOS",
@@ -285,8 +285,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -295,7 +295,7 @@
       "nroEmpresa": 9,
       "ip": "192.168.9.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "SURUBIM",
       "empresaDir": "22-SURUBIM",
@@ -303,8 +303,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -313,7 +313,7 @@
       "nroEmpresa": 9,
       "ip": "192.168.9.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "SURUBIM",
       "empresaDir": "22-SURUBIM",
@@ -321,8 +321,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -331,7 +331,7 @@
       "nroEmpresa": 10,
       "ip": "192.168.10.81",
       "userPass": "7654",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "adm",
       "nomeEmpresa": "S LOUREN",
       "empresaDir": "16-SAOLOURENCO",
@@ -339,8 +339,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -349,7 +349,7 @@
       "nroEmpresa": 10,
       "ip": "192.168.10.82",
       "userPass": "7654",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "adm",
       "nomeEmpresa": "S LOUREN",
       "empresaDir": "16-SAOLOURENCO",
@@ -357,8 +357,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -367,7 +367,7 @@
       "nroEmpresa": 11,
       "ip": "192.168.11.82",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "GRAVATA",
       "empresaDir": "11-GRAVATA",
@@ -375,8 +375,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -385,7 +385,7 @@
       "nroEmpresa": 11,
       "ip": "192.168.11.83",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "GRAVATA",
       "empresaDir": "11-GRAVATA",
@@ -393,8 +393,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -403,7 +403,7 @@
       "nroEmpresa": 12,
       "ip": "192.168.12.40",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "LIMOEIRO",
       "empresaDir": "13-LIMOEIRO",
@@ -411,8 +411,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -421,7 +421,7 @@
       "nroEmpresa": 12,
       "ip": "192.168.12.41",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "LIMOEIRO",
       "empresaDir": "13-LIMOEIRO",
@@ -429,8 +429,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -439,7 +439,7 @@
       "nroEmpresa": 13,
       "ip": "192.168.13.40",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "ESCADA",
       "empresaDir": "12-ESCADA",
@@ -447,8 +447,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -457,7 +457,7 @@
       "nroEmpresa": 13,
       "ip": "192.168.13.41",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "ESCADA",
       "empresaDir": "12-ESCADA",
@@ -465,8 +465,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -475,7 +475,7 @@
       "nroEmpresa": 14,
       "ip": "192.168.14.37",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CABO",
       "empresaDir": "17-CABO",
@@ -483,8 +483,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -493,7 +493,7 @@
       "nroEmpresa": 14,
       "ip": "192.168.14.38",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CABO",
       "empresaDir": "17-CABO",
@@ -501,8 +501,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -511,7 +511,7 @@
       "nroEmpresa": 15,
       "ip": "192.168.15.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "OURICURI",
       "empresaDir": "30-OURICURI",
@@ -519,8 +519,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -529,7 +529,7 @@
       "nroEmpresa": 15,
       "ip": "192.168.15.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "OURICURI",
       "empresaDir": "30-OURICURI",
@@ -537,8 +537,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -547,7 +547,7 @@
       "nroEmpresa": 16,
       "ip": "192.168.16.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "BELOJARD",
       "empresaDir": "15-BELOJARDIM",
@@ -555,8 +555,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -565,7 +565,7 @@
       "nroEmpresa": 16,
       "ip": "192.168.16.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "BELOJARD",
       "empresaDir": "15-BELOJARDIM",
@@ -573,8 +573,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -583,7 +583,7 @@
       "nroEmpresa": 17,
       "ip": "192.168.17.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "MURIBECA",
       "empresaDir": "19-MURIBECA",
@@ -591,8 +591,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -601,7 +601,7 @@
       "nroEmpresa": 17,
       "ip": "192.168.17.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "MURIBECA",
       "empresaDir": "19-MURIBECA",
@@ -609,8 +609,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -619,7 +619,7 @@
       "nroEmpresa": 18,
       "ip": "192.168.18.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "AFOGADOS",
       "empresaDir": "23-AFOGADOS",
@@ -627,8 +627,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -637,7 +637,7 @@
       "nroEmpresa": 18,
       "ip": "192.168.18.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "AFOGADOS",
       "empresaDir": "23-AFOGADOS",
@@ -645,8 +645,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -655,7 +655,7 @@
       "nroEmpresa": 19,
       "ip": "192.168.19.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "BEZERROS",
       "empresaDir": "20-BEZERROS",
@@ -663,8 +663,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -673,7 +673,7 @@
       "nroEmpresa": 19,
       "ip": "192.168.19.82",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "BEZERROS",
       "empresaDir": "20-BEZERROS",
@@ -681,8 +681,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -691,7 +691,7 @@
       "nroEmpresa": 20,
       "ip": "192.168.20.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "TIMBAUBA",
       "empresaDir": "21-TIMBAUBA",
@@ -699,8 +699,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -709,7 +709,7 @@
       "nroEmpresa": 20,
       "ip": "192.168.20.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "TIMBAUBA",
       "empresaDir": "21-TIMBAUBA",
@@ -717,8 +717,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -727,7 +727,7 @@
       "nroEmpresa": 21,
       "ip": "192.168.21.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CARP TRE",
       "empresaDir": "24-CARPINATREVO",
@@ -735,8 +735,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -745,7 +745,7 @@
       "nroEmpresa": 21,
       "ip": "192.168.21.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CARP TRE",
       "empresaDir": "24-CARPINATREVO",
@@ -753,8 +753,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -763,7 +763,7 @@
       "nroEmpresa": 22,
       "ip": "192.168.22.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "BARREIRO",
       "empresaDir": "26-BARREIRO",
@@ -771,8 +771,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -781,7 +781,7 @@
       "nroEmpresa": 22,
       "ip": "192.168.22.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "BARREIRO",
       "empresaDir": "26-BARREIRO",
@@ -789,8 +789,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -799,7 +799,7 @@
       "nroEmpresa": 23,
       "ip": "192.168.23.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "PEDRAFOGO",
       "empresaDir": "25-PEDRAFOGO",
@@ -807,8 +807,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -817,7 +817,7 @@
       "nroEmpresa": 23,
       "ip": "192.168.23.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "PEDRAFOGO",
       "empresaDir": "25-PEDRAFOGO",
@@ -825,8 +825,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -835,7 +835,7 @@
       "nroEmpresa": 24,
       "ip": "192.168.24.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "DOISUNIDOS",
       "empresaDir": "32-DOISUNIDOS",
@@ -843,8 +843,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -853,7 +853,7 @@
       "nroEmpresa": 24,
       "ip": "192.168.24.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "DOISUNIDOS",
       "empresaDir": "32-DOISUNIDOS",
@@ -861,8 +861,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -871,7 +871,7 @@
       "nroEmpresa": 26,
       "ip": "192.168.26.80",
       "userPass": "123456789",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "FORROCK",
       "empresaDir": "27-FORROCK",
@@ -879,8 +879,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -889,7 +889,7 @@
       "nroEmpresa": 26,
       "ip": "192.168.26.81",
       "userPass": "123456789",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "FORROCK",
       "empresaDir": "27-FORROCK",
@@ -897,8 +897,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -907,7 +907,7 @@
       "nroEmpresa": 27,
       "ip": "192.168.27.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "VARZEA",
       "empresaDir": "31-VARZEA",
@@ -915,8 +915,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -925,7 +925,7 @@
       "nroEmpresa": 27,
       "ip": "192.168.27.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:05",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "VARZEA",
       "empresaDir": "31-VARZEA",
@@ -933,8 +933,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -943,7 +943,7 @@
       "nroEmpresa": 29,
       "ip": "192.168.29.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "SAOMATEUS",
       "empresaDir": "28-SAOMATEUS",
@@ -951,8 +951,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -961,7 +961,7 @@
       "nroEmpresa": 29,
       "ip": "192.168.29.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "SAOMATEUS",
       "empresaDir": "28-SAOMATEUS",
@@ -969,8 +969,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -979,7 +979,7 @@
       "nroEmpresa": 31,
       "ip": "192.168.31.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "RIBEIRAO",
       "empresaDir": "33-RIBEIRAO",
@@ -987,8 +987,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -997,7 +997,7 @@
       "nroEmpresa": 31,
       "ip": "192.168.31.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "RIBEIRAO",
       "empresaDir": "33-RIBEIRAO",
@@ -1005,8 +1005,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1015,7 +1015,7 @@
       "nroEmpresa": 32,
       "ip": "192.168.32.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "ARARIPINA",
       "empresaDir": "29-ARARIPINA",
@@ -1023,8 +1023,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1033,7 +1033,7 @@
       "nroEmpresa": 32,
       "ip": "192.168.32.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "ARARIPINA",
       "empresaDir": "29-ARARIPINA",
@@ -1041,8 +1041,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1051,7 +1051,7 @@
       "nroEmpresa": 34,
       "ip": "192.168.34.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CARUARU",
       "empresaDir": "34-CARUARU",
@@ -1059,8 +1059,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1069,7 +1069,7 @@
       "nroEmpresa": 34,
       "ip": "192.168.34.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CARUARU",
       "empresaDir": "34-CARUARU",
@@ -1077,8 +1077,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 2,
@@ -1087,7 +1087,7 @@
       "nroEmpresa": 500,
       "ip": "10.10.1.82",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "MATRIZ",
       "empresaDir": "1-MATRIZ",
@@ -1095,8 +1095,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 3,
@@ -1105,7 +1105,7 @@
       "nroEmpresa": 500,
       "ip": "10.10.1.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "MATRIZ",
       "empresaDir": "1-MATRIZ",
@@ -1113,8 +1113,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 4,
@@ -1123,7 +1123,7 @@
       "nroEmpresa": 500,
       "ip": "10.10.1.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "MATRIZ",
       "empresaDir": "1-MATRIZ",
@@ -1131,8 +1131,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1141,7 +1141,7 @@
       "nroEmpresa": 552,
       "ip": "10.11.0.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CSC - VIT",
       "empresaDir": "38-CSCVITORIA",
@@ -1149,8 +1149,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1159,7 +1159,7 @@
       "nroEmpresa": 998,
       "ip": "172.98.2.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CD FLV P",
       "empresaDir": "18-CDFLV",
@@ -1167,8 +1167,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1177,7 +1177,7 @@
       "nroEmpresa": 998,
       "ip": "172.98.2.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CD FLV P",
       "empresaDir": "18-CDFLV",
@@ -1185,8 +1185,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1195,7 +1195,7 @@
       "nroEmpresa": 998,
       "ip": "172.98.2.82",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:13",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CD FLV P",
       "empresaDir": "18-CDFLV",
@@ -1203,8 +1203,8 @@
       "portaria": 0,
       "dtaGeracao": "2024-07-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1213,7 +1213,7 @@
       "nroEmpresa": 36,
       "ip": "192.168.36.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CAMARAGIBE",
       "empresaDir": "39-CAMARAGIBE",
@@ -1221,8 +1221,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-10-08T17:05:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1231,16 +1231,16 @@
       "nroEmpresa": 36,
       "ip": "192.168.36.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "CAMARAGIBE",
       "empresaDir": "39-CAMARAGIBE",
       "codFilial": 39,
       "portaria": 671,
       "dtaGeracao": "2024-10-08T17:05:08",
-      "status": "failed",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1249,7 +1249,7 @@
       "nroEmpresa": 30,
       "ip": "192.168.30.80",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "PAULCT",
       "empresaDir": "36-PAULCT",
@@ -1257,8 +1257,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-11-12T14:55:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     },
     {
       "piso": 1,
@@ -1267,7 +1267,7 @@
       "nroEmpresa": 30,
       "ip": "192.168.30.81",
       "userPass": "admin",
-      "lastSyncDate": "2024-12-17T18:00:06",
+      "lastSyncDate": "2024-12-23T20:30:32",
       "userName": "admin",
       "nomeEmpresa": "PAULCT",
       "empresaDir": "36-PAULCT",
@@ -1275,8 +1275,8 @@
       "portaria": 671,
       "dtaGeracao": "2024-11-12T14:55:08",
       "status": "success",
-      "errorCode": "ETIMEDOUT",
-      "errorMessage": "Host de destino inacessivel"
+      "errorCode": "no error",
+      "errorMessage": "no error"
     }
   ]
 }

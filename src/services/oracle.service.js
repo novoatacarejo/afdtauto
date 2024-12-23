@@ -1,54 +1,50 @@
 require('dotenv').config({ path: '../../.env' });
 const oracledb = require('oracledb');
-const log4js = require('log4js');
+const Logger = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'OracleService';
 
-log4js.configure({
-  appenders: { console: { type: 'console' } },
-  categories: { default: { appenders: ['console'], level: 'info' } }
-});
-const logger = log4js.getLogger('LOG');
+let logger = new Logger();
+logger.service = SERVICE_NAME;
+logger.configureDirLogService('service');
 
-const ENV_VARS = {
-  ORACLE_LIB_DIR: process.env.ORACLE_LIB_DIR,
-  ORACLE_CONNECTION_STRING: process.env.ORACLE_CONNECTION_STRING,
-  ORACLE_USER: process.env.ORACLE_USER,
-  ORACLE_PASSWORD: process.env.ORACLE_PASSWORD
-};
+const { ORACLE_LIB_DIR, ORACLE_CONNECTION_STRING, ORACLE_USER, ORACLE_PASSWORD } = process.env;
 
 class OracleService {
   static async initOracleClient() {
+    const name = this.initOracleClient.name;
     try {
-      await oracledb.initOracleClient({ libDir: ENV_VARS.ORACLE_LIB_DIR });
-    } catch (error) {
-      logger.error(`[${SERVICE_NAME}][initOracleClient][error]\n`, error);
-      throw error;
+      await oracledb.initOracleClient({ libDir: ORACLE_LIB_DIR });
+    } catch (err) {
+      logger.error(name, err);
+      throw err;
     }
   }
 
   static async connect() {
+    const name = this.connect.name;
     try {
       await this.initOracleClient();
       const propsConnect = {
-        connectionString: ENV_VARS.ORACLE_CONNECTION_STRING,
-        user: ENV_VARS.ORACLE_USER,
-        password: ENV_VARS.ORACLE_PASSWORD
+        connectionString: ORACLE_CONNECTION_STRING,
+        user: ORACLE_USER,
+        password: ORACLE_PASSWORD
       };
 
       return await oracledb.getConnection(propsConnect);
-    } catch (error) {
-      logger.error(`[${SERVICE_NAME}][connect][error]\n`, error);
-      throw error;
+    } catch (err) {
+      logger.error(name, err);
+      throw err;
     }
   }
 
   static async close(connection) {
+    const name = this.close.name;
     if (connection) {
       try {
         await connection.close();
       } catch (err) {
-        logger.error(`[${SERVICE_NAME}][close][error]\n`, err);
+        logger.error(name, err);
         throw err;
       }
     }
@@ -58,4 +54,4 @@ class OracleService {
 OracleService.BIND_OUT = oracledb.BIND_OUT;
 OracleService.NUMBER = oracledb.NUMBER;
 
-exports.OracleService = OracleService;
+module.exports = { OracleService };

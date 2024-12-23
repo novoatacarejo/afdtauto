@@ -1,70 +1,54 @@
-require('dotenv').config({ path: '../.env' });
-const fs = require('fs');
-const path = require('path');
-const { ConsincoService } = require('./consinco.service');
+require('dotenv').config({ path: '../../.env' });
 const axios = require('axios');
 const https = require('https');
-const { returnJsonLine, subtractHours, currentDate, configureDirLog } = require('../utils');
+const { ConsincoService } = require('./consinco.service.js');
 const { promisify } = require('util');
-const { getLogger } = require('log4js');
-let logger = getLogger('LOG');
+const fs = require('fs');
+const path = require('path');
+const { returnJsonLine, subtractHours, currentDate, getLogValue } = require('../utils/Utils.js');
+const Logger = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'StationService';
+
+let logger = new Logger();
+logger.service = SERVICE_NAME;
+logger.configureDirLogService('service');
+
+const { AFD_DIR, API_BASE_URL, API_LOCAL_ADDRESS } = process.env;
 
 axios.defaults.timeout = 30000;
 
 const instance = axios.create({
-  baseURL: process.env.API_BASE_URL,
-  localAddress: process.env.API_LOCAL_ADDRESS,
+  baseURL: API_BASE_URL,
+  localAddress: API_LOCAL_ADDRESS,
   timeout: 60000,
   httpAgent: new https.Agent({ keepAlive: true })
 });
 
-const errorMessage = async (error, service, name, ip, attempt) => {
-  const ipAddress = !ip ? `localhost` : ip;
-  await configureDirLog('network');
-
-  if (error.code === 'ETIMEDOUT') {
-    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} timed out on attempt ${attempt}.`);
-  } else if (error.code === 'ECONNRESET') {
-    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} reset on attempt ${attempt}.`);
-  } else if (error.code === 'ERR_BAD_RESPONSE') {
-    logger.error(`[${service}][${name}][${error.code}] - bad response from ${ipAddress} on attempt ${attempt}.`);
-  } else if (error.code === 'ECONNABORTED') {
-    logger.error(`[${service}][${name}][${error.code}] - connection to ${ipAddress} aborted on attempt ${attempt}.`);
-  } else {
-    logger.error(`[${service}][${name}][error][${error.code}] - station: ${ipAddress} after 3 attempts - ${error}`);
-  }
-};
-
 class StationService {
   static async isServerReachable(ip, login, pass) {
+    const name = this.isServerReachable.name;
     try {
       await axios.get(`https://${ip}/login.fcgi?login=${login}&password=${pass}`, { timeout: 5000 });
+      logger.info(name, `server on ip: ${ip} with login: ${login} is reachable`);
       return true;
     } catch (error) {
+      logger.error(
+        name,
+        `error when trying to reach the server on ip: ${ip} with login: ${login} and password: ${pass}`
+      );
       return false;
     }
   }
 
   static async getToken(enableLog, ip, login, pass, retries = 3, delay = 1000) {
+    const name = this.getToken.name;
     const url = `https://${ip}/login.fcgi?login=${login}&password=${pass}`;
     const headers = {
       'Content-Length': '0'
     };
 
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
-
-    if (log === null) {
-      logger.error(
-        `[${SERVICE_NAME}][getToken][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
-      );
-    }
+    const log = getLogValue(enableLog);
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
@@ -79,37 +63,31 @@ class StationService {
           const error = {
             code: `error when trying to fetch the token on ip: ${ip} with login: ${login}`
           };
-          const name = `getToken`;
-          const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
-          throw new Error(errorMessage);
+          logger.replyConn(error, name, ip, attempt);
         }
 
         const token = response.data.session;
         if (!token) {
           const error = {
-            code: `not connected on Station IP: ${ip}. No token.`
+            code: `not connected on station ip: ${ip}. no token.`
           };
-          const name = `getToken`;
-          const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
-          throw new Error(errorMessage);
+          logger.replyConn(error, name, ip, attempt);
         } else {
           log == 1
-            ? logger.info(
-                `[${SERVICE_NAME}][getToken][login] - connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`
-              )
+            ? logger.info(name, `connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`)
             : null;
         }
 
         return token;
       } catch (error) {
-        errorMessage(error, `${SERVICE_NAME}`, `getToken`, `${ip}`, `${attempt}`);
+        logger.replyConn(error, name, ip, attempt);
 
         if (attempt < retries) {
           const waitTime = delay * Math.pow(2, attempt);
-          logger.info(`[${SERVICE_NAME}][getToken][retry] - retrying in ${waitTime} ms...`);
+          logger.info(name, `- retrying in ${waitTime} ms...`);
           await new Promise((resolve) => setTimeout(resolve, waitTime));
         } else {
-          errorMessage(error, `${SERVICE_NAME}`, `getToken`, `${ip}`, `${attempt}`);
+          logger.replyConn(error, name, ip, attempt);
           return false;
         }
       }
@@ -117,13 +95,12 @@ class StationService {
   }
 
   static getAfd = async (ip, token, portaria, afdDateInfo) => {
+    const name = this.getAfd.name;
     if (!token) {
       const error = {
         code: `error when trying to fetch the token on ip:${ip} with login: ${login} and password: ${pass}`
       };
-      const name = `getAfd`;
-      const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, 1);
-      throw new Error(errorMessage);
+      logger.replyConn(error, name, ip, 1);
     }
     try {
       const previousDate = {
@@ -150,32 +127,32 @@ class StationService {
 
       if (!response) {
         const error = { code: `error when trying to post data: ${response.config.data}` };
-        const name = `getAfd`;
-        const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, 1);
-        throw new Error(errorMessage);
+        logger.replyConn(error, name, ip, 1);
       }
 
       let answer = response.data;
 
       return answer;
     } catch (error) {
-      errorMessage = (error, `${SERVICE_NAME}`, `getAfd`, ip, 1);
+      logger.replyConn(error, name, ip, 1);
     }
   };
 
   static getStationsInfo = async () => {
+    const name = this.getStationsInfo.name;
     try {
-      //logger.info(`[${SERVICE_NAME}][getStationsInfo][getting] - getting stations info`);
+      logger.info(name, `getting stations info`);
       const result = await ConsincoService.getStationsInfo();
       return result;
     } catch (error) {
-      errorMessage = (error, `${SERVICE_NAME}`, `getStationsInfo`, ip, 1);
+      logger.replyConn(error, name, 'localhost', 1);
     }
   };
 
   static startSendLines = async (emp, it, ip) => {
+    const name = this.startSendLines.name;
     const readFileAsync = promisify(fs.readFile);
-    const dir = `./afd/${emp}/`;
+    const dir = path.join(AFD_DIR, `${emp}`);
     const filename = `afd_${emp}_rlg${it}_ip${ip}.txt`;
     const file = path.join(dir, filename);
 
@@ -183,9 +160,7 @@ class StationService {
       const error = {
         code: `${file} not found`
       };
-      const name = `startSendLines`;
-      const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, 1);
-      throw new Error(errorMessage);
+      logger.replyConn(error, name, ip, 1);
     }
 
     try {
@@ -212,7 +187,6 @@ class StationService {
         let testDate = punchDate == today ? true : false;
 
         if (testHour === true && testDate === true) {
-          //i++;
           const cod = await ConsincoService.getCodPessoa(data.id, data.lnLength);
 
           data.cardId = cod;
@@ -232,25 +206,15 @@ class StationService {
       }
       return arr;
     } catch (error) {
-      errorMessage = (error, `${SERVICE_NAME}`, `startSendLines`, ip, 1);
+      logger.replyConn(error, name, ip, 1);
       throw false;
     }
   };
 
   static logoutStation = async (enableLog, ip, token, retries = 3, delay = 1000) => {
+    const name = this.logoutStation.name;
     const url = `https://${ip}/logout.fcgi?session=${token}`;
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
-
-    if (log === null) {
-      logger.error(
-        `[${SERVICE_NAME}][logoutStation][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
-      );
-    }
+    const log = getLogValue(enableLog);
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
@@ -265,26 +229,25 @@ class StationService {
           const error = {
             code: `error when trying to logout on station ${ip} with token ${token}`
           };
-          const name = 'logoutStation';
-          const errorMessage = errorMessage(error, SERVICE_NAME, name, ip, attempt);
-          throw new Error(errorMessage);
+          logger.replyConn(error, name, ip, attempt);
         } else {
           log == 1
             ? logger.info(
-                `[${SERVICE_NAME}][logoutStation][logout] ip:${response.request.host} | status:${response.status} | message:${response.statusText}`
+                name,
+                `logout-ip:${response.request.host} | status:${response.status} | message:${response.statusText}`
               )
             : null;
         }
         return true;
       } catch (error) {
-        errorMessage(error, `${SERVICE_NAME}`, `logoutStation`, `${ip}`, `${attempt}`);
+        logger.replyConn(error, name, ip, attempt);
 
         if (attempt < retries) {
           const waitTime = delay * Math.pow(2, attempt);
-          logger.info(`[${SERVICE_NAME}][logoutStation][retry] - retrying in ${waitTime} ms...`);
+          logger.info(name, `-retrying in ${waitTime} ms...`);
           await new Promise((resolve) => setTimeout(resolve, waitTime));
         } else {
-          errorMessage(error, `${SERVICE_NAME}`, `logoutStation`, `${ip}`, `${attempt}`);
+          logger.replyConn(error, name, ip, attempt);
           return false;
         }
       }
@@ -292,4 +255,4 @@ class StationService {
   };
 }
 
-exports.StationService = StationService;
+module.exports = { StationService };

@@ -1,27 +1,43 @@
 require('dotenv').config('../.env');
-const { AppService } = require('./services/app.service');
-const { testConn } = require('./others/testConn');
-const { startWebServer } = require('./server');
-const { getLogger } = require('log4js');
+const { App } = require('./controllers/index.controller.js');
+const { NetworkService, WebService } = require('./services/index.service.js');
+const Logger = require('./middleware/Logger.middleware.js');
 
-let logger = getLogger('LOG');
-let cron = require('node-cron');
+const cron = require('node-cron');
+
+const SERVICE_NAME = 'app';
+
+let logger = new Logger();
+logger.service = SERVICE_NAME;
+logger.configureDirLogService('app-start');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.UV_THREADPOOL_SIZE = 10;
 
-//AppService.startApplication('n');
-//testConn();
-
-startWebServer();
+WebService.start();
+logger.info('start', 'starting web server');
 
 cron.schedule('0 * * * *', async () => {
-  await AppService.startApplication('n');
+  try {
+    await App.startapp('s');
+    logger.info('cron-App.start', 'application started');
+  } catch (error) {
+    logger.error('cron-App.start', error);
+  }
 });
 
 cron.schedule('0 */6 * * * *', async () => {
-  await testConn();
+  try {
+    logger.info('cron-testConn()', 'testing connection');
+    await NetworkService.testConn();
+  } catch (error) {
+    logger.error('cron-testConn()', error);
+  }
 });
+
+App.startapp('s');
+
+NetworkService.testConn();
 
 /*
  # ┌────────────── second (optional)

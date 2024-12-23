@@ -1,12 +1,16 @@
-const { assembleArrayObjects } = require('../utils');
-const { OracleService } = require('./oracle.service');
-const { getLogger } = require('log4js');
-let logger = getLogger('LOG');
+const { assembleArrayObjects, getLogValue, totalRecords } = require('../utils/Utils.js');
+const { OracleService } = require('./oracle.service.js');
+const Logger = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'ConsincoService';
 
+let logger = new Logger();
+logger.service = SERVICE_NAME;
+logger.configureDirLogService('service');
+
 class ConsincoService {
   static async getStationsInfo() {
+    const name = this.getStationsInfo.name;
     try {
       const columnsName = [
         { name: 'codFilial' },
@@ -33,23 +37,14 @@ class ConsincoService {
 
       return products;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getStationsInfo][error]\n`, error);
+      logger.error(name, error);
     }
   }
 
-  static async getPunchesByHour(enableLog) {
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
+  static async getPunchesByHour(enableLog = 'n') {
+    const name = this.getPunchesByHour.name;
+    const log = getLogValue(enableLog);
 
-    if (log === null) {
-      logger.error(
-        `[${SERVICE_NAME}][getPunchesByHour][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
-      );
-    }
     try {
       const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
 
@@ -63,27 +58,18 @@ class ConsincoService {
 
       await OracleService.close(client);
 
-      log === 1 ? logger.info(`[${SERVICE_NAME}][getPunchesByHour][getting][total] - ${punches.count}`) : null;
+      logger.info(name, totalRecords(punches, log));
 
       return punches;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getPunchesByHour][error]\n`, error);
+      logger.error(name, error);
     }
   }
 
-  static async getPunchesByDate(enableLog, date) {
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
+  static async getPunchesByDate(enableLog = 'n', date) {
+    const name = this.getPunchesByDate.name;
+    const log = getLogValue(enableLog);
 
-    if (log === null) {
-      logger.error(
-        `[${SERVICE_NAME}][getPunchesByDate][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
-      );
-    }
     try {
       const punchName = [{ name: 'codPessoa' }, { name: 'punchTime' }];
 
@@ -111,17 +97,16 @@ class ConsincoService {
 
       await OracleService.close(client);
 
-      if (log === 1) {
-        await logger.info(`[${SERVICE_NAME}][getPunchesByDate][getting][total] - ${punches.count}`);
-      }
+      logger.info(name, totalRecords(punches, log));
 
       return punches;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getPunchesByDate][error]\n`, error);
+      logger.error(name, error);
     }
   }
 
   static async getCodPessoa(idt) {
+    const name = this.getCodPessoa.name;
     try {
       const client = await OracleService.connect();
 
@@ -137,15 +122,16 @@ class ConsincoService {
 
       return employeeId;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][getCodPessoa][error]\n`, error);
+      logger.error(name, error);
     }
   }
 
   static async insertAfd(data) {
+    const name = this.insertAfd.name;
     try {
       const client = await OracleService.connect();
       if (!data.codpessoa) {
-        logger.info(`[${SERVICE_NAME}][insertAfd][no data] - Usuario sem codpessoa]: ${data}`);
+        logger.info(name, `no data-usuario sem codpessoa: ${data}`);
       } else {
         const sql = `INSERT INTO WFM_DEV.DEV_AFD (DTAGERACAO, CODPESSOA, PUNCH) VALUES ( SYSDATE, :a, TO_DATE( :b, 'YYYY-MM-DD HH24:MI:SS') )`;
 
@@ -155,25 +141,24 @@ class ConsincoService {
 
         const response = await client.execute(sql, bind, options);
 
-        logger.info(
-          `[${SERVICE_NAME}][insertAfd][inserting] - ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`
-        );
+        logger.info(name, `inserting ${response.rowsAffected} row succeded. rowId ${response.lastRowid}`);
 
         await OracleService.close(client);
       }
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][insertAfd][error]\n`, error);
+      logger.error(name, error);
     }
   }
 
   static async insertOne(data) {
+    const name = this.insertOne.name;
     try {
       const client = await OracleService.connect();
 
       client.callTimeout = 10 * 1000;
 
       if (!data.idNumber) {
-        logger.info(`[${SERVICE_NAME}][insertOne][no data] - Usuario sem codpessoa]: ${data}`);
+        logger.info(name, `no data-usuario sem codpessoa: ${data}`);
       } else {
         const sql = `INSERT INTO WFM_DEV.DEV_RM_AFD (DTAGERACAO, IDNUMBER, IDLENGTH, PUNCH) VALUES ( SYSDATE, :a, :b, TO_DATE( :c, 'YYYY-MM-DD HH24:MI:SS') )`;
 
@@ -195,30 +180,19 @@ class ConsincoService {
 
         const response = await client.execute(sql, bind, options);
 
-        logger.info(
-          `[${SERVICE_NAME}][insertOne][inserting] - ${response.rowsAffected} row succeded. RowId ${response.lastRowid}`
-        );
+        logger.info(name, `inserting ${response.rowsAffected} row succeded. rowId ${response.lastRowid}`);
 
         await OracleService.close(client);
       }
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][insertOne][error]\n`, error);
+      logger.error(name, error);
     }
   }
 
   static async deleteDuplicates(enableLog) {
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
+    const name = this.deleteDuplicates.name;
+    const log = getLogValue(enableLog);
 
-    if (log === null) {
-      logger.error(
-        `[${SERVICE_NAME}][deleteDuplicates][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
-      );
-    }
     try {
       const client = await OracleService.connect();
 
@@ -248,35 +222,22 @@ class ConsincoService {
 
       const response = await client.execute(sql);
 
-      log === 1
-        ? logger.info(
-            `[${SERVICE_NAME}][deleteDuplicates][deleting] - eliminate duplicate rows from WFM_DEV.DEV_RM_AFD]`
-          )
-        : null;
+      logger.info(name, `deleted duplicates`);
 
       await OracleService.close(client);
 
-      log === 1 ? logger.info(`[${SERVICE_NAME}][deleteDuplicates][end] - Finished!`) : null;
+      log === 1 ? logger.info(name, `finished!`) : null;
 
       return response;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}]['deleteDuplicates'][error]\n`, error);
+      logger.error(name, error);
     }
   }
 
   static async deleteDuplicatesRows(enableLog) {
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
+    const name = this.deleteDuplicatesRows.name;
+    const log = getLogValue(enableLog);
 
-    if (log === null) {
-      logger.error(
-        `[${SERVICE_NAME}][deleteDuplicatesRows][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
-      );
-    }
     try {
       const client = await OracleService.connect();
 
@@ -313,34 +274,21 @@ class ConsincoService {
       const response = await client.execute(sql, binds);
 
       log === 1
-        ? logger.info(
-            `[${SERVICE_NAME}][deleteDuplicatesRows][deleting] - eliminated ${response.outBinds.rows_deleted} duplicate rows from DEV_RM_AFD]`
-          )
+        ? logger.info(name, `eliminated ${response.outBinds.rows_deleted} duplicate rows from DEV_RM_AFD`)
         : null;
 
       await OracleService.close(client);
 
-      //logger.info(`[${SERVICE_NAME}][deleteDuplicatesRows][end] - Finished!`);
-
       return response.outBinds.rows_deleted;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}]['deleteDuplicatesRows'][error]\n`, error);
+      logger.error(name, error);
     }
   }
 
   static async insertMany(enableLog, data) {
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
+    const name = this.insertMany.name;
+    const log = getLogValue(enableLog);
 
-    if (log === null) {
-      logger.error(
-        `[${SERVICE_NAME}][insertMany][error] - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`
-      );
-    }
     try {
       var content = [];
 
@@ -370,15 +318,15 @@ class ConsincoService {
 
       const response = await client.executeMany(sql, content, options);
 
-      log === 1 ? logger.info(`[${SERVICE_NAME}][insertMany][inserting] - Rows qtd: ${data.length}`) : null;
+      log === 1 ? logger.info(name, `inserting rows: ${data.length}`) : null;
 
       await OracleService.close(client);
 
       return response;
     } catch (error) {
-      logger.error(`[${SERVICE_NAME}][insertMany][error]\n`, error);
+      logger.error(name, error);
     }
   }
 }
 
-exports.ConsincoService = ConsincoService;
+module.exports = { ConsincoService };
