@@ -2,8 +2,6 @@ require('dotenv').config('../../.env');
 const { StationService, TlanticService, ConsincoService } = require('../services/index.service.js');
 const Logger = require('../middleware/Logger.middleware.js');
 const {
-  //configureDirLog,
-  returnAfdDay,
   returnAfdDate,
   returnObjCorrectType,
   writeAfdTxtDay,
@@ -14,28 +12,23 @@ const {
   formatDate,
   formatHour,
   clearScreen,
-  readJsonClocks
+  readJsonClocks,
+  getLogValue
 } = require('../utils/Utils.js');
 
-const SERVICE_NAME = 'AppByDay';
+const SERVICE_NAME = 'AppDay';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
-logger.configureDirLogService('app-by-day');
+logger.configureDirLogService('applicationDay');
 
 const { AFDDAY_DIR } = process.env;
 
-class AppByDay {
-  static async gettingAfdDay(enableLog = 'n', date) {
+class AppDay {
+  static async gettingAfdDay(date, enableLog = 'n') {
     const name = this.gettingAfdDay.name;
+    const log = getLogValue(enableLog);
 
-    const log = enableLog.toLocaleLowerCase === 's' ? 1 : enableLog.toLocaleLowerCase === 'n' ? 0 : null;
-
-    if (log === null) {
-      logger.error(name, `invalid value for enableLog. use 's' or 'n' (case-insensitive).`);
-    }
-
-    //await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
       log === 1 ? logger.info(name, `[${date}] - coleta de arquivos AFD iniciada em ${dataHoraAtual()}`) : null;
@@ -52,7 +45,7 @@ class AppByDay {
           const clock = returnObjCorrectType(station);
 
           try {
-            let token = await StationService.getToken(enableLog, clock.ip, clock.user, clock.pass);
+            let token = await StationService.getToken(clock.ip, clock.user, clock.pass, log);
 
             if (!token) {
               logger.error(name, `[${date}] - not connected on station ip ${clock.ip} - getting no token`);
@@ -61,7 +54,7 @@ class AppByDay {
                 const afdDate = await returnAfdDate(date);
                 const afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
                 await writeAfdTxtDay(clock.empresaDir, clock.item, clock.ipFinal, afd);
-                await StationService.logoutStation(enableLog, clock.ip, token);
+                await StationService.logoutStation(clock.ip, token, log);
               } catch (error) {
                 logger.error(name, `[${date}] - error writing to file: ${error.message}`);
               }
@@ -78,18 +71,8 @@ class AppByDay {
 
   static async importEachAfdLineDay(enableLog = 'n') {
     const name = this.importEachAfdLineDay.name;
+    const log = getLogValue(enableLog);
 
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
-
-    if (log === null) {
-      logger.error(name, `invalid value for enableLog. use 's' or 'n' (case-insensitive).`);
-    }
-    //await configureDirLog(`${dirLog}`);
     try {
       clearScreen();
 
@@ -125,26 +108,16 @@ class AppByDay {
       );
 
       //console.log(obj);
-      await ConsincoService.insertMany(enableLog, obj);
+      await ConsincoService.insertMany(obj, log);
       log === 1 ? await logger.info(name, `[total] - ${obj.length}`) : null;
     } catch (error) {
       logger.error(name, error);
     }
   }
 
-  static async sendingWfmApiDate(enableLog = 'n', date, ckLen) {
-    const name = this.sendingWfmApiDate.name;
-
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
-
-    if (log === null) {
-      logger.error(name, `invalid value for enableLog. use 's' or 'n' (case-insensitive).`);
-    }
+  static async sendingWfmApiDay(date, ckLen, enableLog = 'n') {
+    const name = this.sendingWfmApiDay.name;
+    const log = getLogValue(enableLog);
 
     try {
       clearScreen();
@@ -169,10 +142,12 @@ class AppByDay {
             )
           : null;
 
-        const punches = await ConsincoService.getPunchesByDate(enableLog, date);
+        const punches = await ConsincoService.getPunchesByDate(date, log);
+
+        const totalChunks = punches.length;
 
         if (punches.length === 0) {
-          logger.error(name, `[${date}] - no punches to send`);
+          logger.error(name, `[${date}] - no punches to send to the api from date ${dataHoraAtual()}`);
           return;
         }
 
@@ -193,7 +168,13 @@ class AppByDay {
           chunks.map(async (chunk, index) => {
             await TlanticService.postPunch(token, chunk);
             total += chunk.length;
-            log == 1 ? logger.info(name, `[${date}] round ${index + 1} - punches sent: ${total}`) : null;
+            const percentage = ((total / totalChunks) * 100).toFixed(2).replace('.', ',');
+            log === 1
+              ? logger.info(
+                  name,
+                  `[${date}][round] ${index + 1} | punches sent: ${total} | ${percentage}% | ${dataHoraAtual()}`
+                )
+              : null;
           })
         );
       }
@@ -202,28 +183,18 @@ class AppByDay {
     }
   }
 
-  static async startappDate(enableLog = 'n') {
-    const name = this.startappDate.name;
-    const log =
-      enableLog === 's' || enableLog === 'S' || enableLog === 'y' || enableLog === 'Y'
-        ? 1
-        : enableLog === 'n' || enableLog === 'N'
-        ? 0
-        : null;
-
-    if (log === null) {
-      logger.error(name, `invalid value for enableLog. use 's' or 'n' (case-insensitive).`);
-    }
+  static async startappDay(date, ckLen, enableLog = 'n') {
+    const name = this.startappDay.name;
+    const log = getLogValue(enableLog);
 
     try {
-      //await configureDirLog('app');
       log === 1 ? logger.info(name, `starting integration on JOB pid: ${process.pid} em ${dataHoraAtual()}`) : null;
-      await this.gettingAfdDay(enableLog);
-      await this.importEachAfdLineDay(enableLog);
-      await ConsincoService.deleteDuplicates(enableLog);
+      await this.gettingAfdDay(date, log);
+      await this.importEachAfdLineDay(log);
+      await ConsincoService.deleteDuplicates(date, log);
 
       setTimeout(async () => {
-        await this.sendingWfmApiDate(enableLog);
+        await this.sendingWfmApiDay(date, ckLen, log);
       }, 180000);
     } catch (error) {
       logger.error(name, error);
@@ -231,4 +202,4 @@ class AppByDay {
   }
 }
 
-exports.AppByDay = AppByDay;
+module.exports = { AppDay };

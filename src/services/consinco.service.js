@@ -65,7 +65,7 @@ class ConsincoService {
     }
   }
 
-  static async getPunchesByDate(enableLog = 'n', date) {
+  static async getPunchesByDate(date, enableLog = 'n') {
     const name = this.getPunchesByDate.name;
     const log = getLogValue(enableLog);
 
@@ -188,7 +188,7 @@ class ConsincoService {
     }
   }
 
-  static async deleteDuplicates(enableLog) {
+  /* static async deleteDuplicates(enableLog) {
     const name = this.deleteDuplicates.name;
     const log = getLogValue(enableLog);
 
@@ -225,7 +225,68 @@ class ConsincoService {
 
       await OracleService.close(client);
 
-      log === 1 ? logger.info(name, `finished!`) : null;
+      log === 1 ? logger.info(name, `delete finished!`) : null;
+
+      return response;
+    } catch (error) {
+      logger.error(name, error);
+    }
+  } */
+
+  //
+  static async deleteDuplicates(date, enableLog = 'n') {
+    const name = this.deleteDuplicates.name;
+    const log = getLogValue(enableLog);
+
+    try {
+      const client = await OracleService.connect();
+
+      client.callTimeout = 60 * 1000;
+
+      const sql = `
+      BEGIN \
+            DELETE \
+            FROM DEV_RM_AFD A \
+            WHERE 1 = 1  \
+            AND A.DTABATIDA = TO_DATE(:a,'DD/MM/YYYY') \
+            AND NOT EXISTS \
+            (SELECT 1 \
+                  FROM (SELECT IDNUMBER, DTABATIDA, HHMM, MIN(T.ROWID) AS MINROWID \
+                        FROM DEV_RM_AFD T \
+                        WHERE 1 = 1 \
+                        AND T.DTABATIDA = A.DTABATIDA \
+                        AND T.IDNUMBER = A.IDNUMBER \
+                        AND T.HHMM = A.HHMM \
+                        AND T.DTABATIDA = TO_DATE(:b,'DD/MM/YYYY') \
+                        GROUP BY IDNUMBER, DTABATIDA, HHMM) B \
+                  WHERE 1 = 1 \
+                  AND B.MINROWID = A.ROWID) \
+            OR A.CODPESSOA IS NULL; \
+          COMMIT; \
+      END;`;
+
+      const binds = {
+        a: date,
+        b: date
+      };
+
+      const options = {
+        autoCommit: true,
+        fetchArraySize: 100,
+        poolMax: 25,
+        poolMin: 5,
+        poolIncrement: 5,
+        poolTimeout: 1800,
+        poolPingInterval: 300
+      };
+
+      const response = await client.execute(sql, binds, options);
+
+      logger.info(name, `deleted duplicates from ${date}`);
+
+      await OracleService.close(client);
+
+      log === 1 ? logger.info(name, `delete from ${date} finished!`) : null;
 
       return response;
     } catch (error) {
@@ -284,7 +345,7 @@ class ConsincoService {
     }
   }
 
-  static async insertMany(enableLog, data) {
+  static async insertMany(data, enableLog = 'n') {
     const name = this.insertMany.name;
     const log = getLogValue(enableLog);
 

@@ -1,5 +1,5 @@
 require('dotenv').config('../.env');
-const { App } = require('./controllers/index.controller.js');
+const { AppDay } = require('./controllers/index.controller.js');
 const { ConsincoService } = require('./services/index.service.js');
 const Logger = require('./middleware/Logger.middleware.js');
 
@@ -13,36 +13,52 @@ process.env.UV_THREADPOOL_SIZE = 10;
 
 /*
 Send Data:
-node appDays.js send --date 20/06/202
+node clear && node .\src\appDay.js send -d 15/12/2024 -a 1 -c 100 -l 1
 */
 
 const argv = yargs
-  .command('send', 'Send data to the WFM API', {
+  .command('send', 'Get AFD files and send data to the WFM API', {
     date: {
-      description: 'Date for sending data',
+      description: 'date to get data and for sending',
       alias: 'd',
+      type: 'string'
+    },
+    getafd: {
+      description: 'get new AFD data from date',
+      alias: 'a',
+      type: 'string'
+    },
+    cklen: {
+      description: 'Chunck length for sending data',
+      alias: 'c',
+      type: 'string'
+    },
+    log: {
+      description: 'Enable log',
+      alias: 'l',
       type: 'string'
     }
   })
   .help()
   .alias('help', 'h').argv;
 
-const appDay = async (date, getAfd, ckLen) => {
-  const name = AppDay.name;
-  const data = {
-    date,
-    getAfd: ['s', 'y', 'sim', 'yes', 1, '01', '1'].includes(getAfd) ? 1 : 0,
-    chunckLength: parseInt(ckLen) || 100
+const appDay = async (data) => {
+  const name = appDay.name;
+  const obj = {
+    date: data.date,
+    getAfd: data.getAfd || 0,
+    ckInt: data.ckInt || 100,
+    log: data.log || 0
   };
 
   try {
-    if (data.getAfd === 1) {
-      await App.gettingAfdDate('s', 'applicationByDay', data.date);
-      await App.importEachAfdLineDay('s', 'databaseByDay');
-      await ConsincoService.deleteDuplicates('s');
+    if (obj.getAfd === 1) {
+      await AppDay.gettingAfdDay(obj.date, obj.log);
+      await AppDay.importEachAfdLineDay(obj.log);
+      await ConsincoService.deleteDuplicates(obj.date, obj.log);
     }
 
-    await App.sendingWfmApiDate('s', 'tlanticByDay', data.date);
+    await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
   } catch (error) {
     logger.error(name, error);
   }
@@ -51,7 +67,14 @@ const appDay = async (date, getAfd, ckLen) => {
 switch (argv._[0]) {
   case 'send':
     if (argv.date) {
-      appDay(argv.date);
+      const data = {
+        date: argv.date,
+        getAfd: ['s', 'y', 'sim', 'yes', 1, '01', '1'].includes(argv.getafd) ? 1 : 0,
+        ckInt: parseInt(argv.cklen) || 100,
+        log: ['s', 'y', 'sim', 'yes', 1, '01', '1'].includes(argv.log) ? 1 : 0
+      };
+
+      appDay(data);
     } else {
       logger.error('switch', 'please provide a date with the --date or -d option.');
     }

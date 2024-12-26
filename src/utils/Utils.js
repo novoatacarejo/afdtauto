@@ -426,15 +426,16 @@ const readJsonClocks = async (success) => {
 function getLogValue(enableLog = 'n') {
   const name = getLogValue.name;
 
-  const log = [1, '1', 's', 'sim', 'y', 'yes'].includes(enableLog)
+  const log = ['01', 1, '1', 's', 'sim', 'y', 'yes'].includes(enableLog)
     ? 1
-    : [2, '2', 'n', 'no', 'nao', 'não'].includes(enableLog)
+    : ['02', 2, '2', 'n', 'no', 'nao', 'não'].includes(enableLog)
     ? 0
     : null;
 
   if (log === null) {
-    logger.error('Utils.js', name, `invalid value for enableLog. use 1 or 0.`);
+    logger.error('Utils.js', name, `invalid value for enableLog. 's' or 'n' (case-insensitive).`);
     //throw new Error('getLogValue', 'invalid value for enableLog');
+    //(name, `invalid value for enableLog. use 's' or 'n' (case-insensitive).`)
   }
 
   return log;

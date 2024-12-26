@@ -41,7 +41,7 @@ class StationService {
     }
   }
 
-  static async getToken(enableLog, ip, login, pass, retries = 3, delay = 1000) {
+  static async getToken(ip, login, pass, enableLog = 'n', retries = 3, delay = 1000) {
     const name = this.getToken.name;
     const url = `https://${ip}/login.fcgi?login=${login}&password=${pass}`;
     const headers = {
@@ -211,7 +211,7 @@ class StationService {
     }
   };
 
-  static logoutStation = async (enableLog, ip, token, retries = 3, delay = 1000) => {
+  static logoutStation = async (ip, token, enableLog = 'n', retries = 3, delay = 1000) => {
     const name = this.logoutStation.name;
     const url = `https://${ip}/logout.fcgi?session=${token}`;
     const log = getLogValue(enableLog);

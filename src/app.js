@@ -32,6 +32,7 @@ class application {
       WebService.start();
       logger.info(name, 'starting web server');
 
+      logger.info(name, 'scheduling task App.startapp every hour');
       cron.schedule('0 * * * *', async () => {
         try {
           await App.startapp(enableLog);
@@ -41,6 +42,7 @@ class application {
         }
       });
 
+      logger.info(name, 'scheduling task NetworkService.testConn every 6 minutes');
       cron.schedule('0 */6 * * * *', async () => {
         try {
           await NetworkService.testConn(enableLog);

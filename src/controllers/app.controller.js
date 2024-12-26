@@ -48,7 +48,7 @@ class App {
           const clock = returnObjCorrectType(station);
 
           try {
-            let token = await StationService.getToken(log, clock.ip, clock.user, clock.pass);
+            let token = await StationService.getToken(clock.ip, clock.user, clock.pass, log);
 
             if (!token) {
               logger.error(name, `not connected on station ip: ${clock.ip} - getting no token`);
@@ -56,7 +56,7 @@ class App {
               try {
                 let afd = await StationService.getAfd(clock.ip, token, clock.portaria, afdDate);
                 await writeAfdTxt(clock.empresaDir, clock.item, clock.ipFinal, afd);
-                await StationService.logoutStation(log, clock.ip, token);
+                await StationService.logoutStation(clock.ip, token, log);
               } catch (error) {
                 logger.error(name, `error on writing to file: ${error.message}`);
               }
@@ -106,7 +106,7 @@ class App {
         })
       );
 
-      await ConsincoService.insertMany(log, obj);
+      await ConsincoService.insertMany(obj, log);
       log === 1 ? await logger.info(name, `[total]-${obj.length}`) : null;
     } catch (error) {
       logger.error(name, error);
@@ -176,7 +176,7 @@ class App {
     const name = this.startapp.name;
     const log = await getLogValue(enableLog);
 
-    console.log(name, log);
+    //console.log(name, log);
 
     try {
       log === 1 ? logger.info(name, `starting integration on JOB pid: ${process.pid} em ${dataHoraAtual()}`) : null;
