@@ -71,83 +71,95 @@ const updateDevices = (host, success) => {
   const errorCode = 'ETIMEDOUT';
   const errorMessage = 'Host de destino inacessivel';
 
-  if (!Array.isArray(clock)) {
-    logger.error(name, 'object clock is not an array');
-    clock = [];
-  }
+  try {
+    if (!Array.isArray(clock)) {
+      logger.error(name, 'object clock is not an array');
+      clock = [];
+    }
 
-  const existingDeviceIndex = clock.findIndex((device) => device.ip === host);
+    const existingDeviceIndex = clock.findIndex((device) => device.ip === host);
 
-  if (existingDeviceIndex !== -1) {
-    clock[existingDeviceIndex].status = success ? 'success' : 'failed';
-    clock[existingDeviceIndex].lastSyncDate = currentTime;
-    clock[existingDeviceIndex].errorCode = success ? 'no error' : errorCode;
-    clock[existingDeviceIndex].errorMessage = success ? 'no error' : errorMessage;
-  }
+    if (existingDeviceIndex !== -1) {
+      clock[existingDeviceIndex].status = success ? 'success' : 'failed';
+      clock[existingDeviceIndex].lastSyncDate = currentTime;
+      clock[existingDeviceIndex].errorCode = success ? 'no error' : errorCode;
+      clock[existingDeviceIndex].errorMessage = success ? 'no error' : errorMessage;
+    }
 
-  writeStatus(clock);
+    writeStatus(clock);
 
-  if (!success) {
-    const failedPings = readFailedPings();
-    failedPings.push({
-      ip: host,
-      status: 'failed',
-      lastSyncTime: currentTime,
-      errorCode,
-      errorMessage
-    });
-    writeFailedPings(failedPings);
+    if (!success) {
+      const failedPings = readFailedPings();
+      failedPings.push({
+        ip: host,
+        status: 'failed',
+        lastSyncTime: currentTime,
+        errorCode,
+        errorMessage
+      });
+      writeFailedPings(failedPings);
+    }
+  } catch (error) {
+    logger.error(name, error);
   }
 };
 
 const isDeviceOnline = (host, enableLog = 'n') => {
   const name = isDeviceOnline.name;
   const log = getLogValue(enableLog);
-  return new Promise((resolve) => {
-    exec(`ping -n 5 ${host}`, (error, stdout) => {
-      if (error) {
-        logger.error(name, `[failed] - station ${host}: ${error}`);
-        updateDevices(host, false);
-        return resolve(false);
-      }
-
-      if (stdout.includes('Host de destino inacess')) {
-        logger.error(name, `[failed] - host unreachable: ${host}`);
-        updateDevices(host, false);
-        return resolve(false);
-      } else {
-        if (log === 1) {
-          logger.info(name, `[successful] - working on station: ${host}`);
+  try {
+    return new Promise((resolve) => {
+      exec(`ping -n 5 ${host}`, (error, stdout) => {
+        if (error) {
+          logger.error(name, `[failed] - station ${host}: ${error}`);
+          updateDevices(host, false);
+          return resolve(false);
         }
-        updateDevices(host, true);
-        return resolve(true);
-      }
+
+        if (stdout.includes('Host de destino inacess')) {
+          logger.error(name, `[failed] - host unreachable: ${host}`);
+          updateDevices(host, false);
+          return resolve(false);
+        } else {
+          if (log === 1) {
+            logger.info(name, `[successful] - working on station: ${host}`);
+          }
+          updateDevices(host, true);
+          return resolve(true);
+        }
+      });
     });
-  });
+  } catch (error) {
+    logger.error(name, error);
+    return false;
+  }
 };
 
 class NetworkService {
   static testConn = async (enableLog = 'n') => {
-    const log = getLogValue(enableLog);
-
     const name = this.testConn.name;
+    const log = getLogValue(enableLog);
     const allDevices = readJson();
 
-    if (log === 1) {
-      logger.info(name, `checking devices at ${currentDateHour()}`);
-      logger.info(name, `checking ${allDevices.length} devices`);
-    }
+    try {
+      if (log === 1) {
+        logger.info(name, `checking ${allDevices.length} devices at ${currentDateHour()}`);
+        logger.info(name, `checking ${allDevices.length} devices`);
+      }
 
-    if (!Array.isArray(allDevices)) {
-      logger.error(name, `all devices is not an array`);
-      return;
-    }
+      if (!Array.isArray(allDevices)) {
+        logger.error(name, `all devices is not an array`);
+        return;
+      }
 
-    const promises = allDevices.map((device) => isDeviceOnline(device.ip, log));
-    await Promise.all(promises);
+      const promises = allDevices.map((device) => isDeviceOnline(device.ip, log));
+      await Promise.all(promises);
 
-    if (log === 1) {
-      logger.info(name, `all devices have been checked at ${currentDateHour()}`);
+      if (log === 1) {
+        logger.info(name, `all devices have been checked at ${currentDateHour()}`);
+      }
+    } catch (error) {
+      logger.error(name, error);
     }
   };
 }
