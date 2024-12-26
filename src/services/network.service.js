@@ -106,7 +106,7 @@ const isDeviceOnline = (host, enableLog = 'n') => {
   return new Promise((resolve) => {
     exec(`ping -n 5 ${host}`, (error, stdout) => {
       if (error) {
-        logger.error(name, `[failed] - station ${host} error:\n${error}`);
+        logger.error(name, `[failed] - station ${host}: ${error}`);
         updateDevices(host, false);
         return resolve(false);
       }
