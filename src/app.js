@@ -15,11 +15,12 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.UV_THREADPOOL_SIZE = 10;
 
 WebService.start();
+const enableLog = 'n';
 logger.info('start', 'starting web server');
 
 cron.schedule('0 * * * *', async () => {
   try {
-    await App.startapp('s');
+    await App.startapp(enableLog);
     logger.info('cron-App.start', 'application started');
   } catch (error) {
     logger.error('cron-App.start', error);
@@ -28,8 +29,8 @@ cron.schedule('0 * * * *', async () => {
 
 cron.schedule('0 */6 * * * *', async () => {
   try {
+    await NetworkService.testConn(enableLog);
     logger.info('cron-testConn()', 'testing connection');
-    await NetworkService.testConn();
   } catch (error) {
     logger.error('cron-testConn()', error);
   }

@@ -2,7 +2,7 @@ require('dotenv').config('../../.env');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
-const { currentLogTimeDate, currentDateHour } = require('../utils/Utils.js');
+const { currentLogTimeDate, currentDateHour, getLogValue } = require('../utils/Utils.js');
 const Logger = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'NetworkService';
@@ -100,8 +100,9 @@ const updateDevices = (host, success) => {
   }
 };
 
-const isDeviceOnline = (host) => {
+const isDeviceOnline = (host, enableLog = 'n') => {
   const name = isDeviceOnline.name;
+  const log = getLogValue(enableLog);
   return new Promise((resolve) => {
     exec(`ping -n 5 ${host}`, (error, stdout) => {
       if (error) {
@@ -115,7 +116,9 @@ const isDeviceOnline = (host) => {
         updateDevices(host, false);
         return resolve(false);
       } else {
-        logger.info(name, `[successful] - working on station: ${host}`);
+        if (log === 1) {
+          logger.info(name, `[successful] - working on station: ${host}`);
+        }
         updateDevices(host, true);
         return resolve(true);
       }
@@ -124,22 +127,28 @@ const isDeviceOnline = (host) => {
 };
 
 class NetworkService {
-  static testConn = async () => {
+  static testConn = async (enableLog = 'n') => {
+    const log = getLogValue(enableLog);
+
     const name = this.testConn.name;
     const allDevices = readJson();
 
-    logger.info(name, `checking devices at ${currentDateHour()}`);
-    logger.info(name, `checking ${allDevices.length} devices`);
+    if (log === 1) {
+      logger.info(name, `checking devices at ${currentDateHour()}`);
+      logger.info(name, `checking ${allDevices.length} devices`);
+    }
 
     if (!Array.isArray(allDevices)) {
       logger.error(name, `all devices is not an array`);
       return;
     }
 
-    const promises = allDevices.map((device) => isDeviceOnline(device.ip));
+    const promises = allDevices.map((device) => isDeviceOnline(device.ip, log));
     await Promise.all(promises);
 
-    logger.info(name, `all devices have been checked at ${currentDateHour()}`);
+    if (log === 1) {
+      logger.info(name, `all devices have been checked at ${currentDateHour()}`);
+    }
   };
 }
 
