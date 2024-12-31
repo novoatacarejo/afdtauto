@@ -86,7 +86,7 @@ class TlanticService {
         if (!response.data.success) {
           logger.error(
             name,
-            `error when trying to post data \nStatus: ${response.data.data.result[0].status} \nMessage: ${response.data.data.result[0].message}`
+            `error when trying to post data \nstatus: ${response.data.data.result[0].status} \nmessage: ${response.data.data.result[0].message}`
           );
           return false;
         }

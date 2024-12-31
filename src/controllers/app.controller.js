@@ -127,7 +127,13 @@ class App {
           const punches = await readEachLine(file);
 
           punches.forEach(async (p) => {
-            if (checkoutPunch(p, 'n')) {
+            if (checkoutPunch(p, 'n') && punchInterval(p.punchUserTimestamp, minutes, 'n')) {
+              obj.push({
+                idNumber: p.id,
+                idLength: p.lnLength,
+                punch: await formatDate(p.punchUserTimestamp)
+              });
+
               log === 1
                 ? logger.info(
                     name,
@@ -137,14 +143,6 @@ class App {
                     ).toFixed(2)}%`
                   )
                 : null;
-
-              if (punchInterval(p.punchUserTimestamp, minutes, 'n')) {
-                obj.push({
-                  idNumber: p.id,
-                  idLength: p.lnLength,
-                  punch: await formatDate(p.punchUserTimestamp)
-                });
-              }
             }
           });
         })

@@ -34,7 +34,7 @@ class application {
       process.env.UV_THREADPOOL_SIZE = 128;
 
       WebService.start();
-      logger.info(name, 'starting web server' + dataHoraAtual());
+      logger.info(name, 'starting web server at ' + dataHoraAtual());
 
       logger.info(name, 'scheduling task App.startapp every hour');
       cron.schedule('0 * * * *', async () => {
