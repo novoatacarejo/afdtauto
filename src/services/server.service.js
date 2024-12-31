@@ -1,7 +1,7 @@
 require('dotenv').config('../.env');
 const express = require('express');
 const fs = require('fs');
-const Logger = require('../middleware/Logger.middleware.js');
+const { Logger } = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'WebService';
 

@@ -1,11 +1,14 @@
 require('dotenv').config('../.env');
 const { AppDay } = require('./controllers/index.controller.js');
 const { ConsincoService } = require('./services/index.service.js');
-const Logger = require('./middleware/Logger.middleware.js');
+const { Logger } = require('./middleware/Logger.middleware.js');
 
 const yargs = require('yargs');
 
+const SERVICE_NAME = 'appDay';
+
 let logger = new Logger();
+logger.service = SERVICE_NAME;
 logger.configureDirLogService('applicationDay');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -54,7 +57,7 @@ const appDay = async (data) => {
   try {
     if (obj.getAfd === 1) {
       await AppDay.gettingAfdDay(obj.date, obj.log);
-      await AppDay.importEachAfdLineDay(obj.log);
+      await AppDay.importEachAfdLineDay(obj.date, obj.log);
       await ConsincoService.deleteDuplicates(obj.date, obj.log);
     }
 

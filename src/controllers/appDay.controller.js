@@ -1,6 +1,6 @@
 require('dotenv').config('../../.env');
 const { StationService, TlanticService, ConsincoService } = require('../services/index.service.js');
-const Logger = require('../middleware/Logger.middleware.js');
+const { Logger } = require('../middleware/Logger.middleware.js');
 const {
   returnAfdDate,
   returnObjCorrectType,
@@ -10,7 +10,6 @@ const {
   readEachLine,
   dataHoraAtual,
   formatDate,
-  formatHour,
   clearScreen,
   readJsonClocks,
   getLogValue
@@ -69,9 +68,14 @@ class AppDay {
     }
   }
 
-  static async importEachAfdLineDay(enableLog = 'n') {
+  static async importEachAfdLineDay(date, enableLog = 'n') {
     const name = this.importEachAfdLineDay.name;
     const log = getLogValue(enableLog);
+    const inputDate = await returnAfdDate(date);
+
+    const deepEqual = (obj1, obj2) => {
+      return JSON.stringify(obj1) === JSON.stringify(obj2);
+    };
 
     try {
       clearScreen();
@@ -86,30 +90,23 @@ class AppDay {
           const punches = await readEachLine(file);
           punches.forEach(async (p) => {
             if (String(p.id) !== '0' && p.id !== null && p.id !== undefined && [50, 38].includes(p.lnLength)) {
-              const hour = await formatHour(p.hour);
-              const date = p.date;
+              const afdDate = returnAfdDate(p.date);
               const punch = await formatDate(p.punchUserTimestamp);
-              //const today = await currentDate();
-              //const previousHour = await subtractHours(new Date(), 1);
 
-              //
-              //if (hour > previousHour && date === today) {
-
-              obj.push({
-                idNumber: p.id,
-                idLength: p.lnLength,
-                punch
-              });
-
-              //}
+              if (deepEqual(afdDate, inputDate)) {
+                obj.push({
+                  idNumber: p.id,
+                  idLength: p.lnLength,
+                  punch
+                });
+              }
             }
           });
         })
       );
 
-      //console.log(obj);
-      await ConsincoService.insertMany(obj, log);
       log === 1 ? await logger.info(name, `[total] - ${obj.length}`) : null;
+      await ConsincoService.insertMany(obj, log);
     } catch (error) {
       logger.error(name, error);
     }

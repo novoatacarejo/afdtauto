@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 const { currentLogTimeDate, currentDateHour, getLogValue } = require('../utils/Utils.js');
-const Logger = require('../middleware/Logger.middleware.js');
+const { Logger } = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'NetworkService';
 
@@ -121,9 +121,9 @@ const isDeviceOnline = (host, enableLog = 'n') => {
           updateDevices(host, false);
           return resolve(false);
         } else {
-          if (log === 1) {
+          /*  if (log === 1) {
             logger.info(name, `[successful] - working on station: ${host}`);
-          }
+          } */
           updateDevices(host, true);
           return resolve(true);
         }
@@ -142,10 +142,10 @@ class NetworkService {
     const allDevices = readJson();
 
     try {
-      if (log === 1) {
+      /*      if (log === 1) {
         logger.info(name, `checking ${allDevices.length} devices at ${currentDateHour()}`);
         logger.info(name, `checking ${allDevices.length} devices`);
-      }
+      } */
 
       if (!Array.isArray(allDevices)) {
         logger.error(name, `all devices is not an array`);
@@ -155,9 +155,9 @@ class NetworkService {
       const promises = allDevices.map((device) => isDeviceOnline(device.ip, log));
       await Promise.all(promises);
 
-      if (log === 1) {
+      /* if (log === 1) {
         logger.info(name, `all devices have been checked at ${currentDateHour()}`);
-      }
+      } */
     } catch (error) {
       logger.error(name, error);
     }

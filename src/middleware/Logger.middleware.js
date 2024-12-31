@@ -5,7 +5,7 @@ const path = require('path');
 const { LOG_DIR } = process.env;
 
 class Logger {
-  constructor(app = 'app', message = 'constructor de logger', service = 'service', dirLog = 'log') {
+  constructor(app = 'app', message = 'constructor de logger', service = 'service', dirLog = 'application') {
     this.app = app;
     this.message = message.error || message;
     this.service = service;
@@ -100,4 +100,4 @@ const logCurrentDatetime = () => {
   return `${day}-${month}-${year}_${hours}h${minutes}m${seconds}s`;
 };
 
-module.exports = Logger;
+module.exports = { Logger };

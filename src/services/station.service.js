@@ -6,7 +6,7 @@ const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
 const { returnJsonLine, subtractHours, currentDate, getLogValue } = require('../utils/Utils.js');
-const Logger = require('../middleware/Logger.middleware.js');
+const { Logger } = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'StationService';
 
@@ -41,14 +41,14 @@ class StationService {
     }
   }
 
-  static async getToken(ip, login, pass, enableLog = 'n', retries = 3, delay = 1000) {
+  static async getToken(ip, login, pass, enableLog = 'n', retries = 5, delay = 1000) {
     const name = this.getToken.name;
+    const log = getLogValue(enableLog);
+
     const url = `https://${ip}/login.fcgi?login=${login}&password=${pass}`;
     const headers = {
       'Content-Length': '0'
     };
-
-    const log = getLogValue(enableLog);
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
@@ -66,16 +66,16 @@ class StationService {
           logger.replyConn(error, name, ip, attempt);
         }
 
-        const token = response.data.session;
+        const token = await response.data.session;
         if (!token) {
           const error = {
             code: `not connected on station ip: ${ip}. no token.`
           };
           logger.replyConn(error, name, ip, attempt);
         } else {
-          log == 1
-            ? logger.info(name, `connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`)
-            : null;
+          if (log == 1) {
+            logger.info(name, `connected on station ip: ${ip} with the token ${token} on attempt: ${attempt}`);
+          }
         }
 
         return token;
@@ -211,7 +211,7 @@ class StationService {
     }
   };
 
-  static logoutStation = async (ip, token, enableLog = 'n', retries = 3, delay = 1000) => {
+  static logoutStation = async (ip, token, enableLog = 'n', retries = 5, delay = 1000) => {
     const name = this.logoutStation.name;
     const url = `https://${ip}/logout.fcgi?session=${token}`;
     const log = getLogValue(enableLog);

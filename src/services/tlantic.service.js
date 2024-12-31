@@ -1,6 +1,6 @@
 require('dotenv').config({ path: '../../.env' });
 const axios = require('axios');
-const Logger = require('../middleware/Logger.middleware.js');
+const { Logger } = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'TlanticService';
 
@@ -58,7 +58,7 @@ class TlanticService {
     }
   }
 
-  static async postPunch(token, chunkWithSize100, retries = 3, delay = 1000) {
+  static async postPunch(token, chunkWithSize100, retries = 5, delay = 1000) {
     const name = this.postPunch.name;
     if (!token) {
       logger.error(name, `error when trying to fetch the token`);

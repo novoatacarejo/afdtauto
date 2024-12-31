@@ -1,6 +1,6 @@
 require('dotenv').config({ path: '../../.env' });
 const oracledb = require('oracledb');
-const Logger = require('../middleware/Logger.middleware.js');
+const { Logger } = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'OracleService';
 

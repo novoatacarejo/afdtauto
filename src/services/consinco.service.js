@@ -1,6 +1,6 @@
 const { assembleArrayObjects, getLogValue, totalRecords } = require('../utils/Utils.js');
 const { OracleService } = require('./oracle.service.js');
-const Logger = require('../middleware/Logger.middleware.js');
+const { Logger } = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'ConsincoService';
 
@@ -376,9 +376,11 @@ class ConsincoService {
         poolPingInterval: 300
       };
 
+      log === 1 ? logger.info(name, `iniciando inserção de batidas na tabela oracle`) : null;
+
       const response = await client.executeMany(sql, content, options);
 
-      log === 1 ? logger.info(name, `inserting rows: ${data.length}`) : null;
+      log === 1 ? logger.info(name, `inserindo registros: ${data.length}`) : null;
 
       await OracleService.close(client);
 
