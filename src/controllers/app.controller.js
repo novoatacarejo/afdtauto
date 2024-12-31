@@ -25,10 +25,9 @@ logger.configureDirLogService('application');
 const { AFD_DIR } = process.env;
 
 const checkPunch = (obj, minutes = 0, enableLog = 'n') => {
-  const name = checkoutPunch.name;
+  const name = checkPunch.name;
   const log = getLogValue(enableLog);
   const dta1 = new Date();
-  const dta2 = new Date(obj.punchUserTimestamp);
   const mm = Number(minutes);
 
   dta1.setMinutes(dta1.getMinutes() + mm);
@@ -38,9 +37,10 @@ const checkPunch = (obj, minutes = 0, enableLog = 'n') => {
     obj.id !== null &&
     obj.id !== undefined &&
     [50, 38].includes(obj.lnLength) &&
-    dta2 >= dta1
+    new Date(obj.punchUserTimestamp) >= dta1
   ) {
     if (log === 1) {
+      const dta2 = new Date(obj.punchUserTimestamp);
       const opcoes = {
         timeZone: 'America/Recife',
         year: 'numeric',
@@ -126,7 +126,6 @@ class App {
           const punches = await readEachLine(file);
 
           punches.forEach(async (p) => {
-            // if (checkoutPunch(p, 'n') && punchInterval(p.punchUserTimestamp, minutes, 'n')) {
             if (checkPunch(p, minutes, 'n')) {
               obj.push({
                 idNumber: p.id,
@@ -142,7 +141,7 @@ class App {
                       100
                     ).toFixed(2)}%`
                   )
-                : null;
+                : console.log('no log');
             }
           });
         })
