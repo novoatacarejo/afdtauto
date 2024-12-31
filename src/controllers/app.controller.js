@@ -24,38 +24,37 @@ logger.configureDirLogService('application');
 
 const { AFD_DIR } = process.env;
 
-const punchInterval = (punchDate, minutes = 0, enableLog = 'n') => {
-  const name = punchInterval.name;
+const checkPunch = (obj, minutes = 0, enableLog = 'n') => {
+  const name = checkoutPunch.name;
   const log = getLogValue(enableLog);
   const dta1 = new Date();
-  const dta2 = new Date(punchDate);
+  const dta2 = new Date(obj.punchUserTimestamp);
   const mm = Number(minutes);
 
   dta1.setMinutes(dta1.getMinutes() + mm);
 
-  if (log === 1) {
-    const opcoes = {
-      timeZone: 'America/Recife',
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric'
-    };
-    const obj1 = dta1.toLocaleString('pt-BR', opcoes);
-    const obj2 = dta2.toLocaleString('pt-BR', opcoes);
+  if (
+    String(obj.id) !== '0' &&
+    obj.id !== null &&
+    obj.id !== undefined &&
+    [50, 38].includes(obj.lnLength) &&
+    dta2 >= dta1
+  ) {
+    if (log === 1) {
+      const opcoes = {
+        timeZone: 'America/Recife',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+      };
+      const obj1 = dta1.toLocaleString('pt-BR', opcoes);
+      const obj2 = dta2.toLocaleString('pt-BR', opcoes);
 
-    logger.info(name, `punch: ${obj2} - baseDate: ${obj1} -- ${dta2 >= dta1}`);
-  }
-
-  return dta2 >= dta1;
-};
-
-const checkoutPunch = (obj, enableLog = 'n') => {
-  const name = checkoutPunch.name;
-  const log = getLogValue(enableLog);
-  if (String(obj.id) !== '0' && obj.id !== null && obj.id !== undefined && [50, 38].includes(obj.lnLength)) {
-    log === 1 ? logger.info(name, `punch: ${obj.id} - ${obj.lnLength} - true`) : null;
+      logger.info(name, `punch: ${obj2} - baseDate: ${obj1} -- ${dta2 >= dta1}`);
+      logger.info(name, `punch: ${obj.id} - ${obj.lnLength} - true`);
+    }
     return true;
   } else {
     return false;
@@ -127,7 +126,8 @@ class App {
           const punches = await readEachLine(file);
 
           punches.forEach(async (p) => {
-            if (checkoutPunch(p, 'n') && punchInterval(p.punchUserTimestamp, minutes, 'n')) {
+            // if (checkoutPunch(p, 'n') && punchInterval(p.punchUserTimestamp, minutes, 'n')) {
+            if (checkPunch(p, minutes, 'n')) {
               obj.push({
                 idNumber: p.id,
                 idLength: p.lnLength,
@@ -137,7 +137,7 @@ class App {
               log === 1
                 ? logger.info(
                     name,
-                    `[afd ${files.indexOf(file)} : ${punches.length} linhas] | ${(
+                    `[afd ${files.indexOf(file)}:${punches.length}] | ${(
                       (punches.indexOf(p) / punches.length) *
                       100
                     ).toFixed(2)}%`
@@ -206,7 +206,9 @@ class App {
             await TlanticService.postPunch(token, chunk);
             total += chunk.length;
             const percentage = ((total / totalChunks) * 100).toFixed(2).replace('.', ',');
-            log === 1 ? logger.info(name, `[round] ${index + 1} | enviado: ${total} | ${percentage}%`) : null;
+            log === 1
+              ? logger.info(name, `[round] ${index + 1} | total: ${total} | ${percentage}%`)
+              : console.log(null);
           })
         );
       }

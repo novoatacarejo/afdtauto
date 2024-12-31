@@ -23,6 +23,44 @@ const assembleArrayObjects = (columnsName, lines) => {
   return objects;
 };
 
+const punchInterval = (punchDate, minutes = 0, enableLog = 'n') => {
+  const name = punchInterval.name;
+  const dta1 = new Date();
+  const dta2 = new Date(punchDate);
+  const mm = Number(minutes);
+
+  dta1.setMinutes(dta1.getMinutes() + mm);
+
+  if (enableLog === 1) {
+    const opcoes = {
+      timeZone: 'America/Recife',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    };
+    const obj1 = dta1.toLocaleString('pt-BR', opcoes);
+    const obj2 = dta2.toLocaleString('pt-BR', opcoes);
+
+    console.log(name, `punch: ${obj2} - baseDate: ${obj1} -- ${dta2 >= dta1}`);
+  }
+
+  return dta2 >= dta1;
+};
+
+const checkoutPunch = (obj, enableLog = 'n') => {
+  const name = checkoutPunch.name;
+  const log = getLogValue(enableLog);
+
+  if (String(obj.id) !== '0' && obj.id !== null && obj.id !== undefined && [50, 38].includes(obj.lnLength)) {
+    enableLog === 1 ? console.log(name, `punch: ${obj.id} - ${obj.lnLength} - true`) : null;
+    return true;
+  } else {
+    return false;
+  }
+};
+
 const returnObjCorrectType = (arrayObj) => {
   let data = {
     ip: new String(arrayObj.ip),
