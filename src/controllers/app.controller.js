@@ -230,7 +230,7 @@ class App {
       const obj = await this.importEachAfdLine(mm, log);
 
       if (obj) {
-        log === 1 ? logger.info(name, `[total]-${obj.length} registros`) : null;
+        log === 1 ? logger.info(name, `[total]-${obj.length} registros`) : console.log('no log');
         await ConsincoService.insertMany(obj, log);
         await ConsincoService.deleteDuplicates(today, log);
 

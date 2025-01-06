@@ -90,6 +90,12 @@ const updateDevices = (host, success) => {
 
     if (!success) {
       const failedPings = readFailedPings();
+
+      if (!Array.isArray(failedPings)) {
+        logger.error(name, 'object failedPings is not an array');
+        failedPings = [];
+      }
+
       failedPings.push({
         ip: host,
         status: 'failed',
@@ -155,9 +161,9 @@ class NetworkService {
       const promises = allDevices.map((device) => isDeviceOnline(device.ip, log));
       await Promise.all(promises);
 
-      /* if (log === 1) {
+      if (log === 1) {
         logger.info(name, `all devices have been checked at ${currentDateHour()}`);
-      } */
+      }
     } catch (error) {
       logger.error(name, error);
     }
