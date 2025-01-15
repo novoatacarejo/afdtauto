@@ -26,7 +26,8 @@ class ConsincoService {
 
       const client = await OracleService.connect();
 
-      const sql = `SELECT CODFILIAL, EMPRESA, EMPRESADIR, PISO, TO_NUMBER(ITEM) AS ITEM, IP, TO_NUMBER(IPFINAL) AS IPFINAL, USERNAME, USERPASS, TO_NUMBER(PORTARIA) AS PORTARIA FROM WFM_DEV.DEV_VW_RM_DEVICES WHERE 1 = 1 AND CODFILIAL NOT IN (1, 8, 18, 38)`;
+      // const sql = `SELECT CODFILIAL, EMPRESA, EMPRESADIR, PISO, TO_NUMBER(ITEM) AS ITEM, IP, TO_NUMBER(IPFINAL) AS IPFINAL, USERNAME, USERPASS, TO_NUMBER(PORTARIA) AS PORTARIA FROM WFM_DEV.DEV_VW_RM_DEVICES WHERE 1 = 1 AND CODFILIAL NOT IN (1, 8, 18, 38)`;
+      const sql = `SELECT CODFILIAL, EMPRESA, EMPRESADIR, PISO, TO_NUMBER(ITEM) AS ITEM, IP, TO_NUMBER(IPFINAL) AS IPFINAL, USERNAME, USERPASS, TO_NUMBER(PORTARIA) AS PORTARIA FROM WFM_DEV.DEV_VW_RM_DEVICES`;
 
       const response = await client.execute(sql);
 
@@ -69,7 +70,7 @@ class ConsincoService {
     const name = this.getAfdRtPunches.name;
     const log = getLogValue(enableLog);
 
-    const punchName = [
+    const labels = [
       { name: 'dtaBatida' },
       { name: 'hora' },
       { name: 'qtdRows' },
@@ -108,13 +109,58 @@ class ConsincoService {
 
       const response = await client.execute(sql, bind);
 
-      const punches = assembleArrayObjects(punchName, response.rows);
+      const punches = assembleArrayObjects(labels, response.rows);
 
       await OracleService.close(client);
 
       logger.info(name, totalRecords(punches, log));
 
       return punches;
+    } catch (error) {
+      logger.error(name, error);
+    }
+  }
+
+  static async getAfdRtNroPunches(date, enableLog = 'n') {
+    const name = this.getAfdRtNroPunches.name;
+    const log = getLogValue(enableLog);
+
+    const labels = [{ name: 'nroBatidas' }, { name: 'colaboradores' }];
+
+    try {
+      const client = await OracleService.connect();
+
+      const sql = `
+      SELECT
+          TO_CHAR(SK_BATIDA) || 'b' AS NROBATIDAS,
+          COUNT(SK_BATIDA) AS COLABORADORES
+          FROM (
+      SELECT /*+ index(A IDX_WFMDEV_RMAFD_02) */
+       DTABATIDA,
+       A.CODPESSOA,
+       COUNT(DTABATIDA || A.CODPESSOA || HHMM) AS SK_BATIDA
+      FROM WFM_DEV.DEV_RM_AFD A
+      INNER JOIN WFM_DEV.DEV_RM_CODPESSOA B
+      ON (A.IDNUMBER = DECODE(A.IDLENGTH, 38, B.PIS, 50, B.CPF, NULL))
+      WHERE 1 = 1
+      AND DTABATIDA = TRUNC(TO_DATE(:a, 'YYYY-MM-DD'))
+      GROUP BY DTABATIDA, A.CODPESSOA
+      ) C
+        GROUP BY TO_CHAR(SK_BATIDA)|| 'b' 
+        ORDER BY 1 ASC            
+                 `;
+
+      const bind = [date];
+
+      const response = await client.execute(sql, bind);
+
+      const obj = assembleArrayObjects(labels, response.rows);
+
+      await OracleService.close(client);
+
+      logger.info(name, totalRecords(obj, log));
+
+      return obj;
     } catch (error) {
       logger.error(name, error);
     }

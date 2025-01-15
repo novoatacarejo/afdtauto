@@ -39,7 +39,19 @@ class WebService {
           res.json(result);
         } catch (err) {
           console.error(err);
-          res.status(500).send('Erro ao buscar os dados.');
+          res.status(500).send('table', 'erro ao buscar os dados da tabela.');
+        }
+      });
+
+      app.get('/chart2', async (req, res) => {
+        const { date } = req.query;
+
+        try {
+          const result = await ConsincoService.getAfdRtNroPunches(date, 's');
+          res.json(result);
+        } catch (err) {
+          console.error(err);
+          res.status(500).send('barchart1', 'erro ao obter os dados do gráfico de colunas.');
         }
       });
 

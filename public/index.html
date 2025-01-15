@@ -8,6 +8,7 @@
     <link href="http://10.101.108.195:3500/assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
     <link href="http://10.101.108.195:3500/assets/fontawesome/css/brands.css" rel="stylesheet" />
     <link href="http://10.101.108.195:3500/assets/fontawesome/css/solid.css" rel="stylesheet" />
+    <link rel="icon" href="http://10.101.108.195:3500/assets/favicon.ico" />
     <title>Importação de Arquivos Afd - Real Time</title>
     <style>
       body {
@@ -40,6 +41,46 @@
         margin-top: 20px;
         margin-bottom: 20px;
       }
+      div#dataHora {
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      input[type='date'] {
+        padding: 5px;
+        margin: 5px;
+      }
+      button {
+        padding: 5px;
+        margin: 5px;
+        cursor: pointer;
+      }
+      div#chart1 {
+        margin: 20px auto;
+      }
+      div#chart2 {
+        margin: 20px auto;
+      }
+      #loading {
+        display: none;
+        font-size: 0.7rem;
+        font-weight: bold;
+        color: #4caf50;
+      }
+      #progressBar {
+        display: none;
+        width: 200px; /* Define uma largura fixa para a barra de progresso */
+        background-color: #f3f3f3;
+        margin: 20px auto; /* Centraliza a barra de progresso */
+      }
+      #progressBar div {
+        width: 0;
+        height: 35px;
+        background-color: #4caf50;
+        text-align: center;
+        line-height: 35px; /* Ajusta a altura da linha para centralizar o texto verticalmente */
+        color: white;
+      }
     </style>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
@@ -48,14 +89,25 @@
 
     <div id="dataHora"></div>
 
+    <div id="loading">loading</div>
+    <div id="progressBar"><div>0%</div></div>
+
     <p></p>
 
     <label for="date">Pesquisar por Data:</label>
     <input type="date" id="date" />
     <button id="searchButton" onclick="fetchData()">Pesquisar</button>
 
+    <div id="chart1" style="width: 900px; height: 500px; margin: 0 auto"></div>
+
+    <!-- <div id="chart2" style="width: 900px; height: 500px"></div> -->
+
+    <div id="chart2" style="width: 900px; height: 500px; margin: 0 auto"></div>
+
+    <p></p>
+
     <table>
-      <thead>
+      <thead id="tableHeader" style="display: none">
         <tr>
           <th>#</th>
           <th>Data</th>
@@ -69,8 +121,6 @@
         <!-- Dados preenchidos dinamicamente -->
       </tbody>
     </table>
-
-    <div id="curve_chart" style="width: 900px; height: 500px"></div>
 
     <script src="./index.js"></script>
   </body>

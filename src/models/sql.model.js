@@ -2,20 +2,6 @@ const getStationsInfo = `SELECT CODFILIAL, EMPRESA, EMPRESADIR, PISO, TO_NUMBER(
 
 const getPunchesByHour = `SELECT CODPESSOA, PUNCHTIME FROM WFM_DEV.DEV_VW_DATE_TEST`;
 
-const getPunchesByDate = `SELECT
-                    A.CODPESSOA,
-                    TO_CHAR(A.PUNCH, 'YYYY-MM-DD HH24:MI') AS PUNCHTIME
-              FROM
-                  WFM_DEV.DEV_RM_AFD         A,
-                  WFM_DEV.DEV_RM_CODPESSOA    B,
-                  WFM_DEV.DEV_RM_DEPARTAMENTO C
-              WHERE 1 = 1
-              AND A.CODPESSOA = B.CODPESSOA
-              AND B.FILIALRM = C.FILIALRM
-              AND B.CODDEPTRM = C.CODDEPTRM
-              --AND C.INTEGRA_WFM = 1
-              AND TO_DATE(A.DTABATIDA,'DD/MM/YYYY') = :a`;
-
 const getCodPessoa = `SELECT CODPESSOA FROM WFM_DEV.DEV_RM_CODPESSOA H WHERE 1 = 1 AND CODPESSOA = :a`;
 
 const insertAfd = `INSERT INTO WFM_DEV.DEV_AFD (DTAGERACAO, CODPESSOA, PUNCH) VALUES ( SYSDATE, :a, TO_DATE( :b, 'YYYY-MM-DD HH24:MI:SS') )`;
@@ -69,6 +55,20 @@ const deleteDuplicatesRows = `
           COMMIT;
           :rows_deleted := rows_deleted;
       END;`;
+
+const getPunchesByDate = `SELECT
+                    A.CODPESSOA,
+                    TO_CHAR(A.PUNCH, 'YYYY-MM-DD HH24:MI') AS PUNCHTIME
+              FROM
+                  WFM_DEV.DEV_RM_AFD         A,
+                  WFM_DEV.DEV_RM_CODPESSOA    B,
+                  WFM_DEV.DEV_RM_DEPARTAMENTO C
+              WHERE 1 = 1
+              AND A.CODPESSOA = B.CODPESSOA
+              AND B.FILIALRM = C.FILIALRM
+              AND B.CODDEPTRM = C.CODDEPTRM
+              --AND C.INTEGRA_WFM = 1
+              AND TO_DATE(A.DTABATIDA,'DD/MM/YYYY') = :a`;
 
 const checkBatidas = `
 SELECT C.DTA AS DTABATIDA,
