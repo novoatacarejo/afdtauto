@@ -65,6 +65,61 @@ class ConsincoService {
     }
   }
 
+  static async getAfdRtPunches(date, enableLog = 'n') {
+    const name = this.getAfdRtPunches.name;
+    const log = getLogValue(enableLog);
+
+    const punchName = [
+      { name: 'dtaBatida' },
+      { name: 'hora' },
+      { name: 'qtdRows' },
+      { name: 'minBatida' },
+      { name: 'maxBatida' }
+    ];
+
+    try {
+      const client = await OracleService.connect();
+
+      const sql = `
+                   SELECT C.DTA AS DTABATIDA,
+                          hora, 
+                          COUNT(D.BATIDA) AS QTD_ROWS,
+                          MIN(BATIDA) AS MIN_BATIDA,
+                          MAX(BATIDA) AS MAX_BATIDA
+                   FROM DEV_C5_CALENDARIO C,
+                        (SELECT TO_DATE(A.DTABATIDA, 'DD/MM/YYYY') AS DTABATIDA,
+                                B.CODPESSOA,
+                                A.HHMM AS BATIDA, 
+                                SUBSTR(A.HHMM, 0, INSTR(A.HHMM, ':') - 1) AS hora
+                         FROM WFM_DEV.DEV_RM_AFD A
+                         JOIN WFM_DEV.DEV_RM_CODPESSOA B
+                         ON A.CODPESSOA = B.CODPESSOA
+                         WHERE 1 = 1
+                         AND A.IDNUMBER = DECODE(A.IDLENGTH, 38, B.PIS, 50, B.CPF, NULL)
+                        ) D
+                   WHERE 1 = 1
+                   AND C.DTA = D.DTABATIDA(+)
+                   AND C.DTA = TRUNC(TO_DATE(:a, 'YYYY-MM-DD'))
+                   GROUP BY C.DTA, hora
+                   ORDER BY 1, 2
+                 `;
+
+      const bind = [date];
+
+      const response = await client.execute(sql, bind);
+
+      const punches = assembleArrayObjects(punchName, response.rows);
+
+      await OracleService.close(client);
+
+      logger.info(name, totalRecords(punches, log));
+
+      return punches;
+    } catch (error) {
+      logger.error(name, error);
+    }
+  }
+
   static async getPunchesByDate(date, enableLog = 'n') {
     const name = this.getPunchesByDate.name;
     const log = getLogValue(enableLog);

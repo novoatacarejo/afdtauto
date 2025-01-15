@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="content-type" content="text/html" />
@@ -8,24 +8,28 @@
     <link href="http://10.101.108.195:3500/assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
     <link href="http://10.101.108.195:3500/assets/fontawesome/css/brands.css" rel="stylesheet" />
     <link href="http://10.101.108.195:3500/assets/fontawesome/css/solid.css" rel="stylesheet" />
-    <title>Localhost - Api WFM Logs</title>
+    <title>Importação de Arquivos Afd - Real Time</title>
     <style>
       body {
         padding: 20px;
         font-size: 0.8rem;
-        text-align: center;
         font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+        text-align: center;
+        text-align-last: center;
       }
       table {
-        width: 100%;
+        width: 70%;
         border-collapse: collapse;
-        margin-top: 20px;
+        margin: 20px auto; /* Centraliza a tabela horizontalmente */
+        text-align: center;
+        text-align-last: center;
       }
       th,
       td {
         border: 1px solid #ddd;
         padding: 8px;
-        text-align: left;
+        text-align: center;
+        text-align-last: center;
       }
       th {
         background-color: #f2f2f2;
@@ -37,116 +41,37 @@
         margin-bottom: 20px;
       }
     </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
   <body>
-    <h1>Log Visualization</h1>
-    <div class="filters">
-      <label for="filter-status">Filter by Status:</label>
-      <select id="filter-status">
-        <option value="">All</option>
-        <option value="success">Success</option>
-        <option value="failed">Failed</option>
-      </select>
-    </div>
-    <div id="logs-container"></div>
-    <div class="pagination">
-      <button id="prev-page" disabled>Previous</button>
-      <span id="page-info"></span>
-      <button id="next-page" disabled>Next</button>
-    </div>
-    <script>
-      const logsContainer = document.getElementById('logs-container');
-      const filterStatus = document.getElementById('filter-status');
-      const prevPageButton = document.getElementById('prev-page');
-      const nextPageButton = document.getElementById('next-page');
-      const pageInfo = document.getElementById('page-info');
+    <h1>Importação de Arquivos Afd<br />Real Time</h1>
 
-      let logs = [];
-      let currentPage = 1;
-      const logsPerPage = 10;
+    <div id="dataHora"></div>
 
-      const fetchLogs = () => {
-        fetch('http://10.101.108.195:3500/logs')
-          .then((response) => response.json())
-          .then((data) => {
-            logs = data;
+    <p></p>
 
-            console.log(logs);
-            displayLogs();
-          })
-          .catch((error) => {
-            console.error('Error fetching logs:', error);
-            logsContainer.innerHTML = '<p>Error fetching logs. Please try again later.</p>';
-          });
-      };
+    <label for="date">Pesquisar por Data:</label>
+    <input type="date" id="date" />
+    <button id="searchButton" onclick="fetchData()">Pesquisar</button>
 
-      const displayLogs = () => {
-        logsContainer.innerHTML = '';
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Data</th>
+          <th>Hora</th>
+          <th>Qtd. Batidas</th>
+          <th>Min. Batida</th>
+          <th>Max. Batida</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Dados preenchidos dinamicamente -->
+      </tbody>
+    </table>
 
-        const filteredLogs = logs.filter((log) => {
-          return filterStatus.value === '' || log.status === filterStatus.value;
-        });
+    <div id="curve_chart" style="width: 900px; height: 500px"></div>
 
-        const start = (currentPage - 1) * logsPerPage;
-        const end = start + logsPerPage;
-        const paginatedLogs = filteredLogs.slice(start, end);
-
-        const table = document.createElement('table');
-        const headerRow = table.createTHead().insertRow();
-        Object.keys(paginatedLogs[0] || {}).forEach((key) => {
-          const th = document.createElement('th');
-          th.textContent = key;
-          th.onclick = () => sortLogs(key);
-          headerRow.appendChild(th);
-        });
-
-        paginatedLogs.forEach((entry) => {
-          const row = table.insertRow();
-          Object.values(entry).forEach((value) => {
-            const cell = row.insertCell();
-            cell.textContent = value;
-          });
-        });
-
-        logsContainer.appendChild(table);
-
-        updatePagination(filteredLogs.length);
-      };
-
-      const updatePagination = (totalLogs) => {
-        const totalPages = Math.ceil(totalLogs / logsPerPage);
-
-        prevPageButton.disabled = currentPage === 1;
-        nextPageButton.disabled = currentPage === totalPages;
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-      };
-
-      const sortLogs = (key) => {
-        logs.sort((a, b) => (a[key] > b[key] ? 1 : -1));
-        displayLogs();
-      };
-
-      filterStatus.onchange = () => {
-        currentPage = 1;
-        displayLogs();
-      };
-
-      prevPageButton.onclick = () => {
-        if (currentPage > 1) {
-          currentPage--;
-          displayLogs();
-        }
-      };
-
-      nextPageButton.onclick = () => {
-        const totalPages = Math.ceil(logs.length / logsPerPage);
-        if (currentPage < totalPages) {
-          currentPage++;
-          displayLogs();
-        }
-      };
-
-      fetchLogs();
-    </script>
+    <script src="./index.js"></script>
   </body>
 </html>
