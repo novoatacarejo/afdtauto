@@ -306,9 +306,6 @@ function drawChart3(chartData) {
     title: `Importação de Batidas por Dia`,
     //curveType: 'function',
     legend: { position: 'top', maxLines: 3 },
-    selectionMode: 'multiple',
-    tooltip: { trigger: 'selection' },
-    aggregationTarget: 'category',
     hAxis: {
       title: 'Importação entre 20 Dias Anteriores até a data selecionada',
       slantedText: true,
@@ -318,17 +315,11 @@ function drawChart3(chartData) {
       title: 'Qtd. Batidas'
     },
     annotations: {
-      boxStyle: {
-        stroke: '#888',
-        strokeWidth: 1,
-        rx: 10,
-        ry: 10,
-        alwaysOutside: true
+      alwaysOutside: 'true',
+      textStyle: {
+        fontSize: 12,
+        color: '#000'
       }
-    },
-    crosshair: {
-      color: '#000',
-      trigger: 'selection'
     }
   };
 
