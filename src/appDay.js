@@ -28,7 +28,7 @@ const argv = yargs
     },
     getafd: {
       description: 'get new AFD data from date',
-      alias: 'a',
+      alias: 'g',
       type: 'string'
     },
     cklen: {
@@ -39,6 +39,11 @@ const argv = yargs
     log: {
       description: 'Enable log',
       alias: 'l',
+      type: 'string'
+    },
+    api: {
+      description: 'send to api tlantic',
+      alias: 'a',
       type: 'string'
     }
   })
@@ -51,17 +56,27 @@ const appDay = async (data) => {
     date: data.date,
     getAfd: data.getAfd || 0,
     ckInt: data.ckInt || 100,
-    log: data.log || 0
+    log: data.log || 0,
+    api: data.api || 0
   };
 
   try {
     if (obj.getAfd === 1) {
-      await AppDay.gettingAfdDay(obj.date, obj.log);
-      await AppDay.importEachAfdLineDay(obj.date, obj.log);
-      await ConsincoService.deleteDuplicates(obj.date, obj.log);
+      try {
+        await AppDay.gettingAfdDay(obj.date, obj.log);
+        await AppDay.importEachAfdLineDay(obj.date, obj.log);
+        await ConsincoService.deleteDuplicates(obj.date, obj.log);
+      } catch (error) {
+        logger.error(name, error);
+      }
     }
-
-    await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
+    if (obj.api === 1) {
+      try {
+        await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
+      } catch (error) {
+        logger.error(name, error);
+      }
+    }
   } catch (error) {
     logger.error(name, error);
   }
@@ -74,7 +89,8 @@ switch (argv._[0]) {
         date: argv.date,
         getAfd: ['s', 'y', 'sim', 'yes', 1, '01', '1'].includes(argv.getafd) ? 1 : 0,
         ckInt: parseInt(argv.cklen) || 100,
-        log: ['s', 'y', 'sim', 'yes', 1, '01', '1'].includes(argv.log) ? 1 : 0
+        log: ['s', 'y', 'sim', 'yes', 1, '01', '1'].includes(argv.log) ? 1 : 0,
+        api: ['s', 'y', 'sim', 'yes', 1, '01', '1'].includes(argv.api) ? 1 : 0
       };
 
       appDay(data);
