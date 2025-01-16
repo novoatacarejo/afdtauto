@@ -16,21 +16,18 @@
         font-size: 0.8rem;
         font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
         text-align: center;
-        text-align-last: center;
       }
       table {
         width: 70%;
         border-collapse: collapse;
         margin: 20px auto; /* Centraliza a tabela horizontalmente */
         text-align: center;
-        text-align-last: center;
       }
       th,
       td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: center;
-        text-align-last: center;
       }
       th {
         background-color: #f2f2f2;
@@ -56,10 +53,22 @@
         cursor: pointer;
       }
       div#chart1 {
-        margin: 20px auto;
+        /* margin: 20px auto; */
+        width: 900px;
+        height: 500px;
+        margin: 0 auto;
       }
       div#chart2 {
-        margin: 20px auto;
+        /* margin: 20px auto; */
+        width: 900px;
+        height: 500px;
+        margin: 0 auto;
+      }
+      div#chart3 {
+        /* margin: 20px auto; */
+        width: 900px;
+        height: 500px;
+        margin: 0 auto;
       }
       #loading {
         display: none;
@@ -98,16 +107,19 @@
     <input type="date" id="date" />
     <button id="searchButton" onclick="fetchData()">Pesquisar</button>
 
-    <div id="chart1" style="width: 900px; height: 500px; margin: 0 auto"></div>
+    <div id="chart3"></div>
+
+    <div id="chart1"></div>
 
     <!-- <div id="chart2" style="width: 900px; height: 500px"></div> -->
 
-    <div id="chart2" style="width: 900px; height: 500px; margin: 0 auto"></div>
+    <div id="chart2"></div>
 
     <p></p>
 
+    <h3 id="tableTitle1" style="display: none">Análise de Batidas por Hora</h3>
     <table>
-      <thead id="tableHeader" style="display: none">
+      <thead id="tableHeader1" style="display: none">
         <tr>
           <th>#</th>
           <th>Data</th>
@@ -117,7 +129,27 @@
           <th>Max. Batida</th>
         </tr>
       </thead>
-      <tbody id="tableBody">
+      <tbody id="tableBody1">
+        <!-- Dados preenchidos dinamicamente -->
+      </tbody>
+    </table>
+
+    <p></p>
+
+    <h3 id="tableTitle2" style="display: none">Análise de Batidas por Loja</h3>
+    <table>
+      <thead id="tableHeader2" style="display: none">
+        <tr>
+          <th>#</th>
+          <th>Loja</th>
+          <th>Qtd. Relogios</th>
+          <th>Qtd. Batidas</th>
+          <th>Data Batida</th>
+          <th>Min. Batida</th>
+          <th>Max. Batida</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody2">
         <!-- Dados preenchidos dinamicamente -->
       </tbody>
     </table>

@@ -66,106 +66,6 @@ class ConsincoService {
     }
   }
 
-  static async getAfdRtPunches(date, enableLog = 'n') {
-    const name = this.getAfdRtPunches.name;
-    const log = getLogValue(enableLog);
-
-    const labels = [
-      { name: 'dtaBatida' },
-      { name: 'hora' },
-      { name: 'qtdRows' },
-      { name: 'minBatida' },
-      { name: 'maxBatida' }
-    ];
-
-    try {
-      const client = await OracleService.connect();
-
-      const sql = `
-                   SELECT C.DTA AS DTABATIDA,
-                          hora, 
-                          COUNT(D.BATIDA) AS QTD_ROWS,
-                          MIN(BATIDA) AS MIN_BATIDA,
-                          MAX(BATIDA) AS MAX_BATIDA
-                   FROM DEV_C5_CALENDARIO C,
-                        (SELECT TO_DATE(A.DTABATIDA, 'DD/MM/YYYY') AS DTABATIDA,
-                                B.CODPESSOA,
-                                A.HHMM AS BATIDA, 
-                                SUBSTR(A.HHMM, 0, INSTR(A.HHMM, ':') - 1) AS hora
-                         FROM WFM_DEV.DEV_RM_AFD A
-                         JOIN WFM_DEV.DEV_RM_CODPESSOA B
-                         ON A.CODPESSOA = B.CODPESSOA
-                         WHERE 1 = 1
-                         AND A.IDNUMBER = DECODE(A.IDLENGTH, 38, B.PIS, 50, B.CPF, NULL)
-                        ) D
-                   WHERE 1 = 1
-                   AND C.DTA = D.DTABATIDA(+)
-                   AND C.DTA = TRUNC(TO_DATE(:a, 'YYYY-MM-DD'))
-                   GROUP BY C.DTA, hora
-                   ORDER BY 1, 2
-                 `;
-
-      const bind = [date];
-
-      const response = await client.execute(sql, bind);
-
-      const punches = assembleArrayObjects(labels, response.rows);
-
-      await OracleService.close(client);
-
-      logger.info(name, totalRecords(punches, log));
-
-      return punches;
-    } catch (error) {
-      logger.error(name, error);
-    }
-  }
-
-  static async getAfdRtNroPunches(date, enableLog = 'n') {
-    const name = this.getAfdRtNroPunches.name;
-    const log = getLogValue(enableLog);
-
-    const labels = [{ name: 'nroBatidas' }, { name: 'colaboradores' }];
-
-    try {
-      const client = await OracleService.connect();
-
-      const sql = `
-      SELECT
-          TO_CHAR(SK_BATIDA) || 'b' AS NROBATIDAS,
-          COUNT(SK_BATIDA) AS COLABORADORES
-          FROM (
-      SELECT /*+ index(A IDX_WFMDEV_RMAFD_02) */
-       DTABATIDA,
-       A.CODPESSOA,
-       COUNT(DTABATIDA || A.CODPESSOA || HHMM) AS SK_BATIDA
-      FROM WFM_DEV.DEV_RM_AFD A
-      INNER JOIN WFM_DEV.DEV_RM_CODPESSOA B
-      ON (A.IDNUMBER = DECODE(A.IDLENGTH, 38, B.PIS, 50, B.CPF, NULL))
-      WHERE 1 = 1
-      AND DTABATIDA = TRUNC(TO_DATE(:a, 'YYYY-MM-DD'))
-      GROUP BY DTABATIDA, A.CODPESSOA
-      ) C
-        GROUP BY TO_CHAR(SK_BATIDA)|| 'b' 
-        ORDER BY 1 ASC            
-                 `;
-
-      const bind = [date];
-
-      const response = await client.execute(sql, bind);
-
-      const obj = assembleArrayObjects(labels, response.rows);
-
-      await OracleService.close(client);
-
-      logger.info(name, totalRecords(obj, log));
-
-      return obj;
-    } catch (error) {
-      logger.error(name, error);
-    }
-  }
-
   static async getPunchesByDate(date, enableLog = 'n') {
     const name = this.getPunchesByDate.name;
     const log = getLogValue(enableLog);
@@ -289,52 +189,6 @@ class ConsincoService {
     }
   }
 
-  /* static async deleteDuplicates(enableLog) {
-    const name = this.deleteDuplicates.name;
-    const log = getLogValue(enableLog);
-
-    try {
-      const client = await OracleService.connect();
-
-      client.callTimeout = 60 * 1000;
-
-      const sql = `
-      BEGIN \
-            DELETE \
-            FROM DEV_RM_AFD A \
-            WHERE 1 = 1  \
-            AND A.DTABATIDA = TRUNC(SYSDATE) \
-            AND NOT EXISTS \
-            (SELECT 1 \
-                  FROM (SELECT IDNUMBER, DTABATIDA, HHMM, MIN(T.ROWID) AS MINROWID \
-                        FROM DEV_RM_AFD T \
-                        WHERE 1 = 1 \
-                        AND T.DTABATIDA = A.DTABATIDA \
-                        AND T.IDNUMBER = A.IDNUMBER \
-                        AND T.HHMM = A.HHMM \
-                        AND T.DTABATIDA = TRUNC(SYSDATE) \
-                        GROUP BY IDNUMBER, DTABATIDA, HHMM) B \
-                  WHERE 1 = 1 \
-                  AND B.MINROWID = A.ROWID) \
-            OR A.CODPESSOA IS NULL; \
-          COMMIT; \
-      END;`;
-
-      const response = await client.execute(sql);
-
-      logger.info(name, `deleted duplicates`);
-
-      await OracleService.close(client);
-
-      log === 1 ? logger.info(name, `delete finished!`) : null;
-
-      return response;
-    } catch (error) {
-      logger.error(name, error);
-    }
-  } */
-
-  //
   static async deleteDuplicates(date, enableLog = 'n') {
     const name = this.deleteDuplicates.name;
     const log = getLogValue(enableLog);
@@ -486,6 +340,201 @@ class ConsincoService {
       await OracleService.close(client);
 
       return response;
+    } catch (error) {
+      logger.error(name, error);
+    }
+  }
+
+  static async getAfdRtPunches(date, enableLog = 'n') {
+    const name = this.getAfdRtPunches.name;
+    const log = getLogValue(enableLog);
+
+    const labels = [
+      { name: 'dtaBatida' },
+      { name: 'hora' },
+      { name: 'qtdRows' },
+      { name: 'minBatida' },
+      { name: 'maxBatida' }
+    ];
+
+    try {
+      const client = await OracleService.connect();
+
+      const sql = `
+              SELECT
+                    TO_DATE( D.DTABATIDA, 'DD/MM/YYYY') AS DTABATIDA,
+                    D.HORA,
+                    COUNT(D.BATIDA) AS QTD_ROWS,
+                    MIN(D.BATIDA) AS MIN_BATIDA,
+                    MAX(D.BATIDA) AS MAX_BATIDA
+              FROM (SELECT /*+ index(A IDX_WFMDEV_RMAFD_02) */
+                    A.CODPESSOA,
+                    A.DTABATIDA,
+                    A.HHMM AS BATIDA,
+                    SUBSTR(A.HHMM, 0, INSTR(A.HHMM, ':') - 1) AS HORA
+                    FROM WFM_DEV.DEV_RM_AFD A
+                    WHERE 1 = 1
+                    AND A.DTABATIDA = TRUNC(TO_DATE(:a, 'YYYY-MM-DD'))) D
+              GROUP BY D.DTABATIDA, D.HORA
+              ORDER BY 1, 2`;
+
+      const bind = [date];
+
+      const response = await client.execute(sql, bind);
+
+      const punches = assembleArrayObjects(labels, response.rows);
+
+      await OracleService.close(client);
+
+      log === 1 ? logger.info(name, totalRecords(punches, log)) : null;
+
+      return punches;
+    } catch (error) {
+      logger.error(name, error);
+    }
+  }
+
+  static async getAfdRtNroPunches(date, enableLog = 'n') {
+    const name = this.getAfdRtNroPunches.name;
+    const log = getLogValue(enableLog);
+
+    const labels = [{ name: 'nroBatidas' }, { name: 'colaboradores' }];
+
+    try {
+      const client = await OracleService.connect();
+
+      const sql = `
+      SELECT TO_CHAR(SK_BATIDA) || 'b', COUNT(CODPESSOA) AS COLABORADORES
+      FROM
+      (SELECT /*+ index(A IDX_WFMDEV_RMAFD_02) */
+      CODPESSOA, DTABATIDA, COUNT(HHMM) AS SK_BATIDA
+      FROM WFM_DEV.DEV_RM_AFD A
+      WHERE 1 = 1
+      AND DTABATIDA = TRUNC(TO_DATE(:a, 'YYYY-MM-DD'))
+      GROUP BY CODPESSOA, DTABATIDA) C
+      GROUP BY TO_CHAR(SK_BATIDA) || 'b'
+      ORDER BY 1`;
+
+      const bind = [date];
+
+      const response = await client.execute(sql, bind);
+
+      const obj = assembleArrayObjects(labels, response.rows);
+
+      await OracleService.close(client);
+
+      log === 1 ? logger.info(name, totalRecords(obj, log)) : null;
+
+      return obj;
+    } catch (error) {
+      logger.error(name, error);
+    }
+  }
+
+  static async getAfdRtLjPunches(date, enableLog = 'n') {
+    const name = this.getAfdRtLjPunches.name;
+    const log = getLogValue(enableLog);
+
+    const labels = [
+      { name: 'loja' },
+      { name: 'qtdRelogios' },
+      { name: 'qtdBatidas' },
+      { name: 'dtaBatida' },
+      { name: 'minBatida' },
+      { name: 'maxBatida' }
+    ];
+
+    try {
+      const client = await OracleService.connect();
+
+      const sql = `
+                  SELECT E.LOJA,
+                        E.QTDRELOGIOS,
+                        NVL(SUM(H.QTDBATIDAS),0) AS QTDBATIDAS,
+                        NVL(TO_DATE(MIN(H.DTABATIDA),'DD/MM/YYYY'),'') AS DTABATIDA,
+                        NVL(MIN(H.MIN_BATIDA),0) AS MENORBATIDA,
+                        NVL(MAX(H.MAX_BATIDA),0) AS MAIORBATIDA
+                  FROM (SELECT D.FILIALRM,
+                              (LPAD(D.NROEMPRESA, 3, 0) || '-' || D.NOMERM) AS LOJA,
+                              COUNT(D.IP) AS QTDRELOGIOS
+                        FROM WFM_DEV.DEV_RM_DEVICE D
+                        GROUP BY D.FILIALRM, (LPAD(D.NROEMPRESA, 3, 0) || '-' || D.NOMERM)) E
+                  LEFT JOIN (SELECT F.CODPESSOA,
+                                    F.DTABATIDA,
+                                    F.QTDBATIDAS,
+                                    F.MIN_BATIDA,
+                                    F.MAX_BATIDA,
+                                    G.FILIALRM
+                            FROM (SELECT /*+ index(A IDX_WFMDEV_RMAFD_02, B IDX_CODPESSOA_01) */
+                                    A.CODPESSOA,
+                                    A.DTABATIDA,
+                                    COUNT(A.HHMM) AS QTDBATIDAS,
+                                    MIN(A.HHMM) AS MIN_BATIDA,
+                                    MAX(A.HHMM) AS MAX_BATIDA
+                                  FROM WFM_DEV.DEV_RM_AFD A
+                                  WHERE 1 = 1
+                                  AND A.DTABATIDA = TRUNC(TO_DATE(:a, 'YYYY-MM-DD'))
+                                  GROUP BY A.CODPESSOA, A.DTABATIDA) F
+                            INNER JOIN (SELECT CODPESSOA, FILIALRM
+                                        FROM WFM_DEV.DEV_RM_CODPESSOA G) G
+                            ON (G.CODPESSOA = F.CODPESSOA)) H
+                  ON (E.FILIALRM = H.FILIALRM)
+                  GROUP BY E.LOJA, E.QTDRELOGIOS
+                  ORDER BY 1`;
+
+      const bind = [date];
+
+      const response = await client.execute(sql, bind);
+
+      const obj = assembleArrayObjects(labels, response.rows);
+
+      await OracleService.close(client);
+
+      log === 1 ? logger.info(name, totalRecords(obj, log)) : null;
+
+      return obj;
+    } catch (error) {
+      logger.error(name, error);
+    }
+  }
+
+  static async getAfdRtAllPunches(date, enableLog = 'n') {
+    const name = this.getAfdRtAllPunches.name;
+    const log = getLogValue(enableLog);
+
+    const labels = [{ name: 'dtaMes' }, { name: 'qtdBatidas' }];
+
+    try {
+      const client = await OracleService.connect();
+
+      const sql = `
+                  SELECT B.DTAMES, COUNT(B.SK_BATIDA) AS QTDBATIDAS
+                  FROM (
+                        SELECT /*+ index(A IDX_WFMDEV_RMAFD_02, B IDX_CODPESSOA_01) */
+                        A.CODPESSOA,
+                        A.DTABATIDA,
+                        TO_CHAR(TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'DD/MM') || '-' || TO_CHAR( TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'Dy') AS DTAMES,
+                        (TO_CHAR(CODPESSOA) || REPLACE(DTABATIDA, '/', NULL) ||
+                        REPLACE(A.HHMM, ':', NULL)) AS SK_BATIDA
+                        FROM WFM_DEV.DEV_RM_AFD A
+                        WHERE 1 = 1
+                        AND A.DTABATIDA BETWEEN ( TRUNC(TO_DATE(:a, 'YYYY-MM-DD')) - INTERVAL '20' DAY )
+                        AND TRUNC(TO_DATE(:b, 'YYYY-MM-DD'))
+                        ) B
+                  GROUP BY B.DTAMES
+                  ORDER BY 1`;
+
+      const bind = [date, date];
+
+      const response = await client.execute(sql, bind);
+
+      const obj = assembleArrayObjects(labels, response.rows);
+
+      await OracleService.close(client);
+
+      log === 1 ? logger.info(name, totalRecords(obj, log)) : null;
+
+      return obj;
     } catch (error) {
       logger.error(name, error);
     }

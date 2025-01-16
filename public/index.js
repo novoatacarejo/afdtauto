@@ -36,7 +36,11 @@ async function fetchData() {
   progressBarInner.textContent = '0%';
 
   try {
-    const response1 = await fetch(`/date?date=${dateInput}`);
+    const response4 = await fetch(`/chart3?date=${dateInput}`);
+    progressBarInner.style.width = '35%';
+    progressBarInner.textContent = '35%';
+
+    const response1 = await fetch(`/table1?date=${dateInput}`);
     progressBarInner.style.width = '50%';
     progressBarInner.textContent = '50%';
 
@@ -44,25 +48,47 @@ async function fetchData() {
     progressBarInner.style.width = '75%';
     progressBarInner.textContent = '75%';
 
+    const response3 = await fetch(`/table2?date=${dateInput}`);
+    progressBarInner.style.width = '89%';
+    progressBarInner.textContent = '89%';
+
     if (!response1.ok) {
-      throw new Error('chart1', 'Network response was not ok');
+      throw new Error('table1', 'Network response was not ok');
     }
 
     if (!response2.ok) {
       throw new Error('chart2', 'Network response was not ok');
     }
 
+    if (!response3.ok) {
+      throw new Error('table2', 'Network response was not ok');
+    }
+
+    if (!response3.ok) {
+      throw new Error('chart3', 'Network response was not ok');
+    }
+
     const data1 = await response1.json();
     const data2 = await response2.json();
+    const data3 = await response3.json();
+    const data4 = await response4.json();
 
-    const tableBody = document.getElementById('tableBody');
-    const tableHeader = document.getElementById('tableHeader');
-    tableBody.innerHTML = '';
+    const tableBody1 = document.getElementById('tableBody1');
+    const tableHeader1 = document.getElementById('tableHeader1');
+    const tableTitle1 = document.getElementById('tableTitle1');
+    tableBody1.innerHTML = '';
+
+    const tableBody2 = document.getElementById('tableBody2');
+    const tableHeader2 = document.getElementById('tableHeader2');
+    const tableTitle2 = document.getElementById('tableTitle2');
+    tableBody2.innerHTML = '';
 
     const dataChart1 = [['Hora', 'Qtd. Batidas']];
     const dataChart2 = [['Número de Batidas', 'Colaboradores']];
+    const dataChart3 = [['Dia', 'Qtd. Batidas']];
 
-    let totalBatidas = 0;
+    let totalBatidas1 = 0;
+    let totalBatidas2 = 0;
 
     data1.forEach((row, index) => {
       const tr = document.createElement('tr');
@@ -81,31 +107,80 @@ async function fetchData() {
         <td>${row.minBatida}</td>
         <td>${row.maxBatida}</td>
       `;
-      tableBody.appendChild(tr);
+      tableBody1.appendChild(tr);
 
-      tableHeader.style.display = 'table-header-group';
+      tableHeader1.style.display = 'table-header-group';
+      tableTitle1.style.display = 'block';
 
       dataChart1.push([row.hora, row.qtdRows]);
 
-      totalBatidas += row.qtdRows;
+      totalBatidas1 += row.qtdRows;
     });
+
+    const trTotal1 = document.createElement('tr');
+    trTotal1.innerHTML = `
+      <td colspan="3"><strong>Total</strong></td>
+      <td><strong>${totalBatidas1}</strong></td>
+      <td colspan="2"></td>
+    `;
+    tableBody1.appendChild(trTotal1);
+
+    progressBarInner.style.width = '90%';
+    progressBarInner.textContent = '90%';
 
     data2.forEach((row, index) => {
       dataChart2.push([row.nroBatidas, row.colaboradores]);
     });
 
-    const trTotal = document.createElement('tr');
-    trTotal.innerHTML = `
+    data3.forEach((row, index) => {
+      const tr = document.createElement('tr');
+
+      const formattedDate = new Date(row.dtaBatida).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${row.loja}</td>
+        <td>${row.qtdRelogios}</td>
+        <td>${row.qtdBatidas}</td>
+        <td>${formattedDate}</td>
+        <td>${row.minBatida}</td>
+        <td>${row.maxBatida}</td>
+      `;
+      tableBody2.appendChild(tr);
+
+      tableHeader2.style.display = 'table-header-group';
+      tableTitle2.style.display = 'block';
+
+      totalBatidas2 += row.qtdBatidas;
+    });
+
+    const trTotal2 = document.createElement('tr');
+    trTotal2.innerHTML = `
       <td colspan="3"><strong>Total</strong></td>
-      <td><strong>${totalBatidas}</strong></td>
-      <td colspan="2"></td>
+      <td><strong>${totalBatidas2}</strong></td>
+      <td colspan="3"></td>
     `;
-    tableBody.appendChild(trTotal);
+    tableBody2.appendChild(trTotal2);
+
+    progressBarInner.style.width = '95%';
+    progressBarInner.textContent = '95%';
+
+    data4.forEach((row, index) => {
+      dataChart3.push([row.dtaMes, row.qtdBatidas]);
+    });
+
+    progressBarInner.style.width = '97%';
+    progressBarInner.textContent = '97%';
 
     google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(() => {
       drawChart1(dataChart1);
       drawChart2(dataChart2);
+      drawChart3(dataChart3);
 
       progressBarInner.style.width = '100%';
       progressBarInner.textContent = '100%';
@@ -144,14 +219,14 @@ function drawChart1(chartData) {
   chart.draw(data, options);
 }
 
-function drawChart2(chartData) {
+function drawChart2(chartData, totalBatidas) {
   const data = google.visualization.arrayToDataTable(chartData);
 
   const options = {
-    title: 'Batidas x Colaboradores',
+    title: 'Qtd.Batidas x Colaboradores',
     legend: { position: 'bottom' },
     hAxis: {
-      title: 'Colaborador',
+      title: 'Qtd. Batidas ⇔ b = batida(s)',
       slantedText: true,
       slantedTextAngle: 45,
       textStyle: {
@@ -160,7 +235,7 @@ function drawChart2(chartData) {
       }
     },
     vAxis: {
-      title: 'Número de Batidas'
+      title: `Colaboradores`
     },
     backgroundColor: 'transparent',
     legend: { position: 'top', maxLines: 3 },
@@ -176,6 +251,29 @@ function drawChart2(chartData) {
   };
 
   const chart = new google.visualization.ColumnChart(document.getElementById('chart2'));
+
+  chart.draw(data, options);
+}
+
+function drawChart3(chartData) {
+  const data = google.visualization.arrayToDataTable(chartData);
+
+  const options = {
+    title: `Importação de Batidas por Dia`,
+    //curveType: 'function',
+    legend: { position: 'top', maxLines: 3 },
+    hAxis: {
+      title: 'Importação entre 20 Dias Anteriores até a data selecionada',
+      slantedText: true,
+      slantedTextAngle: 45
+    },
+    vAxis: {
+      title: 'Qtd. Batidas'
+    },
+    annotations: { alwaysOutside: 'true' }
+  };
+
+  const chart = new google.visualization.LineChart(document.getElementById('chart3'));
 
   chart.draw(data, options);
 }

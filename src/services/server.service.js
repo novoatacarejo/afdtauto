@@ -31,11 +31,24 @@ class WebService {
         res.render('index.html');
       });
 
-      app.get('/date', async (req, res) => {
+      app.get('/chart3', async (req, res) => {
         const { date } = req.query;
 
         try {
-          const result = await ConsincoService.getAfdRtPunches(date, 's');
+          const result = await ConsincoService.getAfdRtAllPunches(date, 'n');
+          //console.log(result);
+          res.json(result);
+        } catch (err) {
+          console.error(err);
+          res.status(500).send('chart3', 'erro ao buscar os dados da tabela.');
+        }
+      });
+
+      app.get('/table1', async (req, res) => {
+        const { date } = req.query;
+
+        try {
+          const result = await ConsincoService.getAfdRtPunches(date, 'n');
           res.json(result);
         } catch (err) {
           console.error(err);
@@ -47,11 +60,23 @@ class WebService {
         const { date } = req.query;
 
         try {
-          const result = await ConsincoService.getAfdRtNroPunches(date, 's');
+          const result = await ConsincoService.getAfdRtNroPunches(date, 'n');
           res.json(result);
         } catch (err) {
           console.error(err);
-          res.status(500).send('barchart1', 'erro ao obter os dados do gráfico de colunas.');
+          res.status(500).send('chart2', 'erro ao obter os dados do gráfico de colunas.');
+        }
+      });
+
+      app.get('/table2', async (req, res) => {
+        const { date } = req.query;
+
+        try {
+          const result = await ConsincoService.getAfdRtLjPunches(date, 'n');
+          res.json(result);
+        } catch (err) {
+          console.error(err);
+          res.status(500).send('chart3', 'erro ao obter os dados da tabela de linhas.');
         }
       });
 
