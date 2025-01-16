@@ -1,8 +1,52 @@
+const colors = [
+  '#3366CC',
+  '#DC3912',
+  '#FF9900',
+  '#109618',
+  '#990099',
+  '#3B3EAC',
+  '#0099C6',
+  '#DD4477',
+  '#66AA00',
+  '#B82E2E',
+  '#316395',
+  '#994499',
+  '#22AA99',
+  '#AAAA11',
+  '#6633CC',
+  '#E67300',
+  '#8B0707',
+  '#329262',
+  '#5574A6',
+  '#3B3EAC',
+  '#3366CC',
+  '#DC3912',
+  '#FF9900',
+  '#109618',
+  '#990099',
+  '#3B3EAC',
+  '#0099C6',
+  '#DD4477',
+  '#66AA00',
+  '#B82E2E',
+  '#316395',
+  '#994499',
+  '#22AA99',
+  '#AAAA11',
+  '#6633CC',
+  '#E67300',
+  '#8B0707',
+  '#329262',
+  '#5574A6',
+  '#3B3EAC'
+];
+
 function dataHoraAtual() {
   const now = new Date();
   const nowString =
     now.toLocaleDateString('pt-BR', {
       day: '2-digit',
+
       month: '2-digit',
       year: 'numeric'
     }) +
@@ -84,8 +128,8 @@ async function fetchData() {
     tableBody2.innerHTML = '';
 
     const dataChart1 = [['Hora', 'Qtd. Batidas']];
-    const dataChart2 = [['Número de Batidas', 'Colaboradores']];
-    const dataChart3 = [['Dia', 'Qtd. Batidas']];
+    const dataChart2 = [['Número de Batidas', 'Colaboradores', { role: 'style' }]];
+    const dataChart3 = [['Dia', 'Qtd. Batidas', { role: 'style' }]];
 
     let totalBatidas1 = 0;
     let totalBatidas2 = 0;
@@ -129,7 +173,7 @@ async function fetchData() {
     progressBarInner.textContent = '90%';
 
     data2.forEach((row, index) => {
-      dataChart2.push([row.nroBatidas, row.colaboradores]);
+      dataChart2.push([row.nroBatidas, row.colaboradores, colors[index]]);
     });
 
     data3.forEach((row, index) => {
@@ -170,7 +214,7 @@ async function fetchData() {
     progressBarInner.textContent = '95%';
 
     data4.forEach((row, index) => {
-      dataChart3.push([row.dtaMes, row.qtdBatidas]);
+      dataChart3.push([row.dtaMes, row.qtdBatidas, colors[index]]);
     });
 
     progressBarInner.style.width = '97%';
@@ -200,7 +244,7 @@ function drawChart1(chartData) {
   const data = google.visualization.arrayToDataTable(chartData);
 
   const options = {
-    title: `Batidas por Hora`,
+    title: `Importação de Batidas por Hora`,
     //curveType: 'function',
     legend: { position: 'top', maxLines: 3 },
     hAxis: {
@@ -223,7 +267,7 @@ function drawChart2(chartData, totalBatidas) {
   const data = google.visualization.arrayToDataTable(chartData);
 
   const options = {
-    title: 'Qtd.Batidas x Colaboradores',
+    title: 'Número de Batidas importadas x Colaboradores',
     legend: { position: 'bottom' },
     hAxis: {
       title: 'Qtd. Batidas ⇔ b = batida(s)',
@@ -262,6 +306,9 @@ function drawChart3(chartData) {
     title: `Importação de Batidas por Dia`,
     //curveType: 'function',
     legend: { position: 'top', maxLines: 3 },
+    selectionMode: 'multiple',
+    tooltip: { trigger: 'selection' },
+    aggregationTarget: 'category',
     hAxis: {
       title: 'Importação entre 20 Dias Anteriores até a data selecionada',
       slantedText: true,
@@ -270,10 +317,23 @@ function drawChart3(chartData) {
     vAxis: {
       title: 'Qtd. Batidas'
     },
-    annotations: { alwaysOutside: 'true' }
+    annotations: {
+      boxStyle: {
+        stroke: '#888',
+        strokeWidth: 1,
+        rx: 10,
+        ry: 10,
+        alwaysOutside: true
+      }
+    },
+    crosshair: {
+      color: '#000',
+      trigger: 'selection'
+    }
   };
 
-  const chart = new google.visualization.LineChart(document.getElementById('chart3'));
+  //const chart = new google.visualization.LineChart(document.getElementById('chart3'));
+  const chart = new google.visualization.ColumnChart(document.getElementById('chart3'));
 
   chart.draw(data, options);
 }
