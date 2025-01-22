@@ -464,16 +464,20 @@ const readJsonClocks = async (success) => {
 function getLogValue(enableLog = 'n') {
   const name = getLogValue.name;
 
-  const log = ['01', 1, '1', 's', 'sim', 'y', 'yes'].includes(enableLog)
+  if (typeof enableLog !== 'string') {
+    enableLog = String(enableLog);
+  }
+
+  const logValue = enableLog.toLowerCase();
+
+  const log = ['01', '1', 's', 'sim', 'y', 'yes'].includes(logValue)
     ? 1
-    : ['02', 2, '2', 'n', 'no', 'nao', 'não'].includes(enableLog)
+    : ['0', '02', '2', 'n', 'no', 'nao', 'não'].includes(logValue)
     ? 0
     : null;
 
   if (log === null) {
-    logger.error('Utils.js', name, `invalid value for enableLog. 's' or 'n' (case-insensitive).`);
-    //throw new Error('getLogValue', 'invalid value for enableLog');
-    //(name, `invalid value for enableLog. use 's' or 'n' (case-insensitive).`)
+    throw new Error(`Utils.js: ${name} - invalid value for enableLog. Use 's' or 'n' (case-insensitive).`);
   }
 
   return log;
@@ -481,6 +485,37 @@ function getLogValue(enableLog = 'n') {
 
 function totalRecords(data, log = 0) {
   return log === 1 ? `[total]:${data.length}` : null;
+}
+
+function readJsonClock(ip) {
+  const name = readJsonClock.name;
+
+  if (!fs.existsSync(CLOCKS_FILE)) {
+    console.log(name, 'clocks file not found at: ', CLOCKS_FILE);
+    return [];
+  }
+
+  try {
+    const data = fs.readFileSync(CLOCKS_FILE, 'utf8');
+    const parsedData = JSON.parse(data).data;
+
+    const clock = parsedData.filter((record) => record.ip === `${ip}` && record.status === 'success');
+    return clock[0];
+  } catch (err) {
+    console.log(name, err);
+    return [];
+  }
+}
+
+function convertUptime(uptime) {
+  const timeToConvert = Number(uptime);
+
+  const days = Math.floor(timeToConvert / (24 * 60 * 60));
+  const hours = Math.floor((timeToConvert % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((timeToConvert % (60 * 60)) / 60);
+  const seconds = timeToConvert % 60;
+
+  return `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
 module.exports = {
@@ -498,6 +533,7 @@ module.exports = {
   dataHoraAtual2,
   returnHourMinute,
   readJsonClocks,
+  readJsonClock,
   currentDateHour,
   currentLogTimeDate,
   formatDate,
@@ -507,5 +543,6 @@ module.exports = {
   clearScreen,
   readEachLine,
   getLogValue,
-  totalRecords
+  totalRecords,
+  convertUptime
 };

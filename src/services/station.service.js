@@ -5,7 +5,15 @@ const { ConsincoService } = require('./consinco.service.js');
 const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
-const { returnJsonLine, subtractHours, currentDate, getLogValue } = require('../utils/Utils.js');
+const {
+  assembleArrayObjects,
+  returnJsonLine,
+  readJsonClock,
+  subtractHours,
+  currentDate,
+  getLogValue,
+  convertUptime
+} = require('../utils/Utils.js');
 const { Logger } = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'StationService';
@@ -24,6 +32,17 @@ const instance = axios.create({
   timeout: 60000,
   httpAgent: new https.Agent({ keepAlive: true })
 });
+
+const returnAxiosOptions = (url) => {
+  return {
+    method: 'POST',
+    url,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    insecureHTTPParser: true
+  };
+};
 
 class StationService {
   static async isServerReachable(ip, login, pass) {
@@ -251,6 +270,266 @@ class StationService {
           return false;
         }
       }
+    }
+  };
+
+  static getClockInfo = async (ip, enableLog = 'n') => {
+    const name = this.getClockInfo.name;
+    const log = getLogValue(enableLog);
+
+    try {
+      const { userName, userPass } = await readJsonClock(ip, log);
+
+      const token = await this.getToken(ip, userName, userPass, log);
+
+      if (!token) {
+        logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
+      } else {
+        if (log === 1) {
+          logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
+        }
+
+        const url = `https://${ip}/get_info.fcgi?session=` + token;
+
+        const response = await instance.request({
+          method: 'POST',
+          url,
+          //contentType: 'application/json',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          insecureHTTPParser: true
+        });
+
+        this.logoutStation(ip, token, log);
+
+        if (!response) {
+          logger.error(name, `erro ao obter informacoes da estacao ipAddr: ${ip}`);
+        } else {
+          const uptime = response.data.uptime;
+          response.data.uptime = convertUptime(uptime);
+
+          return response.data || null;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      logger.error(name, error);
+    }
+  };
+
+  static getClockSystem = async (ip, enableLog = 'n') => {
+    const name = this.getClockSystem.name;
+    const log = getLogValue(enableLog);
+
+    try {
+      const { userName, userPass } = await readJsonClock(ip, log);
+
+      const token = await this.getToken(ip, userName, userPass, log);
+
+      if (!token) {
+        logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
+      } else {
+        if (log === 1) {
+          logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
+        }
+
+        const url = `https://${ip}/get_system_information.fcgi?session=` + token;
+
+        const response = await instance.request({
+          method: 'POST',
+          url,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          insecureHTTPParser: true
+        });
+
+        this.logoutStation(ip, token, log);
+
+        if (!response) {
+          logger.error(name, `erro ao obter informacoes da estacao ipAddr: ${ip}`);
+        } else {
+          const uptime = response.data.uptime;
+          response.data.uptime = convertUptime(uptime);
+
+          return response.data || null;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      logger.error(name, error);
+    }
+  };
+
+  static getClockAbout = async (ip, enableLog = 'n') => {
+    const name = this.getClockAbout.name;
+    const log = getLogValue(enableLog);
+
+    try {
+      const { userName, userPass } = await readJsonClock(ip, log);
+
+      const token = await this.getToken(ip, userName, userPass, log);
+
+      if (!token) {
+        logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
+      } else {
+        if (log === 1) {
+          logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
+        }
+
+        const url = `https://${ip}/get_about.fcgi?session=` + token;
+
+        const response = await instance.request({
+          method: 'POST',
+          url,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          insecureHTTPParser: true
+        });
+
+        this.logoutStation(ip, token, log);
+
+        if (!response) {
+          logger.error(name, `erro ao obter informacoes da estacao ipAddr: ${ip}`);
+        } else {
+          return response.data || null;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      logger.error(name, error);
+    }
+  };
+
+  static getClockNetwork = async (ip, enableLog = 'n') => {
+    const name = this.getClockNetwork.name;
+    const log = getLogValue(enableLog);
+
+    try {
+      const { userName, userPass } = await readJsonClock(ip, log);
+
+      const token = await this.getToken(ip, userName, userPass, log);
+
+      if (!token) {
+        logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
+      } else {
+        if (log === 1) {
+          logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
+        }
+
+        const url = `https://${ip}/set_system_network.fcgi?session=` + token;
+
+        const response = await instance.request({
+          method: 'POST',
+          url,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          insecureHTTPParser: true
+        });
+
+        this.logoutStation(ip, token, log);
+
+        if (!response) {
+          logger.error(name, `erro ao obter informacoes da estacao ipAddr: ${ip}`);
+        } else {
+          return response.data || null;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      logger.error(name, error);
+    }
+  };
+
+  static getClockStatus = async (ip, user, pass, enableLog = 'n') => {
+    const name = this.getClockStatus.name;
+    const log = getLogValue(enableLog);
+
+    let userName;
+    let userPass;
+
+    if (!user && !pass) {
+      const clockData = await readJsonClock(ip, log);
+      if (clockData) {
+        ({ userName, userPass } = clockData);
+      } else {
+        throw new Error(`Failed to read clock data for IP: ${ip}`);
+      }
+    } else {
+      userName = user;
+      userPass = pass;
+    }
+
+    try {
+      const token = await this.getToken(ip, userName, userPass, log);
+
+      if (!token) {
+        logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
+      } else {
+        if (log === 1) {
+          logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
+        }
+
+        const url1 = `https://${ip}/get_info.fcgi?session=` + token;
+
+        const url2 = `https://${ip}/get_system_information.fcgi?session=` + token;
+
+        const url3 = `https://${ip}/get_about.fcgi?session=` + token;
+
+        const info = await instance.request(returnAxiosOptions(url1));
+
+        const system = await instance.request(returnAxiosOptions(url2));
+
+        const about = await instance.request(returnAxiosOptions(url3));
+
+        this.logoutStation(ip, token, log);
+
+        if (!info || !system || !about) {
+          logger.error(name, `erro ao obter informacoes da estacao ipAddr: ${ip}`);
+        } else {
+          const uptime = info.data.uptime;
+          info.data.uptime = convertUptime(uptime);
+
+          const obj = {
+            ip: ip,
+            mac: about.data.mac,
+            serial: about.data.nSerie,
+            firmware: about.data.versionFW,
+            mrp: about.data.versionMRP,
+            memoriaUtilizada: system.data.memory,
+            ultimoNroNSR: system.data.last_nsr,
+            totalUsuarios: system.data.user_count,
+            usuarios: info.data.user_count,
+            usuariosAdmin: info.data.administrator_count,
+            digitaisCadastradas: info.data.template_count,
+            usuariosComSenha: info.data.password_count,
+            codigoBarras: info.data.bars_count,
+            cartoesRfid: info.data.rfid_count,
+            tempoAtividade: info.data.uptime,
+            totalTicketsImpressos: info.data.cuts,
+            qtdBobina: system.data.coil_paper,
+            totalBobina: system.data.total_paper,
+            prontoImpressao: system.data.paper_ok,
+            acabandoBobina:
+              system.data.low_paper === null ||
+              system.data.low_paper === undefined ||
+              system.data.low_paper === '' ||
+              system.data.low_paper === 'null' ||
+              system.data.low_paper === false ||
+              system.data.low_paper === 'undefined'
+                ? false
+                : true
+          };
+
+          return obj || null;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      logger.error(name, error);
     }
   };
 }

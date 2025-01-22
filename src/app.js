@@ -23,6 +23,7 @@ logger.service = SERVICE_NAME;
 logger.configureDirLogService('application');
 
 const minutesNetwork = '7,14,21,28,35,42,49,56';
+const minutesApp = '9,18,27,36,45,54,63,72';
 
 class application {
   static start(executeApp = 0, minutes = 0, enableLog = 'n') {
@@ -53,7 +54,20 @@ class application {
             'scheduling task NetworkService.testConn for running at every ' + minutesNetwork + ' minutes'
           );
           await NetworkService.testConn(enableLog);
-          logger.info(name, `testing connection at ${dataHoraAtual()}`);
+          logger.info(name, `testing connection with stations at ${dataHoraAtual()}`);
+        } catch (error) {
+          logger.error(name, error);
+        }
+      });
+
+      cron.schedule('10,20,30,40,50 * * * *', async () => {
+        try {
+          logger.info(
+            name,
+            'scheduling task NetworkService.updateInfo for running at every ' + minutesApp + ' minutes'
+          );
+          await NetworkService.updateInfo(enableLog);
+          logger.info(name, `connecting stations at ${dataHoraAtual()}`);
         } catch (error) {
           logger.error(name, error);
         }
@@ -80,6 +94,7 @@ class application {
 
       if (executeApp === 1) {
         App.startapp(mm, enableLog);
+        NetworkService.updateInfo(enableLog);
       }
     } catch (error) {
       logger.error(name, error);

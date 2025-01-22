@@ -1,7 +1,9 @@
 require('dotenv').config('../.env');
 const express = require('express');
-const { ConsincoService } = require('../services/consinco.service.js');
 const fs = require('fs');
+const { ConsincoService } = require('../services/consinco.service.js');
+const { StationService } = require('../services/station.service.js');
+const { readJsonClock } = require('../utils/Utils.js');
 const { Logger } = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'WebService';
@@ -10,7 +12,7 @@ let logger = new Logger();
 logger.service = SERVICE_NAME;
 logger.configureDirLogService('application');
 
-const { CLOCKS_FILE, NETWORK_FILE, API_WEB_DIR } = process.env;
+const { CLOCKS_FILE, FAILS_FILE, INFO_FILE, API_WEB_DIR } = process.env;
 
 class WebService {
   static start = async () => {
@@ -29,6 +31,18 @@ class WebService {
     try {
       app.get('/', (req, res) => {
         res.render('index.html');
+      });
+
+      app.get('/chart2', async (req, res) => {
+        const { date } = req.query;
+
+        try {
+          const result = await ConsincoService.getAfdRtNroPunches(date, 'n');
+          res.json(result);
+        } catch (err) {
+          console.error(err);
+          res.status(500).send('chart2', 'erro ao obter os dados do gráfico de colunas.');
+        }
       });
 
       app.get('/chart3', async (req, res) => {
@@ -56,18 +70,6 @@ class WebService {
         }
       });
 
-      app.get('/chart2', async (req, res) => {
-        const { date } = req.query;
-
-        try {
-          const result = await ConsincoService.getAfdRtNroPunches(date, 'n');
-          res.json(result);
-        } catch (err) {
-          console.error(err);
-          res.status(500).send('chart2', 'erro ao obter os dados do gráfico de colunas.');
-        }
-      });
-
       app.get('/table2', async (req, res) => {
         const { date } = req.query;
 
@@ -76,13 +78,42 @@ class WebService {
           res.json(result);
         } catch (err) {
           console.error(err);
-          res.status(500).send('chart3', 'erro ao obter os dados da tabela de linhas.');
+          res.status(500).send({ error: 'erro ao obter os dados da tabela de linhas.' });
+        }
+      });
+
+      app.get('/info', (req, res) => {
+        try {
+          const data = fs.readFileSync(INFO_FILE, 'utf8');
+          const logs = JSON.parse(data).data;
+          res.json(logs);
+        } catch (err) {
+          logger.error(name, `${err}`);
+          res.status(500).json({ error: 'fails - failed to read logs' });
+        }
+      });
+
+      app.get('/clock', async (req, res) => {
+        const { ip } = req.query;
+        const log = 's';
+
+        try {
+          const result = await StationService.getClockStatus(ip, null, null, log);
+
+          if (result === null) {
+            res.status(500).send('clock', 'sem resposta da estação');
+          } else {
+            res.json(result);
+          }
+        } catch (err) {
+          console.error(err);
+          res.status(500).send('clock', 'erro ao buscar os log da estacao');
         }
       });
 
       app.get('/fails', (req, res) => {
         try {
-          const data = fs.readFileSync(NETWORK_FILE, 'utf8');
+          const data = fs.readFileSync(FAILS_FILE, 'utf8');
           const logs = JSON.parse(data).data;
           res.json(logs);
         } catch (err) {

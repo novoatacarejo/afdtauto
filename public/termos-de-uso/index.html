@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="content-type" content="text/html" />
@@ -124,75 +124,42 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
   <body>
-    <h1>Importação de Arquivos Afd<br />Real Time</h1>
+    <header>
+      <h1>Termos de Uso</h1>
+    </header>
+    <div class="container">
+      <h2>Introdução</h2>
+      <p>
+        Bem-vindo ao site do Novo Atacarejo! Estes Termos de Uso estabelecem as regras para a utilização de nossos
+        serviços online. Ao acessar este site, você concorda com estas condições.
+      </p>
 
-    <div id="dataHora"></div>
+      <h2>Uso permitido</h2>
+      <ul>
+        <li>Acessar informações e realizar compras em nossa loja online;</li>
+        <li>Interagir com nosso suporte para resolver dúvidas ou problemas.</li>
+      </ul>
 
-    <div id="loading">loading</div>
-    <div id="progressBar"><div>0%</div></div>
+      <h2>Restrições</h2>
+      <ul>
+        <li>É proibido realizar fraudes ou atividades ilícitas no site;</li>
+        <li>Não é permitido copiar ou distribuir conteúdo sem autorização;</li>
+        <li>O uso de bots ou ferramentas automatizadas é estritamente proibido.</li>
+      </ul>
 
-    <p></p>
+      <h2>Responsabilidade</h2>
+      <p>
+        Embora nos esforcemos para garantir a disponibilidade do site, não nos responsabilizamos por falhas técnicas ou
+        interrupções nos serviços.
+      </p>
 
-    <label for="date">Pesquisar por Data:</label>
-    <input type="date" id="date" />
-    <button id="searchButton" onclick="fetchData()">Pesquisar</button>
-
-    <div id="chart3"></div>
-
-    <div id="chart1"></div>
-
-    <!-- <div id="chart2" style="width: 900px; height: 500px"></div> -->
-
-    <div id="chart2"></div>
-
-    <p></p>
-
-    <h3 id="tableTitle1" style="display: none">Análise de Batidas por Hora</h3>
-    <table>
-      <thead id="tableHeader1" style="display: none">
-        <tr>
-          <th>#</th>
-          <th>Data</th>
-          <th>Hora</th>
-          <th>Qtd. Batidas</th>
-          <th>Min. Batida</th>
-          <th>Max. Batida</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody1">
-        <!-- Dados preenchidos dinamicamente -->
-      </tbody>
-    </table>
-
-    <p></p>
-
-    <h3 id="tableTitle2" style="display: none">Análise de Batidas por Loja</h3>
-    <table>
-      <thead id="tableHeader2" style="display: none">
-        <tr>
-          <th>#</th>
-          <th>Loja</th>
-          <th>Qtd. Relogios</th>
-          <th>Qtd. Batidas</th>
-          <th>Data Batida</th>
-          <th>Min. Batida</th>
-          <th>Max. Batida</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody2">
-        <!-- Dados preenchidos dinamicamente -->
-      </tbody>
-    </table>
-
-    <footer
-      style="
-        background-color: #f8f9fa;
-        padding: 20px;
-        text-align: center;
-        font-size: 14px;
-        border-top: 1px solid #e9ecef;
-      "
-    >
+      <h2>Alterações nos Termos</h2>
+      <p>
+        Reservamo-nos o direito de atualizar estes Termos de Uso a qualquer momento. Recomendamos que você revise esta
+        página periodicamente.
+      </p>
+    </div>
+    <footer style="padding: 20px; text-align: center; font-size: 14px; border-top: 1px solid #e9ecef">
       <div>
         <p>&copy; 2025 Novo Atacarejo. Todos os direitos reservados.</p>
         <p>
@@ -203,7 +170,5 @@
         <p>Desenvolvido com ❤️ pela equipe Novo Atacarejo</p>
       </div>
     </footer>
-
-    <script src="./index.js"></script>
   </body>
 </html>

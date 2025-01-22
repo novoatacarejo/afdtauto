@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="content-type" content="text/html" />
@@ -9,7 +9,7 @@
     <link href="http://10.101.108.195:3500/assets/fontawesome/css/brands.css" rel="stylesheet" />
     <link href="http://10.101.108.195:3500/assets/fontawesome/css/solid.css" rel="stylesheet" />
     <link rel="icon" href="http://10.101.108.195:3500/assets/favicon.ico" />
-    <title>Importação de Arquivos Afd - Real Time</title>
+    <title>Política de Privacidade - Novo Atacarejo</title>
     <style>
       * {
         margin: 0;
@@ -121,68 +121,24 @@
         color: white;
       }
     </style>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
   <body>
-    <h1>Importação de Arquivos Afd<br />Real Time</h1>
-
-    <div id="dataHora"></div>
-
-    <div id="loading">loading</div>
-    <div id="progressBar"><div>0%</div></div>
-
-    <p></p>
-
-    <label for="date">Pesquisar por Data:</label>
-    <input type="date" id="date" />
-    <button id="searchButton" onclick="fetchData()">Pesquisar</button>
-
-    <div id="chart3"></div>
-
-    <div id="chart1"></div>
-
-    <!-- <div id="chart2" style="width: 900px; height: 500px"></div> -->
-
-    <div id="chart2"></div>
-
-    <p></p>
-
-    <h3 id="tableTitle1" style="display: none">Análise de Batidas por Hora</h3>
-    <table>
-      <thead id="tableHeader1" style="display: none">
-        <tr>
-          <th>#</th>
-          <th>Data</th>
-          <th>Hora</th>
-          <th>Qtd. Batidas</th>
-          <th>Min. Batida</th>
-          <th>Max. Batida</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody1">
-        <!-- Dados preenchidos dinamicamente -->
-      </tbody>
-    </table>
-
-    <p></p>
-
-    <h3 id="tableTitle2" style="display: none">Análise de Batidas por Loja</h3>
-    <table>
-      <thead id="tableHeader2" style="display: none">
-        <tr>
-          <th>#</th>
-          <th>Loja</th>
-          <th>Qtd. Relogios</th>
-          <th>Qtd. Batidas</th>
-          <th>Data Batida</th>
-          <th>Min. Batida</th>
-          <th>Max. Batida</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody2">
-        <!-- Dados preenchidos dinamicamente -->
-      </tbody>
-    </table>
+    <header>
+      <h1>Fale Conosco</h1>
+    </header>
+    <p>Estamos aqui para ajudar! Preencha o formulário abaixo ou entre em contato pelos nossos canais.</p>
+    <form>
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required />
+      <br />
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="email" required />
+      <br />
+      <label for="mensagem">Mensagem:</label>
+      <textarea id="mensagem" name="mensagem" required></textarea>
+      <br />
+      <button type="submit">Enviar</button>
+    </form>
 
     <footer
       style="
@@ -203,7 +159,5 @@
         <p>Desenvolvido com ❤️ pela equipe Novo Atacarejo</p>
       </div>
     </footer>
-
-    <script src="./index.js"></script>
   </body>
 </html>
