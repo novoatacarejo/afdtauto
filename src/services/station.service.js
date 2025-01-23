@@ -464,7 +464,11 @@ class StationService {
     }
 
     try {
-      const token = await this.getToken(ip, userName, userPass, log);
+      try {
+        const token = await this.getToken(ip, userName, userPass, log);
+      } catch (error) {
+        logger.error(`${name}-token`, error);
+      }
 
       if (!token) {
         logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
@@ -479,13 +483,21 @@ class StationService {
 
         const url3 = `https://${ip}/get_about.fcgi?session=` + token;
 
-        const info = await instance.request(returnAxiosOptions(url1));
+        try {
+          const info = await instance.request(returnAxiosOptions(url1));
 
-        const system = await instance.request(returnAxiosOptions(url2));
+          const system = await instance.request(returnAxiosOptions(url2));
 
-        const about = await instance.request(returnAxiosOptions(url3));
+          const about = await instance.request(returnAxiosOptions(url3));
+        } catch (error) {
+          logger.error(`${name}-request`, error);
+        }
 
-        this.logoutStation(ip, token, log);
+        try {
+          this.logoutStation(ip, token, log);
+        } catch (error) {
+          logger.error(`${name}-logoutStation`, error);
+        }
 
         if (!info || !system || !about) {
           logger.error(name, `erro ao obter informacoes da estacao ipAddr: ${ip}`);

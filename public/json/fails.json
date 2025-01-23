@@ -14027,6 +14027,13 @@
       "lastSyncTime": "2025-01-23T07:14:34",
       "errorCode": "ETIMEDOUT",
       "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.9.81",
+      "status": "failed",
+      "lastSyncTime": "2025-01-23T13:49:22",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
     }
   ]
 }
