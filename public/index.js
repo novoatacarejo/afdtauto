@@ -80,42 +80,46 @@ async function fetchData() {
   progressBarInner.textContent = '0%';
 
   try {
-    const response4 = await fetch(`/chart3?date=${dateInput}`);
+    const dfChart3 = await fetch(`/chart3?date=${dateInput}`);
     progressBarInner.style.width = '35%';
     progressBarInner.textContent = '35%';
 
-    const response1 = await fetch(`/table1?date=${dateInput}`);
+    const dfTable1 = await fetch(`/table1?date=${dateInput}`);
     progressBarInner.style.width = '50%';
     progressBarInner.textContent = '50%';
 
-    const response2 = await fetch(`/chart2?date=${dateInput}`);
+    const dfChart2 = await fetch(`/chart2?date=${dateInput}`);
     progressBarInner.style.width = '75%';
     progressBarInner.textContent = '75%';
 
-    const response3 = await fetch(`/table2?date=${dateInput}`);
+    const dfTable2 = await fetch(`/table2?date=${dateInput}`);
     progressBarInner.style.width = '89%';
     progressBarInner.textContent = '89%';
 
-    if (!response1.ok) {
+    if (!dfTable1.ok) {
       throw new Error('table1', 'Network response was not ok');
     }
 
-    if (!response2.ok) {
+    if (!dfChart3.ok) {
       throw new Error('chart2', 'Network response was not ok');
     }
 
-    if (!response3.ok) {
+    if (!dfTable2.ok) {
       throw new Error('table2', 'Network response was not ok');
     }
 
-    if (!response3.ok) {
+    if (!dfTable2.ok) {
       throw new Error('chart3', 'Network response was not ok');
     }
 
-    const data1 = await response1.json();
-    const data2 = await response2.json();
-    const data3 = await response3.json();
-    const data4 = await response4.json();
+    const data1 = await dfTable1.json();
+    const data2 = await dfChart2.json();
+    const data3 = await dfTable2.json();
+    const data4 = await dfChart3.json();
+
+    const gfLinhas = [['Hora', 'Qtd. Batidas', { role: 'annotation' }]];
+    const gfPizza = [['Número de Batidas', 'Colaboradores', { role: 'style' }, { role: 'annotation' }]];
+    const gfBarras = [['Dia', 'Qtd. Batidas', { role: 'style' }, { role: 'annotation' }]];
 
     const tableBody1 = document.getElementById('tableBody1');
     const tableHeader1 = document.getElementById('tableHeader1');
@@ -126,10 +130,6 @@ async function fetchData() {
     const tableHeader2 = document.getElementById('tableHeader2');
     const tableTitle2 = document.getElementById('tableTitle2');
     tableBody2.innerHTML = '';
-
-    const dataChart1 = [['Hora', 'Qtd. Batidas']];
-    const dataChart2 = [['Número de Batidas', 'Colaboradores', { role: 'style' }]];
-    const dataChart3 = [['Dia', 'Qtd. Batidas', { role: 'style' }]];
 
     let totalBatidas1 = 0;
     let totalBatidas2 = 0;
@@ -156,7 +156,7 @@ async function fetchData() {
       tableHeader1.style.display = 'table-header-group';
       tableTitle1.style.display = 'block';
 
-      dataChart1.push([row.hora, row.qtdRows]);
+      gfLinhas.push([row.hora, row.qtdRows, row.qtdRows]);
 
       totalBatidas1 += row.qtdRows;
     });
@@ -173,7 +173,7 @@ async function fetchData() {
     progressBarInner.textContent = '90%';
 
     data2.forEach((row, index) => {
-      dataChart2.push([row.nroBatidas, row.colaboradores, colors[index]]);
+      gfPizza.push([row.nroBatidas, row.colaboradores, colors[index], row.colaboradores]);
     });
 
     data3.forEach((row, index) => {
@@ -214,7 +214,7 @@ async function fetchData() {
     progressBarInner.textContent = '95%';
 
     data4.forEach((row, index) => {
-      dataChart3.push([row.dtaMes, row.qtdBatidas, colors[index]]);
+      gfBarras.push([row.dtaMes, row.qtdBatidas, colors[index], row.qtdBatidas]);
     });
 
     progressBarInner.style.width = '97%';
@@ -222,9 +222,9 @@ async function fetchData() {
 
     google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(() => {
-      drawChart1(dataChart1);
-      drawChart2(dataChart2);
-      drawChart3(dataChart3);
+      drawChart1(gfLinhas);
+      drawChart2(gfPizza);
+      drawChart3(gfBarras);
 
       progressBarInner.style.width = '100%';
       progressBarInner.textContent = '100%';
@@ -294,7 +294,7 @@ function drawChart2(chartData, totalBatidas) {
     }
   };
 
-  const chart = new google.visualization.ColumnChart(document.getElementById('chart2'));
+  const chart = new google.visualization.PieChart(document.getElementById('chart2'));
 
   chart.draw(data, options);
 }
@@ -323,7 +323,6 @@ function drawChart3(chartData) {
     }
   };
 
-  //const chart = new google.visualization.LineChart(document.getElementById('chart3'));
   const chart = new google.visualization.ColumnChart(document.getElementById('chart3'));
 
   chart.draw(data, options);
