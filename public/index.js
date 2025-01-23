@@ -45,13 +45,14 @@ function dataHoraAtual() {
   const now = new Date();
   const nowString =
     now.toLocaleDateString('pt-BR', {
+      timeZone: 'UTC',
       day: '2-digit',
-
       month: '2-digit',
       year: 'numeric'
     }) +
     ' ' +
     now.toLocaleTimeString('pt-BR', {
+      timeZone: 'UTC',
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit'
@@ -65,6 +66,13 @@ async function fetchData() {
   dataHoraAtual();
 
   const dateInput = document.getElementById('date').value;
+
+  const dateInputFormatted = new Date(dateInput).toLocaleDateString('pt-BR', {
+    timeZone: 'UTC',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
 
   if (!dateInput) {
     alert('Selecione uma data.');
@@ -138,6 +146,7 @@ async function fetchData() {
       const tr = document.createElement('tr');
 
       const formattedDate = new Date(row.dtaBatida).toLocaleDateString('pt-BR', {
+        timeZone: 'UTC',
         day: '2-digit',
         month: '2-digit',
         year: 'numeric'
@@ -180,6 +189,7 @@ async function fetchData() {
       const tr = document.createElement('tr');
 
       const formattedDate = new Date(row.dtaBatida).toLocaleDateString('pt-BR', {
+        timeZone: 'UTC',
         day: '2-digit',
         month: '2-digit',
         year: 'numeric'
@@ -222,9 +232,9 @@ async function fetchData() {
 
     google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(() => {
-      drawChart1(gfLinhas);
-      drawChart2(gfPizza);
-      drawChart3(gfBarras);
+      drawChart1(gfLinhas, dateInputFormatted);
+      drawChart2(gfPizza, dateInputFormatted);
+      drawChart3(gfBarras, dateInputFormatted);
 
       progressBarInner.style.width = '100%';
       progressBarInner.textContent = '100%';
@@ -240,11 +250,11 @@ async function fetchData() {
   }
 }
 
-function drawChart1(chartData) {
+function drawChart1(chartData, date) {
   const data = google.visualization.arrayToDataTable(chartData);
 
   const options = {
-    title: `Importação de Batidas por Hora`,
+    title: `Importação de Batidas por Hora - ${date}`,
     //curveType: 'function',
     legend: { position: 'top', maxLines: 3 },
     hAxis: {
@@ -263,11 +273,11 @@ function drawChart1(chartData) {
   chart.draw(data, options);
 }
 
-function drawChart2(chartData, totalBatidas) {
+function drawChart2(chartData, date) {
   const data = google.visualization.arrayToDataTable(chartData);
 
   const options = {
-    title: 'Número de Batidas importadas x Colaboradores',
+    title: `Batidas importadas x Colaboradores - ${date}`,
     legend: { position: 'bottom' },
     hAxis: {
       title: 'Qtd. Batidas ⇔ b = batida(s)',
@@ -299,11 +309,11 @@ function drawChart2(chartData, totalBatidas) {
   chart.draw(data, options);
 }
 
-function drawChart3(chartData) {
+function drawChart3(chartData, date) {
   const data = google.visualization.arrayToDataTable(chartData);
 
   const options = {
-    title: `Importação de Batidas por Dia`,
+    title: `Importação de Batidas por Dia - ${date}`,
     //curveType: 'function',
     legend: { position: 'top', maxLines: 3 },
     hAxis: {

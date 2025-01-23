@@ -101,13 +101,13 @@ class WebService {
           const result = await StationService.getClockStatus(ip, null, null, log);
 
           if (result === null) {
-            res.status(500).send('clock', 'sem resposta da estação');
+            res.status(500).send('clock - sem resposta da estação');
           } else {
             res.json(result);
           }
         } catch (err) {
           console.error(err);
-          res.status(500).send('clock', 'erro ao buscar os log da estacao');
+          res.status(500).send('clock - erro ao buscar os log da estacao');
         }
       });
 
