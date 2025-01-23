@@ -62,17 +62,26 @@ function dataHoraAtual() {
   date.textContent = `gerado em ${nowString}`;
 }
 
-async function fetchData() {
-  dataHoraAtual();
+function formatDate(date) {
+  /*  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`; */
 
-  const dateInput = document.getElementById('date').value;
-
-  const dateInputFormatted = new Date(dateInput).toLocaleDateString('pt-BR', {
+  return new Date(date).toLocaleDateString('pt-BR', {
     timeZone: 'UTC',
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'
   });
+}
+
+async function fetchData() {
+  dataHoraAtual();
+
+  const dateInput = document.getElementById('date').value;
+
+  const formattedDate = formatDate(new Date(dateInput));
 
   if (!dateInput) {
     alert('Selecione uma data.');
@@ -88,42 +97,42 @@ async function fetchData() {
   progressBarInner.textContent = '0%';
 
   try {
-    const dfChart3 = await fetch(`/chart3?date=${dateInput}`);
+    const chart3 = await fetch(`/chart3?date=${dateInput}`);
     progressBarInner.style.width = '35%';
     progressBarInner.textContent = '35%';
 
-    const dfTable1 = await fetch(`/table1?date=${dateInput}`);
+    const table1 = await fetch(`/table1?date=${dateInput}`);
     progressBarInner.style.width = '50%';
     progressBarInner.textContent = '50%';
 
-    const dfChart2 = await fetch(`/chart2?date=${dateInput}`);
+    const chart2 = await fetch(`/chart2?date=${dateInput}`);
     progressBarInner.style.width = '75%';
     progressBarInner.textContent = '75%';
 
-    const dfTable2 = await fetch(`/table2?date=${dateInput}`);
+    const table2 = await fetch(`/table2?date=${dateInput}`);
     progressBarInner.style.width = '89%';
     progressBarInner.textContent = '89%';
 
-    if (!dfTable1.ok) {
+    if (!table1.ok) {
       throw new Error('table1', 'Network response was not ok');
     }
 
-    if (!dfChart3.ok) {
+    if (!chart3.ok) {
       throw new Error('chart2', 'Network response was not ok');
     }
 
-    if (!dfTable2.ok) {
+    if (!table2.ok) {
       throw new Error('table2', 'Network response was not ok');
     }
 
-    if (!dfTable2.ok) {
+    if (!table2.ok) {
       throw new Error('chart3', 'Network response was not ok');
     }
 
-    const data1 = await dfTable1.json();
-    const data2 = await dfChart2.json();
-    const data3 = await dfTable2.json();
-    const data4 = await dfChart3.json();
+    const dfTable1 = await table1.json();
+    const dfChart2 = await chart2.json();
+    const dfTable2 = await table2.json();
+    const dfChart3 = await chart3.json();
 
     const gfLinhas = [['Hora', 'Qtd. Batidas', { role: 'annotation' }]];
     const gfPizza = [['Número de Batidas', 'Colaboradores', { role: 'style' }, { role: 'annotation' }]];
@@ -139,22 +148,17 @@ async function fetchData() {
     const tableTitle2 = document.getElementById('tableTitle2');
     tableBody2.innerHTML = '';
 
-    let totalBatidas1 = 0;
-    let totalBatidas2 = 0;
+    let totalBatidasTable1 = 0;
+    let totalBatidasTable2 = 0;
 
-    data1.forEach((row, index) => {
+    dfTable1.forEach((row, index) => {
       const tr = document.createElement('tr');
 
-      const formattedDate = new Date(row.dtaBatida).toLocaleDateString('pt-BR', {
-        timeZone: 'UTC',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
+      const dtaBatida = formatDate(new Date(row.dtaBatida));
 
       tr.innerHTML = `
         <td>${index + 1}</td>
-        <td>${formattedDate}</td>
+        <td>${dtaBatida}</td>
         <td>${row.hora}</td>
         <td>${row.qtdRows}</td>
         <td>${row.minBatida}</td>
@@ -167,13 +171,13 @@ async function fetchData() {
 
       gfLinhas.push([row.hora, row.qtdRows, row.qtdRows]);
 
-      totalBatidas1 += row.qtdRows;
+      totalBatidasTable1 += row.qtdRows;
     });
 
     const trTotal1 = document.createElement('tr');
     trTotal1.innerHTML = `
       <td colspan="3"><strong>Total</strong></td>
-      <td><strong>${totalBatidas1}</strong></td>
+      <td><strong>${totalBatidasTable1}</strong></td>
       <td colspan="2"></td>
     `;
     tableBody1.appendChild(trTotal1);
@@ -181,26 +185,21 @@ async function fetchData() {
     progressBarInner.style.width = '90%';
     progressBarInner.textContent = '90%';
 
-    data2.forEach((row, index) => {
+    dfChart2.forEach((row, index) => {
       gfPizza.push([row.nroBatidas, row.colaboradores, colors[index], row.colaboradores]);
     });
 
-    data3.forEach((row, index) => {
+    dfTable2.forEach((row, index) => {
       const tr = document.createElement('tr');
 
-      const formattedDate = new Date(row.dtaBatida).toLocaleDateString('pt-BR', {
-        timeZone: 'UTC',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
+      const dtaBatida = formatDate(new Date(row.dtaBatida));
 
       tr.innerHTML = `
         <td>${index + 1}</td>
         <td>${row.loja}</td>
         <td>${row.qtdRelogios}</td>
         <td>${row.qtdBatidas}</td>
-        <td>${formattedDate}</td>
+        <td>${dtaBatida}</td>
         <td>${row.minBatida}</td>
         <td>${row.maxBatida}</td>
       `;
@@ -209,13 +208,13 @@ async function fetchData() {
       tableHeader2.style.display = 'table-header-group';
       tableTitle2.style.display = 'block';
 
-      totalBatidas2 += row.qtdBatidas;
+      totalBatidasTable2 += row.qtdBatidas;
     });
 
     const trTotal2 = document.createElement('tr');
     trTotal2.innerHTML = `
       <td colspan="3"><strong>Total</strong></td>
-      <td><strong>${totalBatidas2}</strong></td>
+      <td><strong>${totalBatidasTable2}</strong></td>
       <td colspan="3"></td>
     `;
     tableBody2.appendChild(trTotal2);
@@ -223,7 +222,7 @@ async function fetchData() {
     progressBarInner.style.width = '95%';
     progressBarInner.textContent = '95%';
 
-    data4.forEach((row, index) => {
+    dfChart3.forEach((row, index) => {
       gfBarras.push([row.dtaMes, row.qtdBatidas, colors[index], row.qtdBatidas]);
     });
 
@@ -232,9 +231,9 @@ async function fetchData() {
 
     google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(() => {
-      drawChart1(gfLinhas, dateInputFormatted);
-      drawChart2(gfPizza, dateInputFormatted);
-      drawChart3(gfBarras, dateInputFormatted);
+      drawChart1(gfLinhas, formattedDate);
+      drawChart2(gfPizza, formattedDate);
+      drawChart3(gfBarras, formattedDate);
 
       progressBarInner.style.width = '100%';
       progressBarInner.textContent = '100%';
