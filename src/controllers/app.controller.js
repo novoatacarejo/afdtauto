@@ -13,6 +13,7 @@ const {
   formatDate,
   clearScreen,
   readJsonClocks,
+  readClocksInfo,
   getLogValue
 } = require('../utils/Utils.js');
 
@@ -70,7 +71,8 @@ class App {
       clearScreen();
       log === 1 ? logger.info(name, `coleta de arquivos afd iniciada em ${dataHoraAtual()}`) : null;
 
-      const stations = await readJsonClocks('success');
+      //const stations = await readJsonClocks('success');
+      const stations = await readClocksInfo();
       const afdDate = await returnAfdDay(0);
 
       if (stations.length === 0) {

@@ -461,6 +461,21 @@ const readJsonClocks = async (success) => {
   }
 };
 
+const readClocksInfo = async () => {
+  if (!fs.existsSync(CLOCKS_FILE)) {
+    fs.writeFileSync(CLOCKS_FILE, JSON.stringify([]));
+  }
+  try {
+    const data = await fs.readFileSync(CLOCKS_FILE, 'utf8');
+    const parsedData = JSON.parse(data).data;
+
+    return parsedData;
+  } catch (err) {
+    console.log('[readJson][error] - error reading json clocks file:', err);
+    return [];
+  }
+};
+
 function getLogValue(enableLog = 'n') {
   const name = getLogValue.name;
 
@@ -534,6 +549,7 @@ module.exports = {
   returnHourMinute,
   readJsonClocks,
   readJsonClock,
+  readClocksInfo,
   currentDateHour,
   currentLogTimeDate,
   formatDate,

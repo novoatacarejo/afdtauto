@@ -249,6 +249,35 @@ async function fetchData() {
   }
 }
 
+function drawChart3(chartData, date) {
+  const data = google.visualization.arrayToDataTable(chartData);
+
+  const options = {
+    title: `Importação de Batidas por Dia - ${date}`,
+    //curveType: 'function',
+    legend: { position: 'top', maxLines: 3 },
+    hAxis: {
+      title: 'Importação entre 20 Dias Anteriores até a data selecionada',
+      slantedText: true,
+      slantedTextAngle: 45
+    },
+    vAxis: {
+      title: 'Qtd. Batidas'
+    },
+    annotations: {
+      alwaysOutside: 'true',
+      textStyle: {
+        fontSize: 12,
+        color: '#000'
+      }
+    }
+  };
+
+  const chart = new google.visualization.ColumnChart(document.getElementById('gfBarras1'));
+
+  chart.draw(data, options);
+}
+
 function drawChart1(chartData, date) {
   const data = google.visualization.arrayToDataTable(chartData);
 
@@ -267,7 +296,7 @@ function drawChart1(chartData, date) {
     annotations: { alwaysOutside: 'true' }
   };
 
-  const chart = new google.visualization.LineChart(document.getElementById('chart1'));
+  const chart = new google.visualization.LineChart(document.getElementById('gfLinhas1'));
 
   chart.draw(data, options);
 }
@@ -303,36 +332,7 @@ function drawChart2(chartData, date) {
     }
   };
 
-  const chart = new google.visualization.PieChart(document.getElementById('chart2'));
-
-  chart.draw(data, options);
-}
-
-function drawChart3(chartData, date) {
-  const data = google.visualization.arrayToDataTable(chartData);
-
-  const options = {
-    title: `Importação de Batidas por Dia - ${date}`,
-    //curveType: 'function',
-    legend: { position: 'top', maxLines: 3 },
-    hAxis: {
-      title: 'Importação entre 20 Dias Anteriores até a data selecionada',
-      slantedText: true,
-      slantedTextAngle: 45
-    },
-    vAxis: {
-      title: 'Qtd. Batidas'
-    },
-    annotations: {
-      alwaysOutside: 'true',
-      textStyle: {
-        fontSize: 12,
-        color: '#000'
-      }
-    }
-  };
-
-  const chart = new google.visualization.ColumnChart(document.getElementById('chart3'));
+  const chart = new google.visualization.PieChart(document.getElementById('gfPizza1'));
 
   chart.draw(data, options);
 }
