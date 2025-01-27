@@ -448,39 +448,42 @@ class ConsincoService {
       const client = await OracleService.connect();
 
       const sql = `
-                  SELECT E.LOJA,
-                        E.QTDRELOGIOS,
-                        NVL(SUM(H.QTDBATIDAS),0) AS QTDBATIDAS,
-                        NVL(TO_DATE(MIN(H.DTABATIDA),'DD/MM/YYYY'),'') AS DTABATIDA,
-                        NVL(MIN(H.MIN_BATIDA),0) AS MENORBATIDA,
-                        NVL(MAX(H.MAX_BATIDA),0) AS MAIORBATIDA
-                  FROM (SELECT D.FILIALRM,
-                              (LPAD(D.NROEMPRESA, 3, 0) || '-' || D.NOMERM) AS LOJA,
-                              COUNT(D.IP) AS QTDRELOGIOS
-                        FROM WFM_DEV.DEV_RM_DEVICE D
-                        GROUP BY D.FILIALRM, (LPAD(D.NROEMPRESA, 3, 0) || '-' || D.NOMERM)) E
-                  LEFT JOIN (SELECT F.CODPESSOA,
-                                    F.DTABATIDA,
-                                    F.QTDBATIDAS,
-                                    F.MIN_BATIDA,
-                                    F.MAX_BATIDA,
-                                    G.FILIALRM
-                            FROM (SELECT /*+ index(A IDX_WFMDEV_RMAFD_02, B IDX_CODPESSOA_01) */
-                                    A.CODPESSOA,
-                                    A.DTABATIDA,
-                                    COUNT(A.HHMM) AS QTDBATIDAS,
-                                    MIN(A.HHMM) AS MIN_BATIDA,
-                                    MAX(A.HHMM) AS MAX_BATIDA
-                                  FROM WFM_DEV.DEV_RM_AFD A
-                                  WHERE 1 = 1
-                                  AND A.DTABATIDA = TRUNC(TO_DATE(:a, 'YYYY-MM-DD'))
-                                  GROUP BY A.CODPESSOA, A.DTABATIDA) F
-                            INNER JOIN (SELECT CODPESSOA, FILIALRM
-                                        FROM WFM_DEV.DEV_RM_CODPESSOA G) G
-                            ON (G.CODPESSOA = F.CODPESSOA)) H
-                  ON (E.FILIALRM = H.FILIALRM)
-                  GROUP BY E.LOJA, E.QTDRELOGIOS
-                  ORDER BY 1`;
+                    SELECT E.LOJA,
+                          E.QTDRELOGIOS,
+                          NVL(SUM(H.QTDBATIDAS), 0) AS QTDBATIDAS,
+                          NVL(TO_DATE(MIN(H.DTABATIDA), 'DD/MM/YYYY'), '') AS DTABATIDA,
+                          NVL(MIN(H.MIN_BATIDA), 0) AS MENORBATIDA,
+                          NVL(MAX(H.MAX_BATIDA), 0) AS MAIORBATIDA
+                    FROM (SELECT E.FILIALRM,
+                                (LPAD(E.FILIALC5, 3, 0) || '-' || E.NOMEC5) AS LOJA,
+                                COUNT(D.IP) AS QTDRELOGIOS
+                          FROM WFM_DEV.DEV_RM_DEVICE D
+                          RIGHT JOIN WFM_DEV.DEV_RM_EMPRESA E
+                          ON (D.FILIALRM = E.FILIALRM)
+                          GROUP BY E.FILIALRM, (LPAD(E.FILIALC5, 3, 0) || '-' || E.NOMEC5)) E
+                    --LEFT JOIN 
+                    RIGHT JOIN (SELECT F.CODPESSOA,
+                                      F.DTABATIDA,
+                                      F.QTDBATIDAS,
+                                      F.MIN_BATIDA,
+                                      F.MAX_BATIDA,
+                                      G.FILIALRM
+                                FROM (SELECT /*+ index(A IDX_WFMDEV_RMAFD_02, B IDX_CODPESSOA_01) */
+                                      A.CODPESSOA,
+                                      A.DTABATIDA,
+                                      COUNT(A.HHMM) AS QTDBATIDAS,
+                                      MIN(A.HHMM) AS MIN_BATIDA,
+                                      MAX(A.HHMM) AS MAX_BATIDA
+                                      FROM WFM_DEV.DEV_RM_AFD A
+                                      WHERE 1 = 1
+                                      AND A.DTABATIDA = TRUNC(TO_DATE(:A, 'YYYY-MM-DD'))
+                                      GROUP BY A.CODPESSOA, A.DTABATIDA) F
+                                LEFT JOIN (SELECT CODPESSOA, FILIALRM
+                                          FROM WFM_DEV.DEV_RM_CODPESSOA G) G
+                                ON (G.CODPESSOA = F.CODPESSOA)) H
+                    ON (E.FILIALRM = H.FILIALRM)
+                    GROUP BY E.LOJA, E.QTDRELOGIOS
+                    ORDER BY 1`;
 
       const bind = [date];
 

@@ -14090,6 +14090,97 @@
       "lastSyncTime": "2025-01-24T17:56:34",
       "errorCode": "ETIMEDOUT",
       "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.23.81",
+      "status": "failed",
+      "lastSyncTime": "2025-01-25T02:07:35",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.10.81",
+      "status": "failed",
+      "lastSyncTime": "2025-01-25T02:42:09",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.19.82",
+      "status": "failed",
+      "lastSyncTime": "2025-01-25T06:49:35",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.4.80",
+      "status": "failed",
+      "lastSyncTime": "2025-01-25T08:56:33",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.32.81",
+      "status": "failed",
+      "lastSyncTime": "2025-01-25T13:35:35",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.24.81",
+      "status": "failed",
+      "lastSyncTime": "2025-01-25T22:14:09",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.1.81",
+      "status": "failed",
+      "lastSyncTime": "2025-01-26T01:28:34",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.11.82",
+      "status": "failed",
+      "lastSyncTime": "2025-01-26T01:35:34",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.14.38",
+      "status": "failed",
+      "lastSyncTime": "2025-01-26T12:21:34",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.26.81",
+      "status": "failed",
+      "lastSyncTime": "2025-01-26T20:28:34",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "192.168.13.40",
+      "status": "failed",
+      "lastSyncTime": "2025-01-27T08:07:22",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "10.100.1.80",
+      "status": "failed",
+      "lastSyncTime": "2025-01-27T12:56:02",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
+    },
+    {
+      "ip": "10.10.1.81",
+      "status": "failed",
+      "lastSyncTime": "2025-01-27T12:56:02",
+      "errorCode": "ETIMEDOUT",
+      "errorMessage": "Host de destino inacessivel"
     }
   ]
 }
