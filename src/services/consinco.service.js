@@ -511,21 +511,24 @@ class ConsincoService {
       const client = await OracleService.connect();
 
       const sql = `
-                  SELECT B.DTAMES, COUNT(B.SK_BATIDA) AS QTDBATIDAS
-                  FROM (
-                        SELECT /*+ index(A IDX_WFMDEV_RMAFD_02, B IDX_CODPESSOA_01) */
+                  SELECT R.DTAMES, R.QTDBATIDAS FROM (SELECT B.DTAMES,
+             COUNT(B.SK_BATIDA) AS QTDBATIDAS,
+             ROW_NUMBER() OVER (ORDER BY MIN(DTABATIDA)) AS RANK_DTAMES
+             FROM (
+                  SELECT /*+ index(A IDX_WFMDEV_RMAFD_02, B IDX_CODPESSOA_01) */
                         A.CODPESSOA,
-                        A.DTABATIDA,
-                        TO_CHAR(TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'DD/MM') || '-' || TO_CHAR( TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'Dy') AS DTAMES,
+                        TO_DATE(A.DTABATIDA, 'DD/MM/YYYY') AS DTABATIDA,
+                        TO_CHAR(TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'DD/MM') || '-' ||
+                        TO_CHAR(TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'Dy') AS DTAMES,
                         (TO_CHAR(CODPESSOA) || REPLACE(DTABATIDA, '/', NULL) ||
                         REPLACE(A.HHMM, ':', NULL)) AS SK_BATIDA
-                        FROM WFM_DEV.DEV_RM_AFD A
-                        WHERE 1 = 1
+                  FROM WFM_DEV.DEV_RM_AFD A
+                  WHERE 1 = 1
                         AND A.DTABATIDA BETWEEN ( TRUNC(TO_DATE(:a, 'YYYY-MM-DD')) - INTERVAL '20' DAY )
-                        AND TRUNC(TO_DATE(:b, 'YYYY-MM-DD'))
-                        ) B
-                  GROUP BY B.DTAMES
-                  ORDER BY 1`;
+                        AND TRUNC(TO_DATE(:b, 'YYYY-MM-DD')) 
+            ) B
+      GROUP BY B.DTAMES) R
+      ORDER BY RANK_DTAMES`;
 
       const bind = [date, date];
 

@@ -94,23 +94,23 @@ async function fetchData() {
   loading.style.display = 'block';
   progressBar.style.display = 'block';
   progressBarInner.style.width = '0%';
-  progressBarInner.textContent = '0%';
+  progressBarInner.textContent = '1%';
 
   try {
     const chart3 = await fetch(`/chart3?date=${dateInput}`);
-    progressBarInner.style.width = '35%';
+    progressBarInner.style.width = '33%';
     progressBarInner.textContent = '35%';
 
     const table1 = await fetch(`/table1?date=${dateInput}`);
-    progressBarInner.style.width = '50%';
+    progressBarInner.style.width = '48%';
     progressBarInner.textContent = '50%';
 
     const chart2 = await fetch(`/chart2?date=${dateInput}`);
-    progressBarInner.style.width = '75%';
+    progressBarInner.style.width = '73%';
     progressBarInner.textContent = '75%';
 
     const table2 = await fetch(`/table2?date=${dateInput}`);
-    progressBarInner.style.width = '89%';
+    progressBarInner.style.width = '87%';
     progressBarInner.textContent = '89%';
 
     if (!table1.ok) {
@@ -183,7 +183,7 @@ async function fetchData() {
     tableBody1.appendChild(trTotal1);
 
     progressBarInner.style.width = '90%';
-    progressBarInner.textContent = '90%';
+    progressBarInner.textContent = '92%';
 
     dfChart2.forEach((row, index) => {
       gfPizza.push([row.nroBatidas, row.colaboradores, colors[index], row.colaboradores]);

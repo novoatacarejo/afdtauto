@@ -17,6 +17,12 @@ process.env.UV_THREADPOOL_SIZE = 10;
 /*
 Send Data:
 node clear && node .\src\appDay.js send -d 15/12/2024 -a 1 -c 100 -l 1
+clear && node .\src\appDay.js send -d 28/02/2025 -g 1 -l 1 -a 1
+-d date
+-g get new afdt files
+-l log all process
+-a send to api
+-c chunck length
 */
 
 const argv = yargs
