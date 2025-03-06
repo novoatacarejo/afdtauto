@@ -58,10 +58,10 @@ ehthumbs.db
 Thumbs.db
 .node_modules
 node_modules
-.env
-.ENV
 logs
 sb
 ./sb
 afd
 ./src/sb
+fail.json
+fails.json

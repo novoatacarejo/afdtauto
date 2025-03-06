@@ -473,11 +473,11 @@ class StationService {
           logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
         }
 
-        const url1 = `https://${ip}/get_info.fcgi?session=` + token;
+        const url1 = `https://${ip}/get_info.fcgi?session=${token}`;
 
-        const url2 = `https://${ip}/get_system_information.fcgi?session=` + token;
+        const url2 = `https://${ip}/get_system_information.fcgi?session=${token}`;
 
-        const url3 = `https://${ip}/get_about.fcgi?session=` + token;
+        const url3 = `https://${ip}/get_about.fcgi?session=${token}`;
 
         const info = await instance.request(returnAxiosOptions(url1));
 
