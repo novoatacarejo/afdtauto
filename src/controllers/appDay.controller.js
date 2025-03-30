@@ -14,6 +14,7 @@ const {
   readJsonClocks,
   getLogValue
 } = require('../utils/Utils.js');
+const { stat } = require('fs');
 
 const SERVICE_NAME = 'AppDay';
 
