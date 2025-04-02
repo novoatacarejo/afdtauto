@@ -6,24 +6,47 @@ const { exec } = require('child_process');
 const { currentLogTimeDate, currentDateHour, getLogValue } = require('../utils/Utils.js');
 const { StationService } = require('../services/station.service.js');
 const { Logger } = require('../middleware/Logger.middleware.js');
+const stripJsonComments = require('strip-json-comments').default;
 
 const SERVICE_NAME = 'NetworkService';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
-logger.configureDirLogService('application');
+logger.configureDirLogService('network');
 
-const { CLOCKS_FILE, FAILS_FILE, INFO_FILE } = process.env;
+const { CLOCKS_DB, CLOCKS_FILE, FAILS_FILE, INFO_FILE } = process.env;
 
-const jsonPath = CLOCKS_FILE;
+const clocksDBPath = CLOCKS_DB;
+const clocksJsonPath = CLOCKS_FILE;
+const infoJsonPath = INFO_FILE;
+const failJsonPath = FAILS_FILE;
 
-const readJson = async () => {
-  const name = readJson.name;
+const clocksDB = fs.existsSync(clocksDBPath) ? stripJsonComments(fs.readFileSync(clocksDBPath, 'utf8')) : '{}';
+
+const clocksJson = fs.existsSync(clocksJsonPath) ? stripJsonComments(fs.readFileSync(clocksJsonPath, 'utf8')) : '{}';
+
+const infoJson = fs.existsSync(infoJsonPath) ? stripJsonComments(fs.readFileSync(infoJsonPath, 'utf8')) : '{}';
+
+const failJson = fs.existsSync(failJsonPath) ? stripJsonComments(fs.readFileSync(failJsonPath, 'utf8')) : '{}';
+
+const readClocksJson = async () => {
+  const name = readClocksJson.name;
   try {
-    if (!fs.existsSync(jsonPath)) {
-      await fsPromises.writeFile(jsonPath, JSON.stringify({ data: [] }));
-    }
-    const data = await fsPromises.readFile(jsonPath, 'utf8');
+    /* if (!fs.existsSync(clocksJson)) {
+      // 02/04/2025 - desativando para testar se é esse trecho que está limpando o arquivo clocks.jon em public
+      // await fsPromises.writeFile(jsonPath, JSON.stringify({ data: [] }));
+
+      logger.error(name, `file ${clocksJson} does not exist`); // Adicionei esta linha para verificar se o arquivo existe
+
+      await fs.copyFileSync(clocksDB, clocksJson, (err) => {
+        if (err) {
+          logger.error(name, `error copying file: ${err}`);
+        } else {
+          logger.info(name, `file ${clocksDB} copied to ${clocksJson}`);
+        }
+      });
+    } */
+    const data = await fsPromises.readFile(clocksDB, 'utf8');
     const parsedData = JSON.parse(data);
     if (!Array.isArray(parsedData.data)) {
       throw new Error('JSON data is not an array');
@@ -36,14 +59,13 @@ const readJson = async () => {
 };
 
 const readFailedPings = async () => {
-  const failPath = FAILS_FILE;
   const name = readFailedPings.name;
   try {
-    if (!fs.existsSync(failPath)) {
-      await fsPromises.writeFile(failPath, JSON.stringify({ data: [] }));
+    if (!fs.existsSync(failJson)) {
+      await fsPromises.writeFile(failJson, JSON.stringify({ data: [] }));
     }
 
-    const data = await fsPromises.readFile(failPath, 'utf8');
+    const data = await fsPromises.readFile(failJson, 'utf8');
     return JSON.parse(data).data;
   } catch (err) {
     logger.error(name, err);
@@ -52,10 +74,9 @@ const readFailedPings = async () => {
 };
 
 const writeFailedPings = async (failedPings) => {
-  const failPath = FAILS_FILE;
   const name = writeFailedPings.name;
   try {
-    await fsPromises.writeFile(failPath, JSON.stringify({ data: failedPings }, null, 2));
+    await fsPromises.writeFile(failJson, JSON.stringify({ data: failedPings }, null, 2));
   } catch (err) {
     logger.error(name, err);
   }
@@ -64,7 +85,7 @@ const writeFailedPings = async (failedPings) => {
 const writeStatus = (clock) => {
   const name = writeStatus.name;
   try {
-    fs.writeFileSync(jsonPath, JSON.stringify({ data: clock }, null, 2));
+    fs.writeFileSync(clocksJson, JSON.stringify({ data: clock }, null, 2));
   } catch (err) {
     logger.error(name, err);
   }
@@ -73,17 +94,16 @@ const writeStatus = (clock) => {
 const writeInfoStatus = async (data, enableLog = 'n') => {
   const name = writeInfoStatus.name;
   const log = getLogValue(enableLog);
-  const filePath = INFO_FILE;
   const currentTime = currentLogTimeDate();
 
   try {
     let existingData = { data: [] };
-    if (fs.existsSync(filePath)) {
-      const fileContent = await fsPromises.readFile(filePath, 'utf8');
+    if (fs.existsSync(infoJson)) {
+      const fileContent = await fsPromises.readFile(infoJson, 'utf8');
       try {
         existingData = JSON.parse(fileContent);
       } catch (error) {
-        logger.error(name, `erro ao analisar JSON existente em ${filePath}:\n${error}`);
+        logger.error(name, `erro ao analisar JSON existente em ${infoJson}:\n${error}`);
         existingData.data = [];
       }
     }
@@ -110,16 +130,16 @@ const writeInfoStatus = async (data, enableLog = 'n') => {
       existingData.data.push(data);
     }
 
-    await fsPromises.writeFile(filePath, JSON.stringify(existingData, null, 2));
-    logger.info(name, `dados escritos com sucesso em ${filePath}`);
+    await fsPromises.writeFile(infoJson, JSON.stringify(existingData, null, 2));
+    logger.info(name, `dados escritos com sucesso em ${infoJson}`);
   } catch (error) {
-    logger.error(name, `erro ao escrever dados em ${filePath}:\n ${error}`);
+    logger.error(name, `erro ao escrever dados em ${infoJson}:\n ${error}`);
   }
 };
 
 const updateDevices = async (host, success) => {
   const name = updateDevices.name;
-  let clock = await readJson();
+  let clock = await readClocksJson();
   const currentTime = currentLogTimeDate();
   const errorCode = 'ETIMEDOUT';
   const errorMessage = 'Host de destino inacessivel';
@@ -227,7 +247,7 @@ class NetworkService {
       if (log === 1) {
         logger.info(name, `getting all devices at ${currentDateHour()}`);
       }
-      const clocks = await readJson();
+      const clocks = await readClocksJson();
 
       if (!Array.isArray(clocks)) {
         logger.error(name, `all devices is not an array`);
