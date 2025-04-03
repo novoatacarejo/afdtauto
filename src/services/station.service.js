@@ -6,7 +6,6 @@ const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
 const {
-  assembleArrayObjects,
   returnJsonLine,
   readJsonClock,
   subtractHours,

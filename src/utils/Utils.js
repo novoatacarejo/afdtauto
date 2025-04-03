@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
 
-const { CLOCKS_FILE, AFD_DIR, AFDDAY_DIR } = process.env;
+const { CLOCKS_FILE, CLOCKS_DB, AFD_DIR, AFDDAY_DIR } = process.env;
 
 const assembleArrayObjects = (columnsName, lines) => {
   const qtColumns = columnsName.length;
@@ -445,11 +445,11 @@ const readEachLine = async (file) => {
 };
 
 const readJsonClocks = async (success) => {
-  if (!fs.existsSync(CLOCKS_FILE)) {
-    fs.writeFileSync(CLOCKS_FILE, JSON.stringify([]));
+  if (!fs.existsSync(CLOCKS_DB)) {
+    fs.writeFileSync(CLOCKS_DB, JSON.stringify([]));
   }
   try {
-    const data = fs.readFileSync(CLOCKS_FILE, 'utf8');
+    const data = fs.readFileSync(CLOCKS_DB, 'utf8');
     const parsedData = JSON.parse(data).data;
 
     const successRecords = parsedData.filter((record) => record.status === `${success}`);
@@ -462,11 +462,11 @@ const readJsonClocks = async (success) => {
 };
 
 const readClocksInfo = async () => {
-  if (!fs.existsSync(CLOCKS_FILE)) {
-    fs.writeFileSync(CLOCKS_FILE, JSON.stringify([]));
+  if (!fs.existsSync(CLOCKS_DB)) {
+    fs.writeFileSync(CLOCKS_DB, JSON.stringify([]));
   }
   try {
-    const data = await fs.readFileSync(CLOCKS_FILE, 'utf8');
+    const data = await fs.readFileSync(CLOCKS_DB, 'utf8');
     const parsedData = JSON.parse(data).data;
 
     return parsedData;
@@ -505,13 +505,13 @@ function totalRecords(data, log = 0) {
 function readJsonClock(ip) {
   const name = readJsonClock.name;
 
-  if (!fs.existsSync(CLOCKS_FILE)) {
-    console.log(name, 'clocks file not found at: ', CLOCKS_FILE);
+  if (!fs.existsSync(CLOCKS_DB)) {
+    console.log(name, 'clocks file not found at: ', CLOCKS_DB);
     return [];
   }
 
   try {
-    const data = fs.readFileSync(CLOCKS_FILE, 'utf8');
+    const data = fs.readFileSync(CLOCKS_DB, 'utf8');
     const parsedData = JSON.parse(data).data;
 
     const clock = parsedData.filter((record) => record.ip === `${ip}` && record.status === 'success');
@@ -531,6 +531,14 @@ function convertUptime(uptime) {
   const seconds = timeToConvert % 60;
 
   return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+
+function validateArray(data, name) {
+  if (!Array.isArray(data)) {
+    logger.error(name, 'Data is not an array. Resetting to an empty array.');
+    return [];
+  }
+  return data;
 }
 
 module.exports = {
@@ -560,5 +568,6 @@ module.exports = {
   readEachLine,
   getLogValue,
   totalRecords,
-  convertUptime
+  convertUptime,
+  validateArray
 };

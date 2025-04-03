@@ -345,3 +345,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Botão de pesquisa não encontrado no DOM.');
   }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const dateInput = document.getElementById('date');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.value = today;
+});

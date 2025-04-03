@@ -14,6 +14,43 @@ logger.configureDirLogService('application');
 
 const { CLOCKS_FILE, FAILS_FILE, INFO_FILE, API_WEB_DIR } = process.env;
 
+const clocksJsonPath = CLOCKS_FILE;
+
+async function updateClock(ip, data) {
+  try {
+    let existingData = { data: [] };
+
+    if (fs.existsSync(clocksJsonPath)) {
+      const fileContent = await fsPromises.readFile(clocksJsonPath, 'utf8');
+      try {
+        existingData = JSON.parse(fileContent);
+      } catch (error) {
+        console.error(`Erro ao analisar JSON existente em ${clocksJsonPath}:\n${error}`);
+        existingData.data = [];
+      }
+    }
+
+    if (!Array.isArray(existingData.data)) {
+      console.warn('O conteúdo de clocks.json não é um array. Redefinindo como array vazio.');
+      existingData.data = [];
+    }
+
+    const existingIndex = existingData.data.findIndex((item) => item.ip === ip);
+
+    if (existingIndex !== -1) {
+      existingData.data[existingIndex] = { ...existingData.data[existingIndex], ...data };
+    } else {
+      existingData.data.push({ ip, ...data });
+    }
+
+    await fsPromises.writeFile(clocksJsonPath, JSON.stringify(existingData, null, 2));
+    logger.info(`Status atualizado com sucesso em ${clocksJsonPath}`);
+  } catch (err) {
+    logger.error(`Erro ao escrever no arquivo ${clocksJsonPath}:\n${err}`);
+    throw err;
+  }
+}
+
 class WebService {
   static start = async () => {
     const name = this.start.name;
@@ -124,13 +161,29 @@ class WebService {
 
       app.get('/clocks', (req, res) => {
         try {
-          const data = fs.readFileSync(CLOCKS_FILE, 'utf8');
+          const data = fs.readFileSync(clocksJsonPath, 'utf8');
           const clocks = JSON.parse(data).data;
 
           res.json(clocks);
         } catch (err) {
           logger.error(name, `${err}`);
           res.status(500).json({ error: 'clocks - failed to read clocks' });
+        }
+      });
+
+      app.post('/clock/:ip', async (req, res) => {
+        const ip = req.params.ip;
+        const data = req.body;
+
+        if (!ip || !data) {
+          return res.status(400).json({ error: 'IP e dados são obrigatórios.' });
+        }
+
+        try {
+          await updateClock(ip, data);
+          res.status(200).json({ message: 'Dispositivo atualizado com sucesso.' });
+        } catch (error) {
+          res.status(500).json({ error: 'Erro ao atualizar o dispositivo.' });
         }
       });
 

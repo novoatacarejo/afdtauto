@@ -1,11 +1,11 @@
-const { application } = require('./src/app.js');
+const { Application } = require('./src/app.js');
 
 const executeApp = 0;
 const minutes = -85;
 const enableLog = 's';
 
 const main = () => {
-  application.start(executeApp, minutes, enableLog);
+  Application.start(executeApp, minutes, enableLog);
 };
 
 main();
