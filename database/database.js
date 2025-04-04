@@ -2,10 +2,10 @@ require('dotenv').config('../.env');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-const { DATABASE_PATH, DATABASE_CLOCKSINFO } = process.env;
+const { DATABASE_PATH, DATABASE_NAME } = process.env;
 
 // Caminho para o arquivo do banco de dados SQLite
-const dbPath = path.join(DATABASE_PATH, DATABASE_CLOCKSINFO);
+const dbPath = path.join(DATABASE_PATH, DATABASE_NAME);
 
 // Cria ou abre o banco de dados
 const db = new sqlite3.Database(dbPath, (err) => {

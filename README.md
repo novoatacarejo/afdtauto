@@ -15,6 +15,9 @@ project-root/
 │   ├── seeds/             # Dados iniciais para popular o banco
 │   ├── database.js        # Configuração do banco de dados SQLite
 │   └── clocks.db          # Arquivo do banco de dados SQLite
+├── storage/               # Pasta para arquivos gerados pelo backend
+│   ├── afd/               # Arquivos relacionados a "afd"
+│   └── afdDay/            # Arquivos relacionados a "afd" sobre uma data específica
 ├── frontend/
 │   ├── assets/            # Arquivos estáticos (CSS, JS, imagens, fontes)
 │   ├── components/        # Componentes reutilizáveis (se usar frameworks como React/Vue)
@@ -50,7 +53,14 @@ Contém tudo relacionado ao banco de dados.
 - **database.js:** Configuração da conexão com o banco de dados.
 - **clocks.db:** Arquivo do banco de dados SQLite.
 
-## 3. frontend
+## 3. storage
+
+Contém os arquivos coletados dos Relógios de Ponto
+
+- **afdt:** Arquivos estáticos, como CSS, JavaScript, imagens e fontes.
+- **afdtDay:** Componentes reutilizáveis (se usar frameworks como React ou Vue).
+
+## 4. frontend
 
 Contém os arquivos do frontend.
 
@@ -60,7 +70,7 @@ Contém os arquivos do frontend.
 - **index.html:** Página inicial.
 - **index.js:** Lógica do frontend.
 
-## 4. Arquivos na Raiz
+## 5. Arquivos na Raiz
 
 - **.env:** Variáveis de ambiente, como configurações do banco de dados e porta do servidor.
 - **.gitignore:** Arquivos e pastas a serem ignorados pelo Git (ex.: node_modules, clocks.db).

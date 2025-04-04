@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="content-type" content="text/html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+    <link href="http://10.101.108.195:3500/assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="http://10.101.108.195:3500/assets/fontawesome/css/brands.css" rel="stylesheet" />
+    <link href="http://10.101.108.195:3500/assets/fontawesome/css/solid.css" rel="stylesheet" />
+    <link rel="icon" href="http://10.101.108.195:3500/assets/favicon.ico" />
+    <title>Importação de Arquivos Afd - Real Time</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        /*display: flex;*/
+        flex-direction: column;
+        padding: 20px;
+        font-size: 0.8rem;
+        font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+        text-align: center;
+      }
+
+      .content {
+        flex: 1; /* Faz com que o conteúdo ocupe o espaço restante */
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      footer {
+        background-color: #333;
+        color: black;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 14px;
+      }
+      table {
+        width: 70%;
+        border-collapse: collapse;
+        margin: 20px auto; /* Centraliza a tabela horizontalmente */
+        text-align: center;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #f2f2f2;
+        cursor: pointer;
+      }
+      .filters,
+      .pagination {
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+      div#dataHora {
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      input[type='date'] {
+        padding: 5px;
+        margin: 5px;
+      }
+      button {
+        padding: 5px;
+        margin: 5px;
+        cursor: pointer;
+      }
+      div#chart1 {
+        /* margin: 20px auto; */
+        width: 900px;
+        height: 500px;
+        margin: 0 auto;
+      }
+      div#chart2 {
+        /* margin: 20px auto; */
+        width: 900px;
+        height: 500px;
+        margin: 0 auto;
+      }
+      div#chart3 {
+        /* margin: 20px auto; */
+        width: 900px;
+        height: 500px;
+        margin: 0 auto;
+      }
+      #loading {
+        display: none;
+        font-size: 0.7rem;
+        font-weight: bold;
+        color: #4caf50;
+      }
+      #progressBar {
+        display: none;
+        width: 200px; /* Define uma largura fixa para a barra de progresso */
+        background-color: #f3f3f3;
+        margin: 20px auto; /* Centraliza a barra de progresso */
+      }
+      #progressBar div {
+        width: 0;
+        height: 35px;
+        background-color: #4caf50;
+        text-align: center;
+        line-height: 35px; /* Ajusta a altura da linha para centralizar o texto verticalmente */
+        color: white;
+      }
+    </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Termos de Uso</h1>
+    </header>
+    <div class="container">
+      <h2>Introdução</h2>
+      <p>
+        Bem-vindo ao site do Novo Atacarejo! Estes Termos de Uso estabelecem as regras para a utilização de nossos
+        serviços online. Ao acessar este site, você concorda com estas condições.
+      </p>
+
+      <h2>Uso permitido</h2>
+      <ul>
+        <li>Acessar informações e realizar compras em nossa loja online;</li>
+        <li>Interagir com nosso suporte para resolver dúvidas ou problemas.</li>
+      </ul>
+
+      <h2>Restrições</h2>
+      <ul>
+        <li>É proibido realizar fraudes ou atividades ilícitas no site;</li>
+        <li>Não é permitido copiar ou distribuir conteúdo sem autorização;</li>
+        <li>O uso de bots ou ferramentas automatizadas é estritamente proibido.</li>
+      </ul>
+
+      <h2>Responsabilidade</h2>
+      <p>
+        Embora nos esforcemos para garantir a disponibilidade do site, não nos responsabilizamos por falhas técnicas ou
+        interrupções nos serviços.
+      </p>
+
+      <h2>Alterações nos Termos</h2>
+      <p>
+        Reservamo-nos o direito de atualizar estes Termos de Uso a qualquer momento. Recomendamos que você revise esta
+        página periodicamente.
+      </p>
+    </div>
+    <footer style="padding: 20px; text-align: center; font-size: 14px; border-top: 1px solid #e9ecef">
+      <div>
+        <p>&copy; 2025 Novo Atacarejo. Todos os direitos reservados.</p>
+        <p>
+          <a href="/politica-de-privacidade" style="text-decoration: none; color: #007bff">Política de Privacidade</a> |
+          <a href="/termos-de-uso" style="text-decoration: none; color: #007bff">Termos de Uso</a> |
+          <a href="/contato" style="text-decoration: none; color: #007bff">Contato</a>
+        </p>
+        <p>Desenvolvido com ❤️ pela equipe Novo Atacarejo</p>
+      </div>
+    </footer>
+  </body>
+</html>
