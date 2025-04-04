@@ -1,4 +1,4 @@
-require('dotenv').config('../../.env');
+require('dotenv').config('../.env');
 const { configure, getLogger } = require('log4js');
 const path = require('path');
 

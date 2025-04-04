@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "send": "node ./main.js",
-    "start": "node main.js"
+    "start": "node main.js",
+    "migrate": "node database/database.js"
   },
   "keywords": [],
   "author": "",
