@@ -33,30 +33,36 @@ project-root/
 
 Contém toda a lógica do servidor e da API.
 
--**controllers:** Lógica de controle, como manipulação de dados e chamadas de serviços. -**middleware:** Middlewares, como autenticação, logs, etc. -**routes:** Define as rotas da API (ex.: /clocks, /info). -**services:** Contém a lógica de negócios, como NetworkService e WebService. -**utils:** Funções utilitárias, como formatação de datas e validações. -**app.js:** Ponto de entrada do backend. -**server.js:** Configuração do servidor Express.
+- **controllers:** Lógica de controle, como manipulação de dados e chamadas de serviços.
+- **middleware:** Middlewares, como autenticação, logs, etc.
+- **routes:** Define as rotas da API (ex.: /clocks, /info).
+- **services:** Contém a lógica de negócios, como NetworkService e WebService.
+- **utils:** Funções utilitárias, como formatação de datas e validações.
+- **app.js:** Ponto de entrada do backend.
+- **server.js:** Configuração do servidor Express.
 
 ## 2. database
 
 Contém tudo relacionado ao banco de dados.
 
-**migrations:** Scripts para criar ou alterar tabelas no banco de dados.
-**seeds:** Dados iniciais para popular o banco (opcional).
-**database.js:** Configuração da conexão com o banco de dados.
-**clocks.db:** Arquivo do banco de dados SQLite.
+- **migrations:** Scripts para criar ou alterar tabelas no banco de dados.
+- **seeds:** Dados iniciais para popular o banco (opcional).
+- **database.js:** Configuração da conexão com o banco de dados.
+- **clocks.db:** Arquivo do banco de dados SQLite.
 
 ## 3. frontend
 
 Contém os arquivos do frontend.
 
-**assets:** Arquivos estáticos, como CSS, JavaScript, imagens e fontes.
-**components:** Componentes reutilizáveis (se usar frameworks como React ou Vue).
-**pages:** Páginas HTML, como index.html.
-**index.html:** Página inicial.
-**index.js:** Lógica do frontend.
+- **assets:** Arquivos estáticos, como CSS, JavaScript, imagens e fontes.
+- **components:** Componentes reutilizáveis (se usar frameworks como React ou Vue).
+- **pages:** Páginas HTML, como index.html.
+- **index.html:** Página inicial.
+- **index.js:** Lógica do frontend.
 
 ## 4. Arquivos na Raiz
 
-**.env:** Variáveis de ambiente, como configurações do banco de dados e porta do servidor.
-**.gitignore:** Arquivos e pastas a serem ignorados pelo Git (ex.: node_modules, clocks.db).
-**package.json:** Gerenciamento de dependências do projeto.
-**README.md:** Documentação do projeto.
+- **.env:** Variáveis de ambiente, como configurações do banco de dados e porta do servidor.
+- **.gitignore:** Arquivos e pastas a serem ignorados pelo Git (ex.: node_modules, clocks.db).
+- **package.json:** Gerenciamento de dependências do projeto.
+- **README.md:** Documentação do projeto.
