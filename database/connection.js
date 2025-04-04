@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { Logger } = require('../backend/middleware/Logger.middleware.js');
 
-const SERVICE_NAME = 'database';
+const SERVICE_NAME = 'connect';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
@@ -20,13 +20,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
   } else {
     console.log(`conectado ao banco de dados SQLite: ${dbPath}.`);
   }
-});
-
-const migrationsPath = path.join(__dirname, 'migrations');
-
-fs.readdirSync(migrationsPath).forEach((file) => {
-  const migration = require(path.join(migrationsPath, file));
-  migration(db);
 });
 
 module.exports = db;

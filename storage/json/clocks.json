@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "nroEmpresa": 6,
+      "ip": "192.168.6.81",
+      "lastSyncDate": "2025-04-04T16:14:20",
+      "nomeEmpresa": "PAULISTA",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 7,
+      "ip": "192.168.7.81",
+      "lastSyncDate": "2025-04-04T16:14:21",
+      "nomeEmpresa": "GOIANA",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    }
+  ]
+}

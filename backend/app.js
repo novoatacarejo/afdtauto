@@ -1,6 +1,6 @@
 require('dotenv').config('../.env');
 const { App, AppDay } = require('./controllers/index.controller.js');
-const { NetworkService, WebService, WFMDevService } = require('./services/index.service.js');
+const { NetworkService, WFMDevService } = require('./services/index.service.js');
 const { Logger } = require('./middleware/Logger.middleware.js');
 const { dataHoraAtual } = require('./utils/Utils.js');
 const cron = require('node-cron');
@@ -27,9 +27,9 @@ class Application {
   static scheduleTask(cronExpression, taskName, taskFunction) {
     cron.schedule(cronExpression, async () => {
       try {
-        logger.info(taskName, `Executing scheduled task at ${dataHoraAtual()}`);
+        logger.info(taskName, `executing scheduled task at ${dataHoraAtual()}`);
         await taskFunction();
-        logger.info(taskName, `Task completed successfully at ${dataHoraAtual()}`);
+        logger.info(taskName, `task completed successfully at ${dataHoraAtual()}`);
       } catch (error) {
         logger.error(taskName, error);
       }
@@ -43,23 +43,19 @@ class Application {
     try {
       this.initializeEnvironment();
 
-      WebService.start();
-      logger.info(name, `Starting web server at ${dataHoraAtual()}`);
-
-      // Schedule tasks
-      this.scheduleTask(CRON_SCHEDULES.hourly, 'App.startapp', async () => {
+      this.scheduleTask(CRON_SCHEDULES.hourly, 'app.startapp', async () => {
         await App.startapp(mm, enableLog);
       });
 
-      this.scheduleTask(CRON_SCHEDULES.networkTest, 'NetworkService.testNetCon', async () => {
+      this.scheduleTask(CRON_SCHEDULES.networkTest, 'networkService.testNetCon', async () => {
         await NetworkService.testNetCon(enableLog);
       });
 
-      this.scheduleTask(CRON_SCHEDULES.updateInfo, 'NetworkService.updateNetInfo', async () => {
+      this.scheduleTask(CRON_SCHEDULES.updateInfo, 'networkService.updateNetInfo', async () => {
         await NetworkService.updateNetInfo(enableLog);
       });
 
-      this.scheduleTask(CRON_SCHEDULES.dailyTask, 'DailyTask', async () => {
+      this.scheduleTask(CRON_SCHEDULES.dailyTask, 'dailyTask', async () => {
         const date = dataHoraAtual().split(' ')[0];
         const obj = { date, ckInt: 100, log: 1 };
 
@@ -67,6 +63,7 @@ class Application {
         await AppDay.importEachAfdLineDay(obj.date, obj.log);
         await WFMDevService.deleteDuplicates(obj.date, obj.log);
         await WFMDevService.sendToStgWfm(obj.date, obj.log);
+        // 03/04/2025 - substituicao do envio por procedure
         //await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
       });
 
@@ -75,29 +72,6 @@ class Application {
         App.startapp(mm, enableLog);
         NetworkService.updateNetInfo(enableLog);
       }
-    } catch (error) {
-      logger.error(name, error);
-    }
-  }
-
-  static async now(executeApp = 1, enableLog = 's') {
-    const name = this.now.name;
-
-    this.initializeEnvironment();
-
-    const date = dataHoraAtual().split(' ')[0];
-    const obj = { date, ckInt: 100, log: 1 };
-
-    try {
-      logger.info(name, 'Executing immediate tasks');
-
-      await AppDay.gettingAfdDay(obj.date, obj.log);
-      await AppDay.importEachAfdLineDay(obj.date, obj.log);
-      await WFMDevService.deleteDuplicates(obj.date, obj.log);
-      await WFMDevService.sendToStgWfm(obj.date, obj.log);
-      //await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
-
-      logger.info(name, 'Immediate tasks completed successfully');
     } catch (error) {
       logger.error(name, error);
     }

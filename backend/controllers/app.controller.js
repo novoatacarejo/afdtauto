@@ -223,6 +223,7 @@ class App {
     const log = await getLogValue(enableLog);
     const today = await currentDate();
     const mm = Number(minutes);
+    const date = dataHoraAtual().split(' ')[0];
 
     try {
       logger.info(name, `iniciando processo node com o pid: ${process.pid} em ${dataHoraAtual()}`);
@@ -236,9 +237,14 @@ class App {
         await WFMDevService.insertMany(obj, log);
         await WFMDevService.deleteDuplicates(today, log);
 
+        logger.info(name, `[procedure]-enviando batidas via procedure para o Stage WFM`);
+        await WFMDevService.sendToStgWfm(date, log);
+
+        /* 03/04/2025 - substituicao do envio por procedure
         setTimeout(async () => {
           await this.sendingWfmApi(log);
         }, 180000);
+         */
       } else {
         logger.info(name, `nenhuma batida encontrada com intervalo de ${mm} minuto(s)`);
       }

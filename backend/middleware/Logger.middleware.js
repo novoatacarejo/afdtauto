@@ -1,8 +1,10 @@
-require('dotenv').config('../.env');
+require('dotenv').config('../../.env');
 const { configure, getLogger } = require('log4js');
 const path = require('path');
 
 const { LOG_DIR } = process.env;
+
+console.log(`LOG_DIR: ${LOG_DIR}`);
 
 class Logger {
   constructor(app = 'app', message = 'constructor de logger', service = 'service', dirLog = 'application') {
