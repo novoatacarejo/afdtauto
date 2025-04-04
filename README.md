@@ -33,13 +33,7 @@ project-root/
 
 Contém toda a lógica do servidor e da API.
 
-**controllers:** Lógica de controle, como manipulação de dados e chamadas de serviços.
-**middleware:** Middlewares, como autenticação, logs, etc.
-**routes:** Define as rotas da API (ex.: /clocks, /info).
-**services:** Contém a lógica de negócios, como NetworkService e WebService.
-**utils:** Funções utilitárias, como formatação de datas e validações.
-**app.js:** Ponto de entrada do backend.
-**server.js:** Configuração do servidor Express.
+-**controllers:** Lógica de controle, como manipulação de dados e chamadas de serviços. -**middleware:** Middlewares, como autenticação, logs, etc. -**routes:** Define as rotas da API (ex.: /clocks, /info). -**services:** Contém a lógica de negócios, como NetworkService e WebService. -**utils:** Funções utilitárias, como formatação de datas e validações. -**app.js:** Ponto de entrada do backend. -**server.js:** Configuração do servidor Express.
 
 ## 2. database
 
