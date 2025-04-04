@@ -2,12 +2,12 @@ const { assembleArrayObjects, getLogValue, totalRecords } = require('../utils/Ut
 const { OracleService } = require('./oracle.service.js');
 const { Logger } = require('../middleware/Logger.middleware.js');
 
-const SERVICE_NAME = 'ConsincoService';
+const SERVICE_NAME = 'WFMDevService';
 
 let logger = new Logger();
 logger.service = SERVICE_NAME;
 logger.configureDirLogService('application');
-class ConsincoService {
+class WFMDevService {
   static async getStationsInfo() {
     const name = this.getStationsInfo.name;
     try {
@@ -545,6 +545,42 @@ class ConsincoService {
       logger.error(name, error);
     }
   }
+
+  static async sendToStgWfm(date, enableLog = 'n') {
+    const name = this.sendToStgWfm.name;
+    const log = getLogValue(enableLog);
+
+    logger.info(name, `starting procedure to send punches`);
+
+    try {
+      const client = await OracleService.connect();
+
+      client.callTimeout = 60 * 1000;
+
+      const sql = `
+      BEGIN 
+           WFM_DEV.DEV_SP_M_WFM_PUNCH(PD_DTAPUNCH => :a);
+      END;`;
+
+      const binds = { a: date };
+
+      const options = {
+        autoCommit: true
+      };
+
+      const response = await client.execute(sql, binds, options);
+
+      logger.info(name, `procedure sending punches by date: ${date}`);
+
+      await OracleService.close(client);
+
+      log === 1 ? logger.info(name, `importing punches from ${date} finished!`) : null;
+
+      return response;
+    } catch (error) {
+      logger.error(name, error);
+    }
+  }
 }
 
-module.exports = { ConsincoService };
+module.exports = { WFMDevService };

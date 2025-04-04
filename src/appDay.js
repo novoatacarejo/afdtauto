@@ -1,6 +1,6 @@
 require('dotenv').config('../.env');
 const { AppDay } = require('./controllers/index.controller.js');
-const { ConsincoService } = require('./services/index.service.js');
+const { WFMDevService } = require('./services/index.service.js');
 const { Logger } = require('./middleware/Logger.middleware.js');
 
 const yargs = require('yargs');
@@ -71,14 +71,15 @@ const appDay = async (data) => {
       try {
         await AppDay.gettingAfdDay(obj.date, obj.log);
         await AppDay.importEachAfdLineDay(obj.date, obj.log);
-        await ConsincoService.deleteDuplicates(obj.date, obj.log);
+        await WFMDevService.deleteDuplicates(obj.date, obj.log);
       } catch (error) {
         logger.error(name, error);
       }
     }
     if (obj.api === 1) {
       try {
-        await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
+        await WFMDevService.sendToStgWfm(obj.date, obj.log);
+        // await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
       } catch (error) {
         logger.error(name, error);
       }

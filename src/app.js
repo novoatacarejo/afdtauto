@@ -1,6 +1,6 @@
 require('dotenv').config('../.env');
 const { App, AppDay } = require('./controllers/index.controller.js');
-const { NetworkService, WebService, ConsincoService } = require('./services/index.service.js');
+const { NetworkService, WebService, WFMDevService } = require('./services/index.service.js');
 const { Logger } = require('./middleware/Logger.middleware.js');
 const { dataHoraAtual } = require('./utils/Utils.js');
 const cron = require('node-cron');
@@ -65,8 +65,9 @@ class Application {
 
         await AppDay.gettingAfdDay(obj.date, obj.log);
         await AppDay.importEachAfdLineDay(obj.date, obj.log);
-        await ConsincoService.deleteDuplicates(obj.date, obj.log);
-        await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
+        await WFMDevService.deleteDuplicates(obj.date, obj.log);
+        await WFMDevService.sendToStgWfm(obj.date, obj.log);
+        //await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
       });
 
       // Execute tasks immediately if executeApp is set
@@ -92,8 +93,9 @@ class Application {
 
       await AppDay.gettingAfdDay(obj.date, obj.log);
       await AppDay.importEachAfdLineDay(obj.date, obj.log);
-      await ConsincoService.deleteDuplicates(obj.date, obj.log);
-      await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
+      await WFMDevService.deleteDuplicates(obj.date, obj.log);
+      await WFMDevService.sendToStgWfm(obj.date, obj.log);
+      //await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
 
       logger.info(name, 'Immediate tasks completed successfully');
     } catch (error) {

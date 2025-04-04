@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '../../.env' });
 const axios = require('axios');
 const https = require('https');
-const { ConsincoService } = require('./consinco.service.js');
+const { ConsincoService } = require('./wfmdev.service.js');
 const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');

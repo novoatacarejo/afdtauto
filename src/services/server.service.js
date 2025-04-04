@@ -1,7 +1,7 @@
 require('dotenv').config('../.env');
 const express = require('express');
 const fs = require('fs');
-const { ConsincoService } = require('../services/consinco.service.js');
+const { WFMDevService } = require('./wfmdev.service.js');
 const { StationService } = require('../services/station.service.js');
 const { readJsonClock } = require('../utils/Utils.js');
 const { Logger } = require('../middleware/Logger.middleware.js');
@@ -74,7 +74,7 @@ class WebService {
         const { date } = req.query;
 
         try {
-          const result = await ConsincoService.getAfdRtNroPunches(date, 'n');
+          const result = await WFMDevService.getAfdRtNroPunches(date, 'n');
           res.json(result);
         } catch (err) {
           console.error(err);
@@ -86,7 +86,7 @@ class WebService {
         const { date } = req.query;
 
         try {
-          const result = await ConsincoService.getAfdRtAllPunches(date, 'n');
+          const result = await WFMDevService.getAfdRtAllPunches(date, 'n');
           //console.log(result);
           res.json(result);
         } catch (err) {
@@ -99,7 +99,7 @@ class WebService {
         const { date } = req.query;
 
         try {
-          const result = await ConsincoService.getAfdRtPunches(date, 'n');
+          const result = await WFMDevService.getAfdRtPunches(date, 'n');
           res.json(result);
         } catch (err) {
           console.error(err);
@@ -111,7 +111,7 @@ class WebService {
         const { date } = req.query;
 
         try {
-          const result = await ConsincoService.getAfdRtLjPunches(date, 'n');
+          const result = await WFMDevService.getAfdRtLjPunches(date, 'n');
           res.json(result);
         } catch (err) {
           console.error(err);

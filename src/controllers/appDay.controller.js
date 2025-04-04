@@ -1,5 +1,5 @@
 require('dotenv').config('../../.env');
-const { StationService, TlanticService, ConsincoService } = require('../services/index.service.js');
+const { StationService, TlanticService, WFMDevService } = require('../services/index.service.js');
 const { Logger } = require('../middleware/Logger.middleware.js');
 const {
   returnAfdDate,
@@ -107,7 +107,7 @@ class AppDay {
       );
 
       log === 1 ? await logger.info(name, `[total] - ${obj.length}`) : null;
-      await ConsincoService.insertMany(obj, log);
+      await WFMDevService.insertMany(obj, log);
     } catch (error) {
       logger.error(name, error);
     }
@@ -140,7 +140,7 @@ class AppDay {
             )
           : null;
 
-        const punches = await ConsincoService.getPunchesByDate(date, log);
+        const punches = await WFMDevService.getPunchesByDate(date, log);
 
         const totalChunks = punches.length;
 
@@ -189,7 +189,7 @@ class AppDay {
       log === 1 ? logger.info(name, `starting integration on JOB pid: ${process.pid} em ${dataHoraAtual()}`) : null;
       await this.gettingAfdDay(date, log);
       await this.importEachAfdLineDay(log);
-      await ConsincoService.deleteDuplicates(date, log);
+      await WFMDevService.deleteDuplicates(date, log);
 
       setTimeout(async () => {
         await this.sendingWfmApiDay(date, ckLen, log);

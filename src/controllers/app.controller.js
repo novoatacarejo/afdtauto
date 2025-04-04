@@ -1,5 +1,5 @@
 require('dotenv').config('../../.env');
-const { StationService, TlanticService, ConsincoService } = require('../services/index.service.js');
+const { StationService, TlanticService, WFMDevService } = require('../services/index.service.js');
 const { Logger } = require('../middleware/Logger.middleware.js');
 const {
   returnAfdDay,
@@ -182,7 +182,7 @@ class App {
           ? logger.info(name, `envio automatico de batidas para api tlantic iniciado em ${dataHoraAtual()}`)
           : null;
 
-        const punches = await ConsincoService.getPunchesByHour(log);
+        const punches = await WFMDevService.getPunchesByHour(log);
 
         if (punches.length === 0) {
           logger.error(name, `no punches to send`);
@@ -233,8 +233,8 @@ class App {
 
       if (obj) {
         log === 1 ? logger.info(name, `[total]-${obj.length} registros`) : console.log('no log');
-        await ConsincoService.insertMany(obj, log);
-        await ConsincoService.deleteDuplicates(today, log);
+        await WFMDevService.insertMany(obj, log);
+        await WFMDevService.deleteDuplicates(today, log);
 
         setTimeout(async () => {
           await this.sendingWfmApi(log);
