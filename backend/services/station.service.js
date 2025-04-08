@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '../../.env' });
 const axios = require('axios');
 const https = require('https');
-const { ConsincoService } = require('./wfmdev.service.js');
+const { WFMDevService } = require('./wfmdev.service.js');
 const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
@@ -160,7 +160,7 @@ class StationService {
     const name = this.getStationsInfo.name;
     try {
       logger.info(name, `getting stations info`);
-      const result = await ConsincoService.getStationsInfo();
+      const result = await WFMDevService.getStationsInfo();
       return result;
     } catch (error) {
       logger.replyConn(error, name, 'localhost', 1);
@@ -205,7 +205,7 @@ class StationService {
         let testDate = punchDate == today ? true : false;
 
         if (testHour === true && testDate === true) {
-          const cod = await ConsincoService.getCodPessoa(data.id, data.lnLength);
+          const cod = await WFMDevService.getCodPessoa(data.id, data.lnLength);
 
           data.cardId = cod;
           delete data.hour;

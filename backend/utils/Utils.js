@@ -67,7 +67,7 @@ const returnObjCorrectType = (arrayObj) => {
     portaria: parseInt(arrayObj.portaria),
     user: new String(arrayObj.userName),
     pass: new String(arrayObj.userPass),
-    empresa: new String(arrayObj.empresa),
+    empresa: new String(arrayObj.nomeEmpresa),
     empresaDir: new String(arrayObj.empresaDir),
     item: parseInt(arrayObj.item),
     ipFinal: parseInt(arrayObj.ipFinal)

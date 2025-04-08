@@ -1,19 +1,163 @@
 {
   "data": [
     {
-      "nroEmpresa": 6,
-      "ip": "192.168.6.81",
-      "lastSyncDate": "2025-04-04T16:14:20",
-      "nomeEmpresa": "PAULISTA",
+      "nroEmpresa": 33,
+      "ip": "192.168.33.81",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "SALGUEIRO",
       "status": "success",
       "errorCode": "no error",
       "errorMessage": "no error"
     },
     {
-      "nroEmpresa": 7,
-      "ip": "192.168.7.81",
-      "lastSyncDate": "2025-04-04T16:14:21",
-      "nomeEmpresa": "GOIANA",
+      "nroEmpresa": 34,
+      "ip": "192.168.34.81",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "CARUARU",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 36,
+      "ip": "192.168.36.81",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "CAMARAGIBE",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 36,
+      "ip": "192.168.36.80",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "CAMARAGIBE",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 552,
+      "ip": "10.11.0.80",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "CSCVITORIA",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 700,
+      "ip": "10.100.1.80",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "DARKSTORE",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 998,
+      "ip": "172.98.2.81",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "CDFLVP",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 998,
+      "ip": "172.98.2.80",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "CDFLVP",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 998,
+      "ip": "172.98.2.82",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "CDFLVP",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 500,
+      "ip": "10.10.1.81",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "MATRIZ",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 500,
+      "ip": "10.10.1.80",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "MATRIZ",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 500,
+      "ip": "10.10.1.82",
+      "lastSyncDate": "2025-04-04T17:35:08",
+      "nomeEmpresa": "MATRIZ",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 8,
+      "ip": "192.168.8.81",
+      "lastSyncDate": "2025-04-04T17:35:10",
+      "nomeEmpresa": "2 IRMAOS",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 33,
+      "ip": "192.168.33.80",
+      "lastSyncDate": "2025-04-04T17:35:11",
+      "nomeEmpresa": "SALGUEIRO",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 34,
+      "ip": "192.168.34.80",
+      "lastSyncDate": "2025-04-04T17:35:12",
+      "nomeEmpresa": "CARUARU",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 13,
+      "ip": "192.168.13.41",
+      "lastSyncDate": "2025-04-04T17:35:19",
+      "nomeEmpresa": "ESCADA",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 22,
+      "ip": "192.168.22.80",
+      "lastSyncDate": "2025-04-04T17:35:19",
+      "nomeEmpresa": "BARREIRO",
+      "status": "success",
+      "errorCode": "no error",
+      "errorMessage": "no error"
+    },
+    {
+      "nroEmpresa": 20,
+      "ip": "192.168.20.81",
+      "lastSyncDate": "2025-04-04T17:35:27",
+      "nomeEmpresa": "TIMBAUBA",
       "status": "success",
       "errorCode": "no error",
       "errorMessage": "no error"

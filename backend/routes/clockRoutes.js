@@ -25,7 +25,7 @@ router.post('/clock/:ip', async (req, res) => {
     return res.status(400).json({ error: 'IP e dados são obrigatórios.' });
   }
   try {
-    await updateClock(ip, data);
+    //await getClockStatus(ip, data);
     res.status(200).json({ message: 'Dispositivo atualizado com sucesso.' });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao atualizar o dispositivo.' });

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="" readonly="0" foreign_keys="" case_sensitive_like="" temp_store="" wal_autocheckpoint="" synchronous=""/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="8973"/><column_width id="4" width="0"/></tab_structure><tab_browse><table title="." custom_title="0" dock_id="4" table="0,0:"/><dock_state state="000000ff00000000fd0000000100000002000005ab000003a2fc0100000005fc00000000000005ab0000000000fffffffa000000000100000002fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320100000000ffffffff0000000000000000fc00000000000005ab0000000000fffffffa000000000100000002fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500370100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500360100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000012400ffffff0000026f0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">select * from clocks;
+
+
+select * from clocksInfo;
+
+
+
+select * from clocksStatus ;
+
+
+SELECT ip, portaria, username, userpass, nomeEmpresa, empresadir, item, ipfinal FROM clocks;
+
+-- Para testar como se fosse dia 04/04/2025 às 19:30
+SELECT datetime('2025-04-04 19:30:00', '-1 hour');
+
+SELECT a.loja, ip, ultima_hora, hoje, ultimos_7_dias, ultimos_15_dias, ultimos_30_dias, ultima_verificacao FROM clocks_vw_fato_falhas a
+WHERE date(
+  substr(ultima_verificacao, 7, 4) || '-' || 
+  substr(ultima_verificacao, 4, 2) || '-' || 
+  substr(ultima_verificacao, 1, 2)
+) &lt;= '2025-04-04';
+
+-- drop view clocks_vw_fato_falhas;
+
+
+CREATE VIEW clocks_vw_fato_falhas AS
+SELECT
+  (printf('%03d', a.nroEmpresa) || '-' || a.nomeEmpresa) as loja, 
+  a.ip,
+
+  -- Falhas na última hora
+  COUNT(CASE 
+          WHEN b.status = 'offline' 
+               AND datetime(substr(b.lastSyncTime, 7, 4) || '-' || substr(b.lastSyncTime, 4, 2) || '-' || substr(b.lastSyncTime, 1, 2) || ' ' || substr(b.lastSyncTime, 12)) 
+                   &gt;= datetime('now', '-1 hour') 
+          THEN 1 
+       END) AS ultima_hora,
+
+  -- Falhas no dia de hoje
+  COUNT(CASE 
+          WHEN b.status = 'offline' 
+               AND date(substr(b.lastSyncTime, 7, 4) || '-' || substr(b.lastSyncTime, 4, 2) || '-' || substr(b.lastSyncTime, 1, 2)) 
+                   = date('now') 
+          THEN 1 
+       END) AS hoje,
+
+  -- Falhas nos últimos 7 dias
+  COUNT(CASE 
+          WHEN b.status = 'offline' 
+               AND date(substr(b.lastSyncTime, 7, 4) || '-' || substr(b.lastSyncTime, 4, 2) || '-' || substr(b.lastSyncTime, 1, 2)) 
+                   &gt;= date('now', '-7 days') 
+          THEN 1 
+       END) AS ultimos_7_dias,
+
+  -- Falhas nos últimos 15 dias
+  COUNT(CASE 
+          WHEN b.status = 'offline' 
+               AND date(substr(b.lastSyncTime, 7, 4) || '-' || substr(b.lastSyncTime, 4, 2) || '-' || substr(b.lastSyncTime, 1, 2)) 
+                   &gt;= date('now', '-15 days') 
+          THEN 1 
+       END) AS ultimos_15_dias,
+
+  -- Falhas nos últimos 30 dias
+  COUNT(CASE 
+          WHEN b.status = 'offline' 
+               AND date(substr(b.lastSyncTime, 7, 4) || '-' || substr(b.lastSyncTime, 4, 2) || '-' || substr(b.lastSyncTime, 1, 2)) 
+                   &gt;= date('now', '-30 days') 
+          THEN 1 
+       END) AS ultimos_30_dias,
+	   max( b.lastSyncTime) as ultima_verificacao
+
+FROM 
+  clocks a 
+LEFT JOIN clocksStatus b ON b.ip = a.ip
+where 1=1
+and b.status = 'offline'
+GROUP BY printf('%03d', a.nroEmpresa) || '-' || a.nomeEmpresa, a.ip
+ORDER BY 1, 2;
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>

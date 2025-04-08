@@ -13,9 +13,9 @@ logger.configureDirLogService('application');
 
 const CRON_SCHEDULES = {
   hourly: '0 * * * *',
-  networkTest: '7,14,21,28,35,42,49,56 * * * *',
-  updateInfo: '10,20,30,40,50 * * * *',
-  dailyTask: '50 23 * * *'
+  testConnection: '7,14,21,28,35,42,49,56 * * * *',
+  clocksInfo: '10,20,30,40,50 * * * *',
+  getallPunches: '50 23 * * *'
 };
 
 class Application {
@@ -27,13 +27,20 @@ class Application {
   static scheduleTask(cronExpression, taskName, taskFunction) {
     cron.schedule(cronExpression, async () => {
       try {
-        logger.info(taskName, `executing scheduled task at ${dataHoraAtual()}`);
+        logger.info(taskName, `executando tarefa agendada em ${dataHoraAtual()}`);
         await taskFunction();
-        logger.info(taskName, `task completed successfully at ${dataHoraAtual()}`);
+        logger.info(taskName, `task concluída com sucesso em ${dataHoraAtual()}`);
       } catch (error) {
-        logger.error(taskName, error);
+        logger.error(taskName, `erro ao executar tarefa: ${error.message}`);
       }
     });
+  }
+
+  static async getAllPunches(obj) {
+    await AppDay.gettingAfdDay(obj.date, obj.log);
+    await AppDay.importEachAfdLineDay(obj.date, obj.log);
+    await WFMDevService.deleteDuplicates(obj.date, obj.log);
+    await WFMDevService.sendToStgWfm(obj.date, obj.log);
   }
 
   static start(executeApp = 0, minutes = 0, enableLog = 'n') {
@@ -41,36 +48,29 @@ class Application {
     const mm = Number(minutes);
 
     try {
-      this.initializeEnvironment();
-
-      this.scheduleTask(CRON_SCHEDULES.hourly, 'app.startapp', async () => {
-        await App.startapp(mm, enableLog);
-      });
-
-      this.scheduleTask(CRON_SCHEDULES.networkTest, 'networkService.testNetCon', async () => {
-        await NetworkService.testNetCon(enableLog);
-      });
-
-      this.scheduleTask(CRON_SCHEDULES.updateInfo, 'networkService.updateNetInfo', async () => {
-        await NetworkService.updateNetInfo(enableLog);
-      });
-
-      this.scheduleTask(CRON_SCHEDULES.dailyTask, 'dailyTask', async () => {
-        const date = dataHoraAtual().split(' ')[0];
-        const obj = { date, ckInt: 100, log: 1 };
-
-        await AppDay.gettingAfdDay(obj.date, obj.log);
-        await AppDay.importEachAfdLineDay(obj.date, obj.log);
-        await WFMDevService.deleteDuplicates(obj.date, obj.log);
-        await WFMDevService.sendToStgWfm(obj.date, obj.log);
-        // 03/04/2025 - substituicao do envio por procedure
-        //await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
-      });
-
-      // Execute tasks immediately if executeApp is set
       if (executeApp === 1) {
         App.startapp(mm, enableLog);
-        NetworkService.updateNetInfo(enableLog);
+      } else if (executeApp === 0) {
+        this.initializeEnvironment();
+
+        this.scheduleTask(CRON_SCHEDULES.hourly, 'app.hourly', async () => {
+          await App.startapp(mm, enableLog);
+        });
+
+        this.scheduleTask(CRON_SCHEDULES.testConnection, 'testConnection', async () => {
+          await NetworkService.testConnection(enableLog);
+        });
+
+        this.scheduleTask(CRON_SCHEDULES.getallPunches, 'getallPunches', async () => {
+          const date = dataHoraAtual().split(' ')[0];
+          const obj = { date, ckInt: 100, log: 1 };
+          await this.getAllPunches(obj);
+        });
+      } else {
+        logger.error(
+          name,
+          `valor inválido para executeApp: ${executeApp}.\nUse 0 para o agendamento ou 1 para executar agora.`
+        );
       }
     } catch (error) {
       logger.error(name, error);

@@ -1,7 +1,6 @@
 require('dotenv').config('../../.env');
-const { exec } = require('child_process');
 const { currentDateHour, getLogValue } = require('../utils/Utils.js');
-const { FilesService } = require('../controllers/files.controller.js');
+const { SqlLiteService } = require('./sqlite.service.js');
 const { Logger } = require('../middleware/Logger.middleware.js');
 
 const SERVICE_NAME = 'NetworkService';
@@ -10,12 +9,10 @@ let logger = new Logger();
 logger.service = SERVICE_NAME;
 logger.configureDirLogService('application');
 
-const { CLOCKS_DB } = process.env;
-
 class NetworkService {
   static validateArray(data, name) {
     if (!Array.isArray(data)) {
-      logger.error(name, 'Data is not an array. Resetting to an empty array.');
+      logger.error(name, 'Os dados não são um array. Retornando um array vazio.');
       return [];
     }
     return data;
@@ -32,83 +29,96 @@ class NetworkService {
     const log = getLogValue(enableLog);
 
     try {
-      this.logMessage(log, name, `Getting all devices at ${currentDateHour()}`);
-      const clocks = await FilesService.readClocksJson(CLOCKS_DB);
+      this.logMessage(log, name, `obtendo dispositivos da tabela "clocks" no banco de dados.`);
 
-      if (!this.validateArray(clocks, name)) return;
+      const query = `SELECT nroEmpresa, ip, nomeEmpresa FROM clocks`;
 
-      const successDevices = clocks.filter((device) => device.status === 'success' || device.status === 'failed');
-      if (successDevices.length === 0) {
-        this.logMessage(log, name, `No devices found with status success or failed`);
-        return;
+      const rows = await SqlLiteService.queryDB(query);
+      if (!this.validateArray(rows, name)) {
+        this.logMessage(log, name, `nenhum dispositivo encontrado na tabela "clocks".`);
+        return [];
       }
 
-      this.logMessage(log, name, `Found ${successDevices.length} devices with status success`);
-
-      return successDevices;
+      this.logMessage(log, name, `Encontrados ${rows.length} dispositivos na tabela "clocks".`);
+      return rows;
     } catch (error) {
-      logger.error(name, error);
+      logger.error(name, `Erro ao buscar dispositivos: ${error.message}`);
+      return [];
     }
   };
 
-  static testNetCon = async (enableLog = 'n') => {
-    const name = this.testNetCon.name;
+  static testConnection = async (enableLog = 'n') => {
+    const name = this.testConnection.name;
     const log = getLogValue(enableLog);
 
     try {
       const clocks = await this.getClocksInfo(log);
       if (!this.validateArray(clocks, name)) return;
 
-      const promises = clocks.map((device) => this.isDeviceOnline(device.ip, log));
-      await Promise.all(promises);
+      const testResults = [];
 
-      this.logMessage(log, name, `All devices have been checked at ${currentDateHour()}`);
+      this.logMessage(log, name, `Iniciando testes de conectividade para ${clocks.length} dispositivos.`);
+
+      for (const device of clocks) {
+        const { ip } = device;
+        const isOnline = await this.isDeviceOnline(ip, log);
+
+        testResults.push([
+          ip,
+          isOnline ? 'online' : 'offline',
+          currentDateHour(),
+          isOnline ? null : 'PINGFAILURE',
+          isOnline ? null : 'falha no ping'
+        ]);
+      }
+
+      if (testResults.length > 0) {
+        const tableName = 'clocksStatus';
+        const columns = ['ip', 'status', 'lastSyncTime', 'errorCode', 'errorMessage'];
+
+        await SqlLiteService.bulkInsert(tableName, columns, testResults);
+
+        this.logMessage(log, name, `${testResults.length} resultados registrados.`);
+      }
+
+      this.logMessage(log, name, `Testes de conectividade concluídos para todos os dispositivos.`);
     } catch (error) {
-      logger.error(name, error);
+      logger.error(name, `Erro ao testar conectividade: ${error.message}`);
     }
   };
 
-  static updateNetInfo = async (enableLog = 'n') => {
-    const name = this.updateNetInfo.name;
-    const log = getLogValue(enableLog);
-
-    try {
-      const clocks = await this.getClocksInfo(log);
-      if (!this.validateArray(clocks, name)) return;
-
-      this.logMessage(log, name, `Updating ${clocks.length} devices at ${currentDateHour()}`);
-
-      const promises = clocks.map((device) =>
-        FilesService.updateInfo(device.ip, device.username, device.userpass, log)
-      );
-      await Promise.all(promises);
-
-      this.logMessage(log, name, `All devices have been updated at ${currentDateHour()}`);
-    } catch (error) {
-      logger.error(name, error);
-    }
-  };
-
-  static async isDeviceOnline(host, enableLog = 'n') {
+  static async isDeviceOnline(host, enableLog = 'n', port = 80) {
     const name = this.isDeviceOnline.name;
     const log = getLogValue(enableLog);
 
     try {
       return new Promise((resolve) => {
-        exec(`ping -n 7 ${host}`, async (error, stdout) => {
-          if (error || stdout.includes('Host de destino inacess')) {
-            logger.error(name, `[failed] - host unreachable: ${host}`);
-            await FilesService.updateDevices(host, false);
-            return resolve(false);
-          }
+        const net = require('net');
+        const socket = new net.Socket();
 
-          await FilesService.updateDevices(host, true);
-          this.logMessage(log, name, `[successful] - working on station: ${host}`);
-          return resolve(true);
+        const timeout = 5000;
+        socket.setTimeout(timeout);
+
+        socket.connect(port, host, () => {
+          //this.logMessage(log, name, `[online] - ${host}:${port}`);
+          socket.destroy();
+          resolve(true);
+        });
+
+        socket.on('error', (err) => {
+          this.logMessage(log, name, `[offline] - ${host}:${port} - ${err.message}`);
+          socket.destroy();
+          resolve(false);
+        });
+
+        socket.on('timeout', () => {
+          this.logMessage(log, name, `[offline] - ${host}:${port}`);
+          socket.destroy();
+          resolve(false);
         });
       });
     } catch (error) {
-      logger.error(name, error);
+      logger.error(name, `erro ao verificar conectividade: ${error.message}`);
       return false;
     }
   }

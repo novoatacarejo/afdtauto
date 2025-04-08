@@ -359,6 +359,30 @@
       "acabandoBobina": false,
       "lastSyncDate": "2025-04-04T16:20:13",
       "status": "success"
+    },
+    {
+      "ip": "192.168.5.80",
+      "mac": "FC:52:CE:83:EB:E2",
+      "serial": "00014003750119565",
+      "firmware": 1048,
+      "mrp": 1560,
+      "memoriaUtilizada": 26,
+      "ultimoNroNSR": 531517,
+      "totalUsuarios": 2153,
+      "usuarios": 2153,
+      "usuariosAdmin": 28,
+      "digitaisCadastradas": 2424,
+      "usuariosComSenha": 7,
+      "codigoBarras": 0,
+      "cartoesRfid": 2,
+      "tempoAtividade": "0d 10h 32m 4s",
+      "totalTicketsImpressos": 523865,
+      "qtdBobina": 0,
+      "totalBobina": 319501,
+      "prontoImpressao": true,
+      "acabandoBobina": false,
+      "lastSyncDate": "2025-04-04T16:20:34",
+      "status": "success"
     }
   ]
 }

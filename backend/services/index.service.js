@@ -4,6 +4,7 @@ const { WFMDevService } = require('./wfmdev.service.js');
 const { OracleService } = require('./oracle.service.js');
 const { NetworkService } = require('./network.service.js');
 const { WebService } = require('./server.service.js');
+const { SqlLiteService } = require('./sqlite.service.js');
 
 module.exports = {
   StationService,
@@ -11,5 +12,6 @@ module.exports = {
   WFMDevService,
   OracleService,
   NetworkService,
-  WebService
+  WebService,
+  SqlLiteService
 };
