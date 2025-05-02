@@ -88,6 +88,15 @@ class AppDay {
 
       await Promise.all(
         files.map(async (file) => {
+          const match = file.match(/afd_(\d+)-.*_rlg\d+_ip(\d+)\.txt/);
+          if (!match) {
+            logger.error(name, `formato de arquivo inválido: ${file}`);
+            return;
+          }
+
+          const filialRM = match[1];
+          const ipFinal = match[2];
+
           const punches = await readEachLine(file);
           punches.forEach(async (p) => {
             if (String(p.id) !== '0' && p.id !== null && p.id !== undefined && [50, 38].includes(p.lnLength)) {
@@ -98,7 +107,9 @@ class AppDay {
                 obj.push({
                   idNumber: p.id,
                   idLength: p.lnLength,
-                  punch
+                  punch,
+                  filialRM: filialRM,
+                  ipFinal: ipFinal
                 });
               }
             }

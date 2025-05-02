@@ -124,6 +124,16 @@ class App {
 
       await Promise.all(
         files.map(async (file) => {
+          // Extraindo FILIALRM e IPFINAL do nome do arquivo
+          const match = file.match(/afd_(\d+)-.*_rlg\d+_ip(\d+)\.txt/);
+          if (!match) {
+            logger.error(name, `Formato de arquivo inválido: ${file}`);
+            return;
+          }
+
+          const filialRM = match[1];
+          const ipFinal = match[2];
+
           const punches = await readEachLine(file);
 
           punches.forEach(async (p) => {
@@ -131,7 +141,9 @@ class App {
               obj.push({
                 idNumber: p.id,
                 idLength: p.lnLength,
-                punch: await formatDate(p.punchUserTimestamp)
+                punch: await formatDate(p.punchUserTimestamp),
+                filialRM: filialRM,
+                ipFinal: ipFinal
               });
 
               log === 1

@@ -311,13 +311,15 @@ class WFMDevService {
 
       client.callTimeout = 60 * 1000;
 
-      const sql = `INSERT INTO WFM_DEV.DEV_RM_AFD (DTAGERACAO, IDNUMBER, IDLENGTH, PUNCH) VALUES ( SYSDATE, :a, :b, TO_DATE( :c, 'YYYY-MM-DD HH24:MI:SS') )`;
+      const sql = `INSERT INTO WFM_DEV.DEV_RM_AFD (DTAGERACAO, IDNUMBER, IDLENGTH, PUNCH, FILIALRM, IPFINAL) VALUES ( SYSDATE, :a, :b, TO_DATE( :c, 'YYYY-MM-DD HH24:MI:SS'), :d, :e )`;
 
       for (let i = 0; i < data.length; i++) {
         var temp = [];
         temp.push(data[i].idNumber);
         temp.push(parseInt(data[i].idLength));
         temp.push(data[i].punch);
+        temp.push(data[i].filialRM);
+        temp.push(data[i].ipFinal);
         content.push(temp);
       }
 
