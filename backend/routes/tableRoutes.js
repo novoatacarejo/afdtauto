@@ -2,7 +2,7 @@ const express = require('express');
 const { WFMDevService, SqlLiteService } = require('../services/index.service.js');
 const router = express.Router();
 
-router.get('/table1', async (req, res) => {
+router.get('/1', async (req, res) => {
   const { date } = req.query;
   try {
     const result = await WFMDevService.getAfdRtPunches(date, 'n');
@@ -13,7 +13,7 @@ router.get('/table1', async (req, res) => {
   }
 });
 
-router.get('/table2', async (req, res) => {
+router.get('/2', async (req, res) => {
   const { date } = req.query;
   try {
     const result = await WFMDevService.getAfdRtLjPunches(date, 'n');
@@ -24,7 +24,7 @@ router.get('/table2', async (req, res) => {
   }
 });
 
-router.get('/table3', async (req, res) => {
+router.get('/3', async (req, res) => {
   const { date } = req.query;
   try {
     const sql = `SELECT a.loja, ip, ultima_hora, hoje, ultimos_7_dias, ultimos_15_dias, ultimos_30_dias, ultima_verificacao FROM clocks_vw_fato_falhas a`;

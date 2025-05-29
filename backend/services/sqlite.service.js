@@ -160,6 +160,75 @@ class SqlLiteService {
       return [];
     }
   };
+
+  static clocksRoute1 = async (enableLog = 'n') => {
+    const name = this.clocksRoute1.name;
+    const log = this.getLogValue(enableLog);
+
+    try {
+      this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
+
+      const query = `SELECT a.* FROM vw_clocks_route1 a`;
+
+      const rows = await this.queryDB(query);
+      if (!this.validateArray(rows, name)) {
+        this.logMessage(log, name, `nenhum dispositivo encontrado na rota clocks/1.`);
+        return [];
+      }
+
+      this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
+      return rows;
+    } catch (error) {
+      logger.error(name, `erro ao buscar dispositivos: ${error.message}`);
+      return [];
+    }
+  };
+
+  static clocksRoute2 = async (enableLog = 'n') => {
+    const name = this.clocksRoute2.name;
+    const log = this.getLogValue(enableLog);
+
+    try {
+      this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
+
+      const query = `select a.* from vw_clocks_route2 a`;
+
+      const rows = await this.queryDB(query);
+      if (!this.validateArray(rows, name)) {
+        this.logMessage(log, name, `nenhum dispositivo encontrado na rota clocks/2.`);
+        return [];
+      }
+
+      this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
+      return rows;
+    } catch (error) {
+      logger.error(name, `erro ao buscar dispositivos: ${error.message}`);
+      return [];
+    }
+  };
+
+  static clocksRoute3 = async (enableLog = 'n') => {
+    const name = this.clocksRoute3.name;
+    const log = this.getLogValue(enableLog);
+
+    try {
+      this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
+
+      const query = `select a.* from vw_clocks_route3 a`;
+
+      const rows = await this.queryDB(query);
+      if (!this.validateArray(rows, name)) {
+        this.logMessage(log, name, `nenhum dispositivo encontrado na rota clocks/3.`);
+        return [];
+      }
+
+      this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
+      return rows;
+    } catch (error) {
+      logger.error(name, `erro ao buscar dispositivos: ${error.message}`);
+      return [];
+    }
+  };
 }
 
 module.exports = { SqlLiteService };

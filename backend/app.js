@@ -11,9 +11,10 @@ let logger = new Logger();
 logger.service = SERVICE_NAME;
 logger.configureDirLogService('application');
 
+// alterado em 28/05/2025: testConnection: '7,14,21,28,35,42,49,56 * * * *',
 const CRON_SCHEDULES = {
   hourly: '0 * * * *',
-  testConnection: '7,14,21,28,35,42,49,56 * * * *',
+  testConnection: '0,15,30,45 * * * *',
   clocksInfo: '10,20,30,40,50 * * * *',
   getallPunches: '50 23 * * *'
 };

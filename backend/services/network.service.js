@@ -67,8 +67,8 @@ class NetworkService {
           ip,
           isOnline ? 'online' : 'offline',
           currentDateHour(),
-          isOnline ? null : 'PINGFAILURE',
-          isOnline ? null : 'falha no ping'
+          isOnline ? null : 'SOCKET_ERROR',
+          isOnline ? null : 'Falha ao conectar ao dispositivo'
         ]);
       }
 

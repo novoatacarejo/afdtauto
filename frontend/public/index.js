@@ -97,23 +97,23 @@ async function fetchData() {
   progressBarInner.textContent = '10%';
 
   try {
-    const chart3 = await fetch(`/api/chart/chart3?date=${dateInput}`);
+    const chart3 = await fetch(`/api/chart/3?date=${dateInput}`);
     progressBarInner.style.width = '12%';
     progressBarInner.textContent = '12%';
 
-    const table1 = await fetch(`/api/table/table1?date=${dateInput}`);
+    const table1 = await fetch(`/api/table/1?date=${dateInput}`);
     progressBarInner.style.width = '15%';
     progressBarInner.textContent = '15%';
 
-    const chart2 = await fetch(`/api/chart/chart2?date=${dateInput}`);
+    const chart2 = await fetch(`/api/chart/2?date=${dateInput}`);
     progressBarInner.style.width = '16%';
     progressBarInner.textContent = '16%';
 
-    const table2 = await fetch(`/api/table/table2?date=${dateInput}`);
+    const table2 = await fetch(`/api/table/2?date=${dateInput}`);
     progressBarInner.style.width = '20%';
     progressBarInner.textContent = '20%';
 
-    const table3 = await fetch(`/api/table/table3`);
+    const table3 = await fetch(`/api/table/3`);
     progressBarInner.style.width = '22%';
     progressBarInner.textContent = '22%';
 

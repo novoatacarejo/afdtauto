@@ -2,7 +2,7 @@ const express = require('express');
 const { WFMDevService } = require('../services/wfmdev.service.js');
 const router = express.Router();
 
-router.get('/chart2', async (req, res) => {
+router.get('/2', async (req, res) => {
   const { date } = req.query;
   try {
     const result = await WFMDevService.getAfdRtNroPunches(date, 'n');
@@ -13,7 +13,7 @@ router.get('/chart2', async (req, res) => {
   }
 });
 
-router.get('/chart3', async (req, res) => {
+router.get('/3', async (req, res) => {
   const { date } = req.query;
   try {
     const result = await WFMDevService.getAfdRtAllPunches(date, 'n');
