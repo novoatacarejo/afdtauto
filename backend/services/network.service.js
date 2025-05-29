@@ -29,7 +29,7 @@ class NetworkService {
     const log = getLogValue(enableLog);
 
     try {
-      this.logMessage(log, name, `obtendo dispositivos da tabela "clocks" no banco de dados.`);
+      // this.logMessage(log, name, `obtendo dispositivos da tabela "clocks" no banco de dados.`);
 
       const query = `SELECT nroEmpresa, ip, nomeEmpresa FROM clocks`;
 
@@ -39,7 +39,7 @@ class NetworkService {
         return [];
       }
 
-      this.logMessage(log, name, `Encontrados ${rows.length} dispositivos na tabela "clocks".`);
+      // this.logMessage(log, name, `Encontrados ${rows.length} dispositivos na tabela "clocks".`);
       return rows;
     } catch (error) {
       logger.error(name, `Erro ao buscar dispositivos: ${error.message}`);
@@ -57,7 +57,7 @@ class NetworkService {
 
       const testResults = [];
 
-      this.logMessage(log, name, `Iniciando testes de conectividade para ${clocks.length} dispositivos.`);
+      //this.logMessage(log, name, `Iniciando testes de conectividade para ${clocks.length} dispositivos.`);
 
       for (const device of clocks) {
         const { ip } = device;
@@ -78,10 +78,10 @@ class NetworkService {
 
         await SqlLiteService.bulkInsert(tableName, columns, testResults);
 
-        this.logMessage(log, name, `${testResults.length} resultados registrados.`);
+        // this.logMessage(log, name, `${testResults.length} resultados registrados.`);
       }
 
-      this.logMessage(log, name, `Testes de conectividade concluídos para todos os dispositivos.`);
+      // this.logMessage(log, name, `Testes de conectividade concluídos para todos os dispositivos.`);
     } catch (error) {
       logger.error(name, `Erro ao testar conectividade: ${error.message}`);
     }
@@ -106,13 +106,13 @@ class NetworkService {
         });
 
         socket.on('error', (err) => {
-          this.logMessage(log, name, `[offline] - ${host}:${port} - ${err.message}`);
+          //this.logMessage(log, name, `[offline] - ${host}:${port} - ${err.message}`);
           socket.destroy();
           resolve(false);
         });
 
         socket.on('timeout', () => {
-          this.logMessage(log, name, `[offline] - ${host}:${port}`);
+          //this.logMessage(log, name, `[offline] - ${host}:${port}`);
           socket.destroy();
           resolve(false);
         });

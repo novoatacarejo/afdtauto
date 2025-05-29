@@ -48,7 +48,7 @@ class StationService {
     const name = this.isServerReachable.name;
     try {
       await axios.get(`https://${ip}/login.fcgi?login=${login}&password=${pass}`, { timeout: 5000 });
-      logger.info(name, `server on ip: ${ip} with login: ${login} is reachable`);
+      //logger.info(name, `server on ip: ${ip} with login: ${login} is reachable`);
       return true;
     } catch (error) {
       logger.error(
@@ -159,7 +159,7 @@ class StationService {
   static getStationsInfo = async () => {
     const name = this.getStationsInfo.name;
     try {
-      logger.info(name, `getting stations info`);
+      //logger.info(name, `getting stations info`);
       const result = await WFMDevService.getStationsInfo();
       return result;
     } catch (error) {
@@ -284,9 +284,9 @@ class StationService {
       if (!token) {
         logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
       } else {
-        if (log === 1) {
+        /*   if (log === 1) {
           logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
-        }
+        } */
 
         const url = `https://${ip}/get_info.fcgi?session=` + token;
 
@@ -329,9 +329,9 @@ class StationService {
       if (!token) {
         logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
       } else {
-        if (log === 1) {
-          logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
-        }
+        /*    if (log === 1) {
+          /logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
+        } */
 
         const url = `https://${ip}/get_system_information.fcgi?session=` + token;
 
@@ -373,9 +373,9 @@ class StationService {
       if (!token) {
         logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
       } else {
-        if (log === 1) {
-          logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
-        }
+        /*    if (log === 1) {
+         logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
+        } */
 
         const url = `https://${ip}/get_about.fcgi?session=` + token;
 
@@ -414,9 +414,9 @@ class StationService {
       if (!token) {
         logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
       } else {
-        if (log === 1) {
+        /*    if (log === 1) {
           logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
-        }
+        } */
 
         const url = `https://${ip}/set_system_network.fcgi?session=` + token;
 
@@ -468,9 +468,9 @@ class StationService {
       if (!token) {
         logger.error(name, `erro ao obter token da estacao ipAddr: ${ip}`);
       } else {
-        if (log === 1) {
+        /*   if (log === 1) {
           logger.info(name, `connected on station ipAddr: ${ip} with the token ${token}`);
-        }
+        } */
 
         const url1 = `https://${ip}/get_info.fcgi?session=${token}`;
 

@@ -143,7 +143,7 @@ class SqlLiteService {
     const log = this.getLogValue(enableLog);
 
     try {
-      this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
+      //this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
 
       const query = `SELECT ip, portaria, userName, userPass, nomeEmpresa, empresaDir, item, ipFinal FROM clocks a`;
 
@@ -153,7 +153,7 @@ class SqlLiteService {
         return [];
       }
 
-      this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
+      //this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
       return rows;
     } catch (error) {
       logger.error(name, `erro ao buscar dispositivos: ${error.message}`);
@@ -166,7 +166,7 @@ class SqlLiteService {
     const log = this.getLogValue(enableLog);
 
     try {
-      this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
+      //this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
 
       const query = `SELECT a.* FROM vw_clocks_route1 a`;
 
@@ -176,7 +176,7 @@ class SqlLiteService {
         return [];
       }
 
-      this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
+      // this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
       return rows;
     } catch (error) {
       logger.error(name, `erro ao buscar dispositivos: ${error.message}`);
@@ -189,7 +189,7 @@ class SqlLiteService {
     const log = this.getLogValue(enableLog);
 
     try {
-      this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
+      //this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
 
       const query = `select a.* from vw_clocks_route2 a`;
 
@@ -199,7 +199,7 @@ class SqlLiteService {
         return [];
       }
 
-      this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
+      //this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
       return rows;
     } catch (error) {
       logger.error(name, `erro ao buscar dispositivos: ${error.message}`);
@@ -212,7 +212,7 @@ class SqlLiteService {
     const log = this.getLogValue(enableLog);
 
     try {
-      this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
+      // this.logMessage(log, name, `obtendo dispositivos no banco de dados.`);
 
       const query = `select a.* from vw_clocks_route3 a`;
 
@@ -222,7 +222,7 @@ class SqlLiteService {
         return [];
       }
 
-      this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
+      //this.logMessage(log, name, `encontrados ${rows.length} dispositivos cadastrados.`);
       return rows;
     } catch (error) {
       logger.error(name, `erro ao buscar dispositivos: ${error.message}`);

@@ -58,7 +58,7 @@ class WFMDevService {
 
       await OracleService.close(client);
 
-      logger.info(name, totalRecords(punches, log));
+      //logger.info(name, totalRecords(punches, log));
 
       return punches;
     } catch (error) {
@@ -97,7 +97,7 @@ class WFMDevService {
 
       await OracleService.close(client);
 
-      logger.info(name, totalRecords(punches, log));
+      //logger.info(name, totalRecords(punches, log));
 
       return punches;
     } catch (error) {
@@ -141,7 +141,7 @@ class WFMDevService {
 
         const response = await client.execute(sql, bind, options);
 
-        logger.info(name, `inserting ${response.rowsAffected} row succeded. rowId ${response.lastRowid}`);
+        // logger.info(name, `inserting ${response.rowsAffected} row succeded. rowId ${response.lastRowid}`);
 
         await OracleService.close(client);
       }
@@ -180,7 +180,7 @@ class WFMDevService {
 
         const response = await client.execute(sql, bind, options);
 
-        logger.info(name, `inserting ${response.rowsAffected} row succeded. rowId ${response.lastRowid}`);
+        //logger.info(name, `inserting ${response.rowsAffected} row succeded. rowId ${response.lastRowid}`);
 
         await OracleService.close(client);
       }
@@ -237,11 +237,11 @@ class WFMDevService {
 
       const response = await client.execute(sql, binds, options);
 
-      logger.info(name, `deleted duplicates from ${date}`);
+      //logger.info(name, `deleted duplicates from ${date}`);
 
       await OracleService.close(client);
 
-      log === 1 ? logger.info(name, `delete from ${date} finished!`) : null;
+      /*      log === 1 ? logger.info(name, `delete from ${date} finished!`) : null; */
 
       return response;
     } catch (error) {
@@ -288,9 +288,9 @@ class WFMDevService {
 
       const response = await client.execute(sql, binds);
 
-      log === 1
+      /*   log === 1
         ? logger.info(name, `eliminated ${response.outBinds.rows_deleted} duplicate rows from DEV_RM_AFD`)
-        : null;
+        : null; */
 
       await OracleService.close(client);
 
@@ -333,11 +333,11 @@ class WFMDevService {
         poolPingInterval: 300
       };
 
-      log === 1 ? logger.info(name, `iniciando inserção de batidas na tabela oracle`) : null;
+      /*  log === 1 ? logger.info(name, `iniciando inserção de batidas na tabela oracle`) : null; */
 
       const response = await client.executeMany(sql, content, options);
 
-      log === 1 ? logger.info(name, `inserindo registros: ${data.length}`) : null;
+      /*   log === 1 ? logger.info(name, `inserindo registros: ${data.length}`) : null; */
 
       await OracleService.close(client);
 
@@ -388,7 +388,7 @@ class WFMDevService {
 
       await OracleService.close(client);
 
-      log === 1 ? logger.info(name, totalRecords(punches, log)) : null;
+      /*  log === 1 ? logger.info(name, totalRecords(punches, log)) : null; */
 
       return punches;
     } catch (error) {
@@ -425,7 +425,7 @@ class WFMDevService {
 
       await OracleService.close(client);
 
-      log === 1 ? logger.info(name, totalRecords(obj, log)) : null;
+      /*   log === 1 ? logger.info(name, totalRecords(obj, log)) : null; */
 
       return obj;
     } catch (error) {
@@ -495,7 +495,7 @@ class WFMDevService {
 
       await OracleService.close(client);
 
-      log === 1 ? logger.info(name, totalRecords(obj, log)) : null;
+      /*    log === 1 ? logger.info(name, totalRecords(obj, log)) : null; */
 
       return obj;
     } catch (error) {
@@ -540,7 +540,7 @@ class WFMDevService {
 
       await OracleService.close(client);
 
-      log === 1 ? logger.info(name, totalRecords(obj, log)) : null;
+      /*  log === 1 ? logger.info(name, totalRecords(obj, log)) : null; */
 
       return obj;
     } catch (error) {
@@ -552,7 +552,7 @@ class WFMDevService {
     const name = this.sendToStgWfm.name;
     const log = getLogValue(enableLog);
 
-    logger.info(name, `starting procedure to send punches`);
+    /*  logger.info(name, `starting procedure to send punches`); */
 
     try {
       const client = await OracleService.connect();
@@ -572,11 +572,11 @@ class WFMDevService {
 
       const response = await client.execute(sql, binds, options);
 
-      logger.info(name, `procedure sending punches by date: ${date}`);
+      /*  logger.info(name, `procedure sending punches by date: ${date}`); */
 
       await OracleService.close(client);
 
-      log === 1 ? logger.info(name, `importing punches from ${date} finished!`) : null;
+      /*  log === 1 ? logger.info(name, `importing punches from ${date} finished!`) : null; */
 
       return response;
     } catch (error) {
