@@ -303,45 +303,35 @@ class WFMDevService {
   static async insertMany(data, enableLog = 'n') {
     const name = this.insertMany.name;
     const log = getLogValue(enableLog);
-
+    const chunkSize = 1000;
     try {
-      var content = [];
-
       const client = await OracleService.connect();
-
       client.callTimeout = 60 * 1000;
-
-      const sql = `INSERT INTO WFM_DEV.DEV_RM_AFD (DTAGERACAO, IDNUMBER, IDLENGTH, PUNCH, FILIALRM, IPFINAL) VALUES ( SYSDATE, :a, :b, TO_DATE( :c, 'YYYY-MM-DD HH24:MI:SS'), :d, :e )`;
-
-      for (let i = 0; i < data.length; i++) {
-        var temp = [];
-        temp.push(data[i].idNumber);
-        temp.push(parseInt(data[i].idLength));
-        temp.push(data[i].punch);
-        temp.push(data[i].filialRM);
-        temp.push(data[i].ipFinal);
-        content.push(temp);
+      const sql = `INSERT INTO WFM_DEV.DEV_RM_AFD (DTAGERACAO, IDNUMBER, IDLENGTH, PUNCH, FILIALRM, IPFINAL) VALUES ( SYSDATE, :a, :b, TO_DATE( :c, 'YYYY-MM-DD HH24:MI:SS'), :d, :e ) LOG ERRORS INTO ERR$_DEV_RM_AFD REJECT LIMIT UNLIMITED`;
+      let totalInserted = 0;
+      for (let i = 0; i < data.length; i += chunkSize) {
+        const chunk = data.slice(i, i + chunkSize);
+        const content = chunk.map((item) => [
+          item.idNumber,
+          parseInt(item.idLength),
+          item.punch,
+          item.FILIALRM || item.filialRM,
+          item.IPFINAL || item.ipFinal
+        ]);
+        const options = {
+          autoCommit: true,
+          fetchArraySize: 100,
+          poolMax: 25,
+          poolMin: 5,
+          poolIncrement: 5,
+          poolTimeout: 1800,
+          poolPingInterval: 300
+        };
+        const response = await client.executeMany(sql, content, options);
+        totalInserted += response.rowsAffected || 0;
       }
-
-      const options = {
-        autoCommit: true,
-        fetchArraySize: 100,
-        poolMax: 25,
-        poolMin: 5,
-        poolIncrement: 5,
-        poolTimeout: 1800,
-        poolPingInterval: 300
-      };
-
-      /*  log === 1 ? logger.info(name, `iniciando inserção de batidas na tabela oracle`) : null; */
-
-      const response = await client.executeMany(sql, content, options);
-
-      /*   log === 1 ? logger.info(name, `inserindo registros: ${data.length}`) : null; */
-
       await OracleService.close(client);
-
-      return response;
+      return { rowsAffected: totalInserted };
     } catch (error) {
       logger.error(name, error);
     }

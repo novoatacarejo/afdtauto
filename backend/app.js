@@ -40,7 +40,7 @@ class Application {
   static async getAllPunches(obj) {
     await AppDay.gettingAfdDay(obj.date, obj.log);
     await AppDay.importEachAfdLineDay(obj.date, obj.log);
-    await WFMDevService.deleteDuplicates(obj.date, obj.log);
+    //await WFMDevService.deleteDuplicates(obj.date, obj.log);
     await WFMDevService.sendToStgWfm(obj.date, obj.log);
   }
 

@@ -71,7 +71,7 @@ const appDay = async (data) => {
       try {
         await AppDay.gettingAfdDay(obj.date, obj.log);
         await AppDay.importEachAfdLineDay(obj.date, obj.log);
-        await WFMDevService.deleteDuplicates(obj.date, obj.log);
+        //await WFMDevService.deleteDuplicates(obj.date, obj.log);
       } catch (error) {
         logger.error(name, error);
       }
