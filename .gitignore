@@ -477,4 +477,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# database
+database/afdtauto.db
+
 # End of https://www.toptal.com/developers/gitignore/api/windows
