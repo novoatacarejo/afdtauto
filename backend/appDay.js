@@ -70,6 +70,7 @@ const appDay = async (data) => {
     if (obj.getAfd === 1) {
       try {
         await AppDay.gettingAfdDay(obj.date, obj.log);
+
         await AppDay.importEachAfdLineDay(obj.date, obj.log);
         //await WFMDevService.deleteDuplicates(obj.date, obj.log);
       } catch (error) {

@@ -1,5 +1,5 @@
 require('dotenv').config('../../.env');
-const { StationService, TlanticService, WFMDevService } = require('../services/index.service.js');
+const { StationService, TlanticService, WFMDevService, SqlLiteService } = require('../services/index.service.js');
 const { Logger } = require('../middleware/Logger.middleware.js');
 const {
   returnAfdDate,
@@ -11,7 +11,7 @@ const {
   dataHoraAtual,
   formatDate,
   clearScreen,
-  readJsonClocks,
+  //readJsonClocks,
   getLogValue
 } = require('../utils/Utils.js');
 const { stat } = require('fs');
@@ -33,7 +33,8 @@ class AppDay {
       clearScreen();
       log === 1 ? logger.info(name, `[${date}] - coleta de arquivos AFD iniciada em ${dataHoraAtual()}`) : null;
 
-      const stations = await readJsonClocks('success');
+      const stations = await SqlLiteService.getClocksInfo(log);
+      //const stations = await readJsonClocks('success');
 
       if (stations.length === 0) {
         logger.error(name, `[${date}] - no stations finded. please, check the database connection`);
