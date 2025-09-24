@@ -45,14 +45,12 @@ function dataHoraAtual() {
   const now = new Date();
   const nowString =
     now.toLocaleDateString('pt-BR', {
-      timeZone: 'UTC',
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
     }) +
     ' ' +
     now.toLocaleTimeString('pt-BR', {
-      timeZone: 'UTC',
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit'
@@ -69,7 +67,6 @@ function formatDate(date) {
   return `${day}/${month}/${year}`; */
 
   return new Date(date).toLocaleDateString('pt-BR', {
-    timeZone: 'UTC',
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'

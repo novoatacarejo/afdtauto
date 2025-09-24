@@ -1,3 +1,4 @@
+require('./backend/cacheUpdater.js');
 const { Application } = require('./backend/app.js');
 const { startServer } = require('./backend/server.js');
 
