@@ -155,10 +155,15 @@ async function fetchData() {
     const tableTitle2 = document.getElementById('tableTitle2');
     tableBody2.innerHTML = '';
 
+    // Remover manipulação da tabela 3 se ela não existe
     const tableBody3 = document.getElementById('tableBody3');
     const tableHeader3 = document.getElementById('tableHeader3');
     const tableTitle3 = document.getElementById('tableTitle3');
-    tableBody3.innerHTML = '';
+    if (tableBody3 && tableHeader3 && tableTitle3) {
+      tableBody3.innerHTML = '';
+      tableHeader3.style.display = 'table-header-group';
+      tableTitle3.style.display = 'block';
+    }
 
     let totalBatidasTable1 = 0;
     let totalBatidasTable2 = 0;
@@ -345,43 +350,13 @@ async function fetchData() {
     let totFalhUlt15d = 0;
     let totFalhUlt30d = 0;
 
-    dfTable3.forEach((row, index) => {
-      const tr = document.createElement('tr');
+    // Remover preenchimento da tabela 3 se ela não existe
+    if (tableBody3) {
+    }
 
-      tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${row.loja}</td>
-        <td>${row.ip}</td>
-        <td>${row.ultima_hora}</td>
-        <td>${row.hoje}</td>
-        <td>${row.ultimos_7_dias}</td>
-        <td>${row.ultimos_15_dias}</td>
-        <td>${row.ultimos_30_dias}</td>
-        <td>${row.ultima_verificacao}</td>
-      `;
-      tableBody3.appendChild(tr);
-
-      tableHeader3.style.display = 'table-header-group';
-      tableTitle3.style.display = 'block';
-
-      totFalhUltHor += parseInt(row.ultima_hora);
-      totFalhHj += parseInt(row.hoje);
-      totFalhUlt7d += parseInt(row.ultimos_7_dias);
-      totFalhUlt15d += parseInt(row.ultimos_15_dias);
-      totFalhUlt30d += parseInt(row.ultimos_30_dias);
-    });
-
-    const trTotal3 = document.createElement('tr');
-    trTotal3.innerHTML = `
-      <td colspan="3"><strong>Total</strong></td>
-      <td><strong>${totFalhUltHor}</strong></td>
-      <td><strong>${totFalhHj}</strong></td>
-      <td><strong>${totFalhUlt7d}</strong></td>
-      <td><strong>${totFalhUlt15d}</strong></td>
-      <td><strong>${totFalhUlt30d}</strong></td>
-      <td colspan="3"></td>`;
-
-    tableBody3.appendChild(trTotal3);
+    // Remover trTotal3 se tabela não existe
+    if (tableBody3) {
+    }
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
     alert('Erro ao buscar dados. Verifique o console para mais detalhes.');
