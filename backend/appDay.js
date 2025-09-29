@@ -56,7 +56,11 @@ const argv = yargs
   .help()
   .alias('help', 'h').argv;
 
+console.log('Iniciando appDay.js...');
+console.log('Argumentos recebidos:', process.argv);
+
 const appDay = async (data) => {
+  console.log('Executando appDay com:', data);
   const name = appDay.name;
   const obj = {
     date: data.date,
@@ -68,9 +72,9 @@ const appDay = async (data) => {
 
   try {
     if (obj.getAfd === 1) {
+      console.log('getAfd ativado, executando importação de AFD...');
       try {
         await AppDay.gettingAfdDay(obj.date, obj.log);
-
         await AppDay.importEachAfdLineDay(obj.date, obj.log);
         //await WFMDevService.deleteDuplicates(obj.date, obj.log);
       } catch (error) {
@@ -78,6 +82,7 @@ const appDay = async (data) => {
       }
     }
     if (obj.api === 1) {
+      console.log('api ativado, enviando para WFM...');
       try {
         await WFMDevService.sendToStgWfm(obj.date, obj.log);
         // await AppDay.sendingWfmApiDay(obj.date, obj.ckInt, obj.log);
