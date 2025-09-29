@@ -77,8 +77,9 @@ async function fetchData() {
   dataHoraAtual();
 
   const dateInput = document.getElementById('date').value;
-
-  const formattedDate = formatDate(new Date(dateInput));
+  // Usa a data do input diretamente para exibição e requisição
+  const [year, month, day] = dateInput.split('-');
+  const formattedDate = `${day}/${month}/${year}`;
 
   if (!dateInput) {
     alert('Selecione uma data.');
@@ -114,32 +115,31 @@ async function fetchData() {
     progressBarInner.style.width = '22%';
     progressBarInner.textContent = '22%';
 
-    if (!table1.ok) {
-      throw new Error('table1', 'Network response was not ok');
-    }
+    // NOVO: Buscar dados do gráfico de status dos relógios
+    const statusChart = await fetch(`/api/chart/status?date=${dateInput}`);
+    progressBarInner.style.width = '25%';
+    progressBarInner.textContent = '25%';
 
-    if (!chart3.ok) {
-      throw new Error('chart2', 'Network response was not ok');
-    }
+    // NOVO: Buscar dados do gráfico de lojas x relógios cadastrados
+    const lojasRelogiosChart = await fetch(`/api/chart/lojas-relogios`);
+    progressBarInner.style.width = '28%';
+    progressBarInner.textContent = '28%';
 
-    if (!table1.ok) {
-      throw new Error('table2', 'Network response was not ok');
-    }
-
-    if (!table2.ok) {
-      throw new Error('chart3', 'Network response was not ok');
-    }
-
-    if (!table3.ok) {
-      throw new Error('table3', 'Network response was not ok');
-    }
+    if (!table1.ok) throw new Error('table1', 'Network response was not ok');
+    if (!chart3.ok) throw new Error('chart2', 'Network response was not ok');
+    if (!table1.ok) throw new Error('table2', 'Network response was not ok');
+    if (!table2.ok) throw new Error('chart3', 'Network response was not ok');
+    if (!table3.ok) throw new Error('table3', 'Network response was not ok');
+    if (!statusChart.ok) throw new Error('statusChart', 'Network response was not ok');
+    if (!lojasRelogiosChart.ok) throw new Error('lojasRelogiosChart', 'Network response was not ok');
 
     const dfChart2 = await chart2.json();
-
     const dfChart3 = await chart3.json();
     const dfTable1 = await table1.json();
     const dfTable2 = await table2.json();
     const dfTable3 = await table3.json();
+    const dfStatusChart = await statusChart.json();
+    const dfLojasRelogios = await lojasRelogiosChart.json();
 
     const gfLinhas = [['Hora', 'Qtd. Batidas', { role: 'annotation' }]];
     const gfPizza = [['Número de Batidas', 'Colaboradores', { role: 'style' }, { role: 'annotation' }]];
@@ -244,15 +244,98 @@ async function fetchData() {
     progressBarInner.style.width = '64%';
     progressBarInner.textContent = '64%';
 
+    // Preparar dados para o gráfico de status dos relógios
+    // Espera-se que dfStatusChart seja um array de objetos: { status: 'Online', quantidade: 10 }, etc
+    const gfStatus = [['Status', 'Quantidade', { role: 'style' }, { role: 'annotation' }]];
+    dfStatusChart.forEach((row, index) => {
+      gfStatus.push([row.status, row.quantidade, colors[index], row.quantidade]);
+    });
+
+    // Preparar dados para o gráfico de lojas x relógios
+    const gfLojasRelogios = [['Tipo', 'Quantidade', { role: 'style' }, { role: 'annotation' }]];
+    dfLojasRelogios.forEach((row, index) => {
+      gfLojasRelogios.push([row.tipo, row.quantidade, colors[index], row.quantidade]);
+    });
+
     google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(() => {
+      showChartContainers();
       drawChart1(gfLinhas, formattedDate);
       drawChart2(gfPizza, formattedDate);
       drawChart3(gfBarras, formattedDate);
+      drawStatusChart(gfStatus, formattedDate);
+      drawLojasRelogiosChart(gfLojasRelogios);
 
       progressBarInner.style.width = '78%';
       progressBarInner.textContent = '78%';
     });
+    // NOVO: Função para desenhar o gráfico de lojas x relógios cadastrados
+    function drawLojasRelogiosChart(chartData) {
+      const data = google.visualization.arrayToDataTable(chartData);
+
+      const options = {
+        title: 'Lojas x Relógios Cadastrados',
+        legend: { position: 'none' },
+        hAxis: {
+          title: 'Tipo',
+          textStyle: {
+            fontSize: 14,
+            color: '#000'
+          }
+        },
+        vAxis: {
+          title: 'Quantidade',
+          minValue: 0
+        },
+        backgroundColor: 'transparent',
+        bar: { groupWidth: '60%' },
+        annotations: {
+          alwaysOutside: true,
+          textStyle: {
+            fontSize: 14,
+            color: '#000'
+          }
+        }
+      };
+
+      const chart = new google.visualization.ColumnChart(document.getElementById('gfLojasRelogios1'));
+      chart.draw(data, options);
+    }
+    // NOVO: Função para desenhar o gráfico de status dos relógios
+    function drawStatusChart(chartData, date) {
+      const data = google.visualization.arrayToDataTable(chartData);
+
+      const options = {
+        title: `Status dos Relógios - ${date}`,
+        legend: { position: 'bottom' },
+        hAxis: {
+          title: 'Status',
+          slantedText: false,
+          textStyle: {
+            fontSize: 14,
+            color: '#000'
+          }
+        },
+        vAxis: {
+          title: 'Quantidade'
+        },
+        backgroundColor: 'transparent',
+        legend: { position: 'top', maxLines: 3 },
+        bar: { groupWidth: '75%' },
+        isStacked: true,
+        annotations: {
+          alwaysOutside: 'true',
+          textStyle: {
+            fontSize: 12,
+            color: '#000'
+          }
+        }
+      };
+
+      // Pode ser ColumnChart ou PieChart, dependendo do visual desejado
+      const chart = new google.visualization.ColumnChart(document.getElementById('gfStatus1'));
+      chart.draw(data, options);
+    }
 
     // table3 begin
 
@@ -323,9 +406,12 @@ function drawChart3(chartData, date) {
     //curveType: 'function',
     legend: { position: 'top', maxLines: 3 },
     hAxis: {
-      title: 'Importação entre 20 Dias Anteriores até a data selecionada',
-      slantedText: true,
-      slantedTextAngle: 45
+      title: 'Importação entre 10 Dias Anteriores até a data selecionada',
+      slantedText: false,
+      textStyle: {
+        fontSize: 12,
+        color: '#000'
+      }
     },
     vAxis: {
       title: 'Qtd. Batidas'
@@ -401,6 +487,14 @@ function drawChart2(chartData, date) {
   const chart = new google.visualization.PieChart(document.getElementById('gfPizza1'));
 
   chart.draw(data, options);
+}
+
+function showChartContainers() {
+  document.getElementById('containerBarras').style.display = 'block';
+  document.getElementById('containerLinhas').style.display = 'block';
+  document.getElementById('containerPizza').style.display = 'block';
+  document.getElementById('containerStatus').style.display = 'block';
+  document.getElementById('containerLojasRelogios').style.display = 'block';
 }
 
 document.addEventListener('DOMContentLoaded', () => {

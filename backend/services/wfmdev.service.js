@@ -8,6 +8,37 @@ let logger = new Logger();
 logger.service = SERVICE_NAME;
 logger.configureDirLogService('application');
 class WFMDevService {
+  // Novo método para gráfico de lojas x relógios cadastrados
+  static async getLojasRelogios() {
+    const { SqlLiteService } = require('./sqlite.service.js');
+    try {
+      // Total de lojas
+      const lojasRows = await SqlLiteService.queryDB('SELECT COUNT(DISTINCT nomeEmpresa) as totalLojas FROM clocks');
+      // Total de relógios
+      const relogiosRows = await SqlLiteService.queryDB('SELECT COUNT(*) as totalRelogios FROM clocks');
+      return [
+        { tipo: 'Lojas', quantidade: lojasRows[0]?.totalLojas || 0 },
+        { tipo: 'Relógios', quantidade: relogiosRows[0]?.totalRelogios || 0 }
+      ];
+    } catch (error) {
+      console.error('Erro ao buscar lojas x relógios:', error);
+      return [];
+    }
+  }
+  // Novo método para buscar status dos relógios no SQLite
+  static async getClocksStatus() {
+    const { SqlLiteService } = require('./sqlite.service.js');
+    try {
+      // Consulta agrupando por status
+      const query = `SELECT status, COUNT(*) as quantidade FROM clocks GROUP BY status`;
+      const rows = await SqlLiteService.queryDB(query);
+      // Ajusta para formato esperado pelo frontend
+      return rows.map((row) => ({ status: row.status, quantidade: row.quantidade }));
+    } catch (error) {
+      console.error('Erro ao buscar status dos relógios:', error);
+      return [];
+    }
+  }
   static async getStationsInfo() {
     const name = this.getStationsInfo.name;
     try {
@@ -503,24 +534,24 @@ class WFMDevService {
       const client = await OracleService.connect();
 
       const sql = `
-                  SELECT R.DTAMES, R.QTDBATIDAS FROM (SELECT B.DTAMES,
-             COUNT(B.SK_BATIDA) AS QTDBATIDAS,
-             ROW_NUMBER() OVER (ORDER BY MIN(DTABATIDA)) AS RANK_DTAMES
-             FROM (
-                  SELECT /*+ index(A IDX_WFMDEV_RMAFD_02, B IDX_CODPESSOA_01) */
-                        A.CODPESSOA,
-                        TO_DATE(A.DTABATIDA, 'DD/MM/YYYY') AS DTABATIDA,
-                        TO_CHAR(TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'DD/MM') || '-' ||
-                        TO_CHAR(TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'Dy') AS DTAMES,
-                        (TO_CHAR(CODPESSOA) || REPLACE(DTABATIDA, '/', NULL) ||
-                        REPLACE(A.HHMM, ':', NULL)) AS SK_BATIDA
-                  FROM WFM_DEV.DEV_RM_AFD A
-                  WHERE 1 = 1
-                        AND A.DTABATIDA BETWEEN ( TRUNC(TO_DATE(:a, 'YYYY-MM-DD')) - INTERVAL '20' DAY )
-                        AND TRUNC(TO_DATE(:b, 'YYYY-MM-DD')) 
-            ) B
-      GROUP BY B.DTAMES) R
-      ORDER BY RANK_DTAMES`;
+      SELECT R.DTAMES, R.QTDBATIDAS FROM (SELECT B.DTAMES,
+     COUNT(B.SK_BATIDA) AS QTDBATIDAS,
+     ROW_NUMBER() OVER (ORDER BY MIN(DTABATIDA)) AS RANK_DTAMES
+     FROM (
+      SELECT /*+ index(A IDX_WFMDEV_RMAFD_02, B IDX_CODPESSOA_01) */
+        A.CODPESSOA,
+        TO_DATE(A.DTABATIDA, 'DD/MM/YYYY') AS DTABATIDA,
+        TO_CHAR(TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'DD/MM') || '-' ||
+        TO_CHAR(TO_DATE(A.DTABATIDA, 'DD/MM/YYYY'), 'Dy') AS DTAMES,
+        (TO_CHAR(CODPESSOA) || REPLACE(DTABATIDA, '/', NULL) ||
+        REPLACE(A.HHMM, ':', NULL)) AS SK_BATIDA
+      FROM WFM_DEV.DEV_RM_AFD A
+      WHERE 1 = 1
+        AND A.DTABATIDA BETWEEN ( TRUNC(TO_DATE(:a, 'YYYY-MM-DD')) - INTERVAL '10' DAY )
+        AND TRUNC(TO_DATE(:b, 'YYYY-MM-DD')) 
+    ) B
+  GROUP BY B.DTAMES) R
+  ORDER BY RANK_DTAMES`;
 
       const bind = [date, date];
 
