@@ -8,7 +8,48 @@ let logger = new Logger();
 logger.service = SERVICE_NAME;
 logger.configureDirLogService('application');
 class WFMDevService {
+  // Retorna falhas por loja para gráfico de barras
+  static async getFalhasPorLoja(date) {
+    try {
+      const { SqlLiteService } = require('./sqlite.service.js');
+      // Converte data 'YYYY-MM-DD' para 'DD/MM/YYYY'
+      const [ano, mes, dia] = date.split('-');
+      const dateISO = `${dia}/${mes}/${ano}`;
+      const sql = `SELECT b.nomeEmpresa || '-ip' || b.ipFinal as loja, COUNT(a.status) as falhas
+FROM clocksStatus a, clocks b
+WHERE a.ip = b.ip
+  AND substr(a.lastSyncTime, 1, 10) = ?
+  AND a.status = 'offline'
+GROUP BY b.nomeEmpresa || '-ip' || b.ipFinal
+ORDER BY falhas DESC
+LIMIT 5`;
+      const rows = await SqlLiteService.queryDB(sql, [dateISO]);
+      return rows;
+    } catch (error) {
+      logger.error('getFalhasPorLoja', error);
+      return [];
+    }
+  }
   // Novo método para gráfico de lojas x relógios cadastrados
+  // Novo método para total de falhas por data
+  static async getTotalFalhasByDate(date) {
+    const name = this.getTotalFalhasByDate?.name || 'getTotalFalhasByDate';
+    try {
+      const { SqlLiteService } = require('./sqlite.service.js');
+      // Converte data 'DD/MM/YYYY' para 'YYYY-MM-DD' para comparar com substr(lastSyncTime, 1, 10)
+      const [ano, mes, dia] = date.split('-');
+      const dateISO = `${dia}/${mes}/${ano}`;
+      const sql = `SELECT COUNT(*) as falhas FROM clocksStatus WHERE substr(lastSyncTime, 1, 10) = ? AND status = 'offline'`;
+      const rows = await SqlLiteService.queryDB(sql, [dateISO]);
+      // Retorna o total de falhas (primeira linha, coluna 'falhas')
+      console.log('rows', rows);
+      console.log('dateISO', dateISO);
+      return rows?.[0]?.falhas || 0;
+    } catch (error) {
+      logger.error(name, error);
+      return 0;
+    }
+  }
   static async getLojasRelogios() {
     const { SqlLiteService } = require('./sqlite.service.js');
     try {

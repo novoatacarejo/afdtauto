@@ -37,4 +37,18 @@ router.get('/3', async (req, res) => {
   }
 });
 
+// Nova rota para total de falhas por data
+
+// Nova rota para gráfico de falhas por loja
+router.get('/falhas-por-loja', async (req, res) => {
+  const { date } = req.query;
+  try {
+    const falhasPorLoja = await WFMDevService.getFalhasPorLoja(date);
+    res.json({ falhasPorLoja });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: 'Erro ao buscar falhas por loja.' });
+  }
+});
+
 module.exports = router;

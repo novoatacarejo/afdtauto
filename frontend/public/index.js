@@ -122,8 +122,8 @@ async function fetchData() {
 
     // NOVO: Buscar dados do gráfico de lojas x relógios cadastrados
     const lojasRelogiosChart = await fetch(`/api/chart/lojas-relogios`);
-    progressBarInner.style.width = '28%';
-    progressBarInner.textContent = '28%';
+    progressBarInner.style.width = '32%';
+    progressBarInner.textContent = '32%';
 
     if (!table1.ok) throw new Error('table1', 'Network response was not ok');
     if (!chart3.ok) throw new Error('chart2', 'Network response was not ok');
@@ -262,6 +262,59 @@ async function fetchData() {
       gfLojasRelogios.push([row.tipo, row.quantidade, colors[index], row.quantidade]);
     });
 
+    // Buscar dados de falhas por loja
+    const falhasPorLojaRes = await fetch(`/api/table/falhas-por-loja?date=${dateInput}`);
+    const falhasPorLojaData = await falhasPorLojaRes.json();
+    const falhasPorLoja = falhasPorLojaData.falhasPorLoja || [];
+
+    // Exibir o card de gráfico de falhas por loja
+    document.getElementById('containerFalhasPorLoja').style.display = 'block';
+    document.getElementById('falhasPorLojaTitle').style.display = 'block';
+    document.getElementById('falhasPorLojaData').textContent = formattedDate;
+
+    // Montar dados para Google Charts
+    const gfFalhasPorLoja = [['Loja', 'Falhas', { role: 'style' }, { role: 'annotation' }]];
+    const barColors = ['#007bff', '#dc3545', '#ffc107', '#28a745', '#6f42c1', '#fd7e14', '#20c997', '#6610f2'];
+    falhasPorLoja.forEach((row, idx) => {
+      gfFalhasPorLoja.push([row.loja, row.falhas, barColors[idx % barColors.length], row.falhas]);
+    });
+
+    google.charts.load('current', { packages: ['corechart'] });
+    google.charts.setOnLoadCallback(() => {
+      const chart = new google.visualization.ColumnChart(document.getElementById('gfFalhasPorLoja'));
+      const options = {
+        title: 'Falhas de Conexão por Loja',
+        legend: { position: 'none' },
+        hAxis: {
+          title: 'Loja',
+          slantedText: false,
+          textStyle: {
+            fontSize: 16,
+            color: '#212529',
+            bold: true,
+            italic: false
+          },
+          titleTextStyle: {
+            fontSize: 10,
+            color: '#212529',
+            bold: true,
+            italic: true
+          }
+        },
+        vAxis: { title: 'Falhas', minValue: 0 },
+        annotations: {
+          alwaysOutside: true,
+          textStyle: {
+            fontSize: 14,
+            color: '#333',
+            bold: false
+          }
+        },
+        colors: barColors,
+        chartArea: { width: '80%', height: '80%' }
+      };
+      chart.draw(google.visualization.arrayToDataTable(gfFalhasPorLoja), options);
+    });
     google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(() => {
       showChartContainers();
@@ -460,7 +513,9 @@ function drawChart2(chartData, date) {
   };
 
   const chart = new google.visualization.PieChart(document.getElementById('gfPizza1'));
-
+  options.chartArea = { left: 20, top: 40, width: '80%', height: '70%' };
+  options.width = 600;
+  options.height = 350;
   chart.draw(data, options);
 }
 
