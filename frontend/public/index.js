@@ -274,44 +274,38 @@ async function fetchData() {
 
     // Montar dados para Google Charts
     const gfFalhasPorLoja = [['Loja', 'Falhas', { role: 'style' }, { role: 'annotation' }]];
-    const barColors = ['#007bff', '#dc3545', '#ffc107', '#28a745', '#6f42c1', '#fd7e14', '#20c997', '#6610f2'];
     falhasPorLoja.forEach((row, idx) => {
-      gfFalhasPorLoja.push([row.loja, row.falhas, barColors[idx % barColors.length], row.falhas]);
+      let lojaLabel = row.loja;
+      gfFalhasPorLoja.push([lojaLabel, row.falhas, colors[idx % colors.length], row.falhas]);
     });
 
     google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(() => {
       const chart = new google.visualization.ColumnChart(document.getElementById('gfFalhasPorLoja'));
       const options = {
-        title: 'Falhas de Conexão por Loja',
-        legend: { position: 'none' },
+        title: `Falhas de Conexão por Loja - ${formattedDate}`,
+        legend: { position: 'top', maxLines: 3 },
         hAxis: {
-          title: 'Loja',
+          // title: 'Importação entre 10 Dias Anteriores até a data selecionada',
           slantedText: false,
           textStyle: {
-            fontSize: 16,
-            color: '#212529',
-            bold: true,
-            italic: false
-          },
-          titleTextStyle: {
-            fontSize: 10,
-            color: '#212529',
-            bold: true,
-            italic: true
+            fontSize: 12,
+            color: '#000'
           }
         },
-        vAxis: { title: 'Falhas', minValue: 0 },
+        vAxis: {
+          title: 'Qtd. Batidas'
+        },
         annotations: {
-          alwaysOutside: true,
+          alwaysOutside: 'true',
           textStyle: {
-            fontSize: 14,
-            color: '#333',
-            bold: false
+            fontSize: 12,
+            color: '#000'
           }
         },
-        colors: barColors,
-        chartArea: { width: '80%', height: '80%' }
+        chartArea: { left: 20, top: 40, width: '80%', height: '70%' },
+        width: 600,
+        height: 350
       };
       chart.draw(google.visualization.arrayToDataTable(gfFalhasPorLoja), options);
     });
@@ -396,13 +390,13 @@ async function fetchData() {
     }
 
     // table3 begin
-
+    /*
     let totFalhHj = 0;
     let totFalhUltHor = 0;
     let totFalhUlt7d = 0;
     let totFalhUlt15d = 0;
     let totFalhUlt30d = 0;
-
+    */
     // Remover preenchimento da tabela 3 se ela não existe
     if (tableBody3) {
     }

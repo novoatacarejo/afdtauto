@@ -15,12 +15,12 @@ class WFMDevService {
       // Converte data 'YYYY-MM-DD' para 'DD/MM/YYYY'
       const [ano, mes, dia] = date.split('-');
       const dateISO = `${dia}/${mes}/${ano}`;
-      const sql = `SELECT b.nomeEmpresa || '-ip' || b.ipFinal as loja, COUNT(a.status) as falhas
+      const sql = `SELECT substr(replace(b.nomeEmpresa, ' ',''),1,4) || '-ip' || b.ipFInal as loja, COUNT(a.status) as falhas
 FROM clocksStatus a, clocks b
 WHERE a.ip = b.ip
   AND substr(a.lastSyncTime, 1, 10) = ?
   AND a.status = 'offline'
-GROUP BY b.nomeEmpresa || '-ip' || b.ipFinal
+GROUP BY substr(replace(b.nomeEmpresa, ' ',''),1,4) || '-ip' || b.ipFInal
 ORDER BY falhas DESC
 LIMIT 5`;
       const rows = await SqlLiteService.queryDB(sql, [dateISO]);
