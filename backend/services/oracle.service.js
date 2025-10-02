@@ -53,5 +53,7 @@ class OracleService {
 
 OracleService.BIND_OUT = oracledb.BIND_OUT;
 OracleService.NUMBER = oracledb.NUMBER;
+OracleService.OUT_FORMAT_OBJECT = oracledb.OUT_FORMAT_OBJECT;
+OracleService.CURSOR = oracledb.CURSOR;
 
 module.exports = { OracleService };

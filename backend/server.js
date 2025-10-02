@@ -6,6 +6,7 @@ const tableRoutesRedis = require('./routes/tableRoutes.redis.js');
 const tableRoutes = require('./routes/tableRoutes.js');
 const clockRoutesRedis = require('./routes/clockRoutes.redis.js');
 const { Logger } = require('./middleware/Logger.middleware.js');
+const logRoutes = require('./routes/logRoutes.js');
 
 const SERVICE_NAME = 'WebService';
 
@@ -23,6 +24,7 @@ function startServer() {
   app.use('/api/table', tableRoutes);
   app.use('/api/table-redis', tableRoutesRedis);
   app.use('/api/clock', clockRoutesRedis);
+  app.use('/api/logs', logRoutes); // Adicione esta linha para expor a rota de logs
   app.use(express.static(API_WEB_DIR));
   app.set('view engine', 'html');
   app.engine('html', require('ejs').renderFile);

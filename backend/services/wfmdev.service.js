@@ -645,6 +645,55 @@ LIMIT 5`;
       logger.error(name, error);
     }
   }
+
+  static async getDevLogRows() {
+    const name = this.getDevLogRows.name;
+
+    const labels = [
+      { name: 'dtaLog' },
+      { name: 'horaLog' },
+      { name: 'processo' },
+      { name: 'objeto' },
+      { name: 'acao' },
+      { name: 'tabela' },
+      { name: 'tempoSegundos' }, // novo campo
+      { name: 'qtdLinhas' },
+      { name: 'status' },
+      { name: 'erroMensagem' }
+    ];
+
+    try {
+      const { OracleService } = require('./oracle.service.js');
+      const client = await OracleService.connect();
+
+      const sql = `
+        SELECT TRUNC(DTA_GERACAO) AS DTALOG,
+               TO_CHAR(DTA_GERACAO, 'HH24:MI') AS HORALOG,
+               T.PROCESSO,
+               T.OBJETO,
+               T.ACAO,
+               T.TABELA,
+               ROUND((NVL(T.DTA_FINAL, SYSDATE) - T.DTA_INICIO) * 24 * 60 * 60) AS TEMPOSEGUNDOS,
+               T.QTDROWS AS QTDLINHAS,
+               T.STATUS,
+               T.ERRO_MENSAGEM AS ERROMENSAGEM
+FROM DEV_LOG T
+`;
+
+      const options = { outFormat: client.OUT_FORMAT_OBJECT };
+
+      const response = await client.execute(sql, [], options);
+      //console.log('Rows Oracle:', response.rows); // Adicione este log para depurar
+      const obj = assembleArrayObjects(labels, response.rows);
+
+      await OracleService.close(client);
+
+      return obj;
+    } catch (error) {
+      console.error('Erro ao consultar DEV_LOG:', error);
+      return [];
+    }
+  }
 }
 
 module.exports = { WFMDevService };
