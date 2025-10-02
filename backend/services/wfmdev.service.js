@@ -667,7 +667,7 @@ LIMIT 5`;
       const client = await OracleService.connect();
 
       const sql = `
-        SELECT TRUNC(DTA_GERACAO) AS DTALOG,
+        SELECT TO_CHAR(DTA_GERACAO,'DD/MM/YYYY') AS DTALOG,
                TO_CHAR(DTA_GERACAO, 'HH24:MI') AS HORALOG,
                T.PROCESSO,
                T.OBJETO,
