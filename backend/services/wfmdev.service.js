@@ -655,6 +655,7 @@ LIMIT 5`;
       { name: 'processo' },
       { name: 'objeto' },
       { name: 'acao' },
+      { name: 'acaoDetalhe' },
       { name: 'tabela' },
       { name: 'tempoSegundos' }, // novo campo
       { name: 'qtdLinhas' },
@@ -671,7 +672,8 @@ LIMIT 5`;
                TO_CHAR(DTA_GERACAO, 'HH24:MI') AS HORALOG,
                T.PROCESSO,
                T.OBJETO,
-               T.ACAO,
+               SUBSTR( ACAO, 1, INSTR( ACAO, ' ') - 1) AS ACAO,
+               T.ACAO AS ACAODETALHE,
                T.TABELA,
                ROUND((NVL(T.DTA_FINAL, SYSDATE) - T.DTA_INICIO) * 24 * 60 * 60) AS TEMPOSEGUNDOS,
                T.QTDROWS AS QTDLINHAS,
